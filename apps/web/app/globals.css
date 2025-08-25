@@ -18,29 +18,35 @@
         --vaul-overlay-background-start: transparent;
         --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
 
+        /* JetVision Brand Colors */
+        --jetvision-navy: 6 8 28;
+        --jetvision-gold: 219 164 1;
+        --jetvision-platinum: 232 234 246;
+        --jetvision-silver: 158 158 158;
+
         --background: 180 0% 100%;
-        --foreground: 180 0% 2%;
+        --foreground: 234 73% 7%; /* Navy-tinted foreground */
 
-        --secondary: 180 0% 98%;
-        --secondary-foreground: 180 0% 4%;
+        --secondary: 231 30% 98%; /* Platinum-tinted secondary */
+        --secondary-foreground: 234 73% 7%;
 
-        --tertiary: 180 0% 94%;
-        --tertiary-foreground: 180 0% 6%;
+        --tertiary: 231 20% 94%;
+        --tertiary-foreground: 234 73% 10%;
 
-        --quaternary: 180 0% 90%;
-        --quaternary-foreground: 180 0% 10%;
+        --quaternary: 231 15% 90%;
+        --quaternary-foreground: 234 73% 15%;
 
-        --card: 40 30% 98%;
-        --card-foreground: 20 15% 10%;
+        --card: 231 30% 98%;
+        --card-foreground: 234 73% 7%;
 
-        --popover: 180 0% 99.5%;
-        --popover-foreground: 180 0% 2%;
+        --popover: 231 30% 99.5%;
+        --popover-foreground: 234 73% 7%;
 
-        --brand: 14 93% 63%;
-        --brand-foreground: 164 86% 66%;
+        --brand: 47 99% 43%; /* JetVision Gold */
+        --brand-foreground: 234 73% 7%; /* Navy text on gold */
 
-        --accent: 164 70% 33%;
-        --accent-foreground: 164 70% 96%;
+        --accent: 234 73% 7%; /* JetVision Navy as accent */
+        --accent-foreground: 231 30% 98%; /* Platinum text on navy */
 
         --muted: 180 0% 90%;
         --muted-foreground: 180 0% 10%;
@@ -69,29 +75,35 @@
         --vaul-overlay-background-start: transparent;
         --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
 
-        --background: 180 0% 10%;
-        --foreground: 180 0% 98%;
+        /* JetVision Dark Mode with luxury feel */
+        --jetvision-navy: 6 8 28;
+        --jetvision-gold: 219 164 1;
+        --jetvision-platinum: 232 234 246;
+        --jetvision-silver: 158 158 158;
 
-        --secondary: 180 0% 8%;
-        --secondary-foreground: 180 0% 98%;
+        --background: 234 73% 5%; /* Deep navy background */
+        --foreground: 231 30% 96%; /* Platinum text */
 
-        --tertiary: 180 0% 6%;
-        --tertiary-foreground: 180 0% 98%;
+        --secondary: 234 60% 8%; /* Slightly lighter navy */
+        --secondary-foreground: 231 30% 96%;
 
-        --quaternary: 180 0% 2%;
-        --quaternary-foreground: 180 0% 98%;
+        --tertiary: 234 50% 10%;
+        --tertiary-foreground: 231 30% 94%;
 
-        --card: 40 30% 98%;
-        --card-foreground: 20 15% 10%;
+        --quaternary: 234 40% 12%;
+        --quaternary-foreground: 231 30% 92%;
 
-        --popover: 180 0% 4%;
-        --popover-foreground: 180 0% 96%;
+        --card: 234 60% 8%;
+        --card-foreground: 231 30% 96%;
 
-        --brand: 14 93% 63%;
-        --brand-foreground: 164 86% 66%;
+        --popover: 234 65% 6%;
+        --popover-foreground: 231 30% 96%;
 
-        --accent: 164 70% 33%;
-        --accent-foreground: 164 70% 96%;
+        --brand: 47 99% 43%; /* JetVision Gold remains vibrant */
+        --brand-foreground: 234 73% 7%; /* Navy text on gold */
+
+        --accent: 47 90% 50%; /* Gold accent in dark mode */
+        --accent-foreground: 234 73% 7%; /* Navy text on gold accent */
 
         --muted: 180 0% 20%;
         --muted-foreground: 180 0% 70%;

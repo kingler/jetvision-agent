@@ -129,36 +129,38 @@ export const Sidebar = () => {
         >
             <Flex direction="col" className="w-full flex-1 items-start overflow-hidden">
                 <div className="mb-3 flex w-full flex-row items-center justify-between">
-                    <Link href="/chat" className="w-full">
+                    <Link href="/chat" className={cn(isSidebarOpen ? 'w-full' : 'w-auto')}>
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
                             className={cn(
-                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5 px-4',
+                                'flex h-8 cursor-pointer items-center justify-start gap-1.5 px-4',
                                 !isSidebarOpen && 'justify-center px-0'
                             )}
                         >
                             <Logo className="text-brand size-5" />
                             {isSidebarOpen && (
                                 <p className="font-clash text-foreground text-lg font-bold tracking-wide">
-                                    llmchat.co
+                                    JetVision Agent
                                 </p>
                             )}
                         </motion.div>
                     </Link>
-                    {isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            tooltip="Close Sidebar"
-                            tooltipSide="right"
-                            size="icon-sm"
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(!isSidebarOpen && 'mx-auto', 'mr-2')}
-                        >
+                    <Button
+                        variant="ghost"
+                        tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+                        tooltipSide="right"
+                        size="icon-sm"
+                        onClick={() => setIsSidebarOpen(prev => !prev)}
+                        className={cn('transition-all', isSidebarOpen ? 'mr-2' : 'mx-auto')}
+                    >
+                        {isSidebarOpen ? (
                             <IconArrowBarLeft size={16} strokeWidth={2} />
-                        </Button>
-                    )}
+                        ) : (
+                            <IconArrowBarRight size={16} strokeWidth={2} />
+                        )}
+                    </Button>
                 </div>
                 <Flex
                     direction="col"
@@ -300,18 +302,6 @@ export const Sidebar = () => {
                     gap="xs"
                     direction={'col'}
                 >
-                    {!isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            tooltip="Open Sidebar"
-                            tooltipSide="right"
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(!isSidebarOpen && 'mx-auto')}
-                        >
-                            <IconArrowBarRight size={16} strokeWidth={2} />
-                        </Button>
-                    )}
                     {isSignedIn && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

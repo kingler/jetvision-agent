@@ -3,6 +3,10 @@ import { CoreMessage } from 'ai';
 import { ProviderEnumType } from './providers';
 
 export enum ModelEnum {
+    // JetVision Agent Model (Primary)
+    JETVISION_AGENT = 'jetvision-agent',
+    
+    // Legacy models (keeping for compatibility)
     GPT_4o_Mini = 'gpt-4o-mini',
     GPT_4o = 'gpt-4o',
     GPT_4_1_Mini = 'gpt-4.1-mini',
@@ -27,6 +31,14 @@ export type Model = {
 };
 
 export const models: Model[] = [
+    // JetVision Agent - Primary model
+    {
+        id: ModelEnum.JETVISION_AGENT,
+        name: 'JetVision Agent (Apollo.io + Avinode)',
+        provider: 'n8n-agent',
+        maxTokens: 32768,
+        contextWindow: 128000,
+    },
     {
         id: ModelEnum.GPT_4o_Mini,
         name: 'GPT-4o Mini',
@@ -128,29 +140,9 @@ export const models: Model[] = [
 ];
 
 export const getModelFromChatMode = (mode?: string): ModelEnum => {
-    switch (mode) {
-        case ChatMode.GEMINI_2_FLASH:
-            return ModelEnum.GEMINI_2_FLASH;
-        case ChatMode.DEEPSEEK_R1:
-            return ModelEnum.Deepseek_R1;
-        case ChatMode.CLAUDE_3_5_SONNET:
-            return ModelEnum.Claude_3_5_Sonnet;
-        case ChatMode.CLAUDE_3_7_SONNET:
-            return ModelEnum.Claude_3_7_Sonnet;
-        case ChatMode.GPT_4o_Mini:
-            return ModelEnum.GPT_4o_Mini;
-        case ChatMode.GPT_4_1:
-            return ModelEnum.GPT_4_1;
-        case ChatMode.GPT_4_1_Mini:
-            return ModelEnum.GPT_4_1_Mini;
-        case ChatMode.GPT_4_1_Nano:
-            return ModelEnum.GPT_4_1_Nano;
-        case ChatMode.O4_Mini:
-            return ModelEnum.O4_Mini;
-        case ChatMode.GPT_4_1_Mini:
-        default:
-            return ModelEnum.GPT_4o_Mini;
-    }
+    // Always use JetVision Agent (n8n webhook) for all chat modes
+    // This ensures all requests go through the n8n LangChain workflow
+    return ModelEnum.JETVISION_AGENT;
 };
 
 export const getChatModeMaxTokens = (mode: ChatMode) => {

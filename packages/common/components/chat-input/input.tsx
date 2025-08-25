@@ -34,7 +34,7 @@ export const ChatInput = ({
 
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor({
-        placeholder: isFollowUp ? 'Ask follow up' : 'Ask anything',
+        placeholder: isFollowUp ? 'Ask a follow-up question about your flight' : 'Ask about executive travel, jet charter, or Apollo.io campaigns',
         onInit: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
                 const draftMessage = window.localStorage.getItem('draft-message');
@@ -157,7 +157,8 @@ export const ChatInput = ({
                                             <GeneratingStatus />
                                         ) : (
                                             <Flex gap="xs" items="center" className="shrink-0">
-                                                <ChatModeButton />
+                                                {/* Model selection removed - using n8n LangChain Agent */}
+                                                {/* <ChatModeButton /> */}
                                                 {/* <AttachmentButton /> */}
                                                 <WebSearchButton />
                                                 {/* <ToolsMenu /> */}

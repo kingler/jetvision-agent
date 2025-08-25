@@ -6,43 +6,48 @@ import {
     IconChartBar,
     IconPencil,
     IconQuestionMark,
+    IconPlane,
+    IconRocket,
+    IconMapPin,
+    IconUsers,
+    IconTrendingUp,
 } from '@tabler/icons-react';
 import { Editor } from '@tiptap/react';
 
 export const examplePrompts = {
-    howTo: [
-        'How to plan a sustainable vegetable garden for small spaces?',
-        'How to prepare for your first international travel experience?',
-        'How to set up a personal budget that actually works?',
-        'How to improve your public speaking skills for professional settings?',
+    jetCharter: [
+        'What type of private jet is best for a New York to London flight?',
+        'Compare light jets vs midsize jets for a 4-person business trip',
+        'What are empty leg flights and how can I save money with them?',
+        'How far in advance should I book a private jet charter?',
     ],
 
-    explainConcepts: [
-        'Explain how blockchain technology works in simple terms.',
-        'What is quantum computing and how does it differ from traditional computing?',
-        'Explain the concept of emotional intelligence and its importance.',
-        'How does carbon capture technology work to combat climate change?',
+    apolloCampaigns: [
+        'Find executive assistants at Fortune 500 companies in California',
+        'Show me my campaign conversion rates for this week',
+        'Launch a campaign targeting private equity firms for year-end travel',
+        'What is my cost per lead for luxury travel prospects?',
     ],
 
-    creative: [
-        "Write a short story about a chance encounter that changes someone's life.",
-        'Create a recipe for a fusion dish combining Italian and Japanese cuisines.',
-        'Design a fictional sustainable city of the future.',
-        'Develop a character profile for the protagonist of a science fiction novel.',
+    travelPlanning: [
+        'Plan a multi-city executive trip: NYC → London → Dubai → Singapore',
+        'What are the best private terminals at major US airports?',
+        'Arrange ground transportation and concierge services in Miami',
+        'Schedule a jet for the Cannes Film Festival with 8 passengers',
     ],
 
-    advice: [
-        "What's the best approach to negotiate a salary increase?",
-        'How should I prepare for a marathon as a beginner runner?',
-        'What strategies can help manage work-life balance when working remotely?',
-        'What should I consider when adopting a pet for the first time?',
+    leadGeneration: [
+        'Find companies that recently raised Series B funding',
+        'Identify executive assistants who changed jobs in the last 30 days',
+        'Which prospects visited our pricing page multiple times?',
+        'Show me high-value leads in the entertainment industry',
     ],
 
-    analysis: [
-        'Analyze the potential impact of artificial intelligence on healthcare.',
-        'Compare different approaches to addressing climate change.',
-        'Examine the pros and cons of various renewable energy sources.',
-        'Analyze how social media has transformed communication in the past decade.',
+    analytics: [
+        'Analyze response rates by industry for jet charter campaigns',
+        'Compare ROI between email sequences and LinkedIn outreach',
+        'What time do executive assistants typically open our emails?',
+        'Show seasonal trends in private jet demand by region',
     ],
 };
 
@@ -59,13 +64,13 @@ export const getRandomPrompt = (category?: keyof typeof examplePrompts) => {
     return prompts[Math.floor(Math.random() * prompts.length)];
 };
 
-// Map of category to icon component
+// Map of category to icon component - JetVision themed
 const categoryIcons = {
-    howTo: { name: 'How to', icon: IconQuestionMark, color: '!text-yellow-700' },
-    explainConcepts: { name: 'Explain Concepts', icon: IconBulb, color: '!text-blue-700' },
-    creative: { name: 'Creative', icon: IconPencil, color: '!text-green-700' },
-    advice: { name: 'Advice', icon: IconBook, color: '!text-purple-700' },
-    analysis: { name: 'Analysis', icon: IconChartBar, color: '!text-red-700' },
+    jetCharter: { name: 'Jet Charter', icon: IconPlane, color: '!text-brand' },
+    apolloCampaigns: { name: 'Apollo Campaigns', icon: IconRocket, color: '!text-accent' },
+    travelPlanning: { name: 'Travel Planning', icon: IconMapPin, color: '!text-blue-700' },
+    leadGeneration: { name: 'Lead Generation', icon: IconUsers, color: '!text-green-700' },
+    analytics: { name: 'Analytics', icon: IconTrendingUp, color: '!text-purple-700' },
 };
 
 export const ExamplePrompts = () => {

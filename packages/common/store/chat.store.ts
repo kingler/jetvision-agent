@@ -1,6 +1,6 @@
 'use client';
 
-import { Model, models } from '@repo/ai/models';
+import { Model, models, ModelEnum } from '@repo/ai/models';
 import { ChatMode } from '@repo/shared/config';
 import { MessageGroup, Thread, ThreadItem } from '@repo/shared/types';
 import Dexie, { Table } from 'dexie';
@@ -32,18 +32,26 @@ if (typeof window !== 'undefined') {
 const loadInitialData = async () => {
     const threads = await db.threads.toArray();
     const configStr = localStorage.getItem(CONFIG_KEY);
+    
+    // Default to JetVision Agent model
+    const jetvisionModel = models.find(m => m.id === ModelEnum.JETVISION_AGENT) || models[0];
+    
     const config = configStr
         ? JSON.parse(configStr)
         : {
-              customInstructions: undefined,
-              model: models[0].id,
+              customInstructions: 'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.',
+              model: jetvisionModel.id,
               useWebSearch: false,
               showSuggestions: true,
               chatMode: ChatMode.GEMINI_2_FLASH,
           };
+    
+    // Always use JetVision Agent model
+    config.model = jetvisionModel.id;
+    
     const chatMode = config.chatMode || ChatMode.GEMINI_2_FLASH;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
-    const customInstructions = config.customInstructions || '';
+    const customInstructions = config.customInstructions || 'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.';
 
     const initialThreads = threads.length ? threads : [];
 
@@ -434,7 +442,7 @@ const debouncedNotify = debounce(notifyWorker, 300);
 
 export const useChatStore = create(
     immer<State & Actions>((set, get) => ({
-        model: models[0],
+        model: models.find(m => m.id === ModelEnum.JETVISION_AGENT) || models[0],
         isGenerating: false,
         editor: undefined,
         context: '',
