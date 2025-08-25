@@ -138,31 +138,35 @@ export const AttachmentButton = () => {
     );
 };
 
-export const ChatModeButton = () => {
-    const chatMode = useChatStore(state => state.chatMode);
-    const setChatMode = useChatStore(state => state.setChatMode);
-    const [isChatModeOpen, setIsChatModeOpen] = useState(false);
-    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
-    const isChatPage = usePathname().startsWith('/chat');
+// Model selection button removed - using n8n LangChain Agent for all chat responses
+// Stub export to prevent import errors
+export const ChatModeButton = () => null;
+// Original ChatModeButton implementation (commented out)
+// export const ChatModeButton = () => {
+//     const chatMode = useChatStore(state => state.chatMode);
+//     const setChatMode = useChatStore(state => state.setChatMode);
+//     const [isChatModeOpen, setIsChatModeOpen] = useState(false);
+//     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+//     const isChatPage = usePathname().startsWith('/chat');
 
-    const selectedOption =
-        (isChatPage
-            ? [...chatOptions, ...modelOptions].find(option => option.value === chatMode)
-            : [...modelOptions].find(option => option.value === chatMode)) ?? modelOptions[0];
+//     const selectedOption =
+//         (isChatPage
+//             ? [...chatOptions, ...modelOptions].find(option => option.value === chatMode)
+//             : [...modelOptions].find(option => option.value === chatMode)) ?? modelOptions[0];
 
-    return (
-        <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button variant={'secondary'} size="xs">
-                    {selectedOption?.icon}
-                    {selectedOption?.label}
-                    <IconChevronDown size={14} strokeWidth={2} />
-                </Button>
-            </DropdownMenuTrigger>
-            <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
-        </DropdownMenu>
-    );
-};
+//     return (
+//         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
+//             <DropdownMenuTrigger asChild>
+//                 <Button variant={'secondary'} size="xs">
+//                     {selectedOption?.icon}
+//                     {selectedOption?.label}
+//                     <IconChevronDown size={14} strokeWidth={2} />
+//                 </Button>
+//             </DropdownMenuTrigger>
+//             <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
+//         </DropdownMenu>
+//     );
+// };
 
 export const WebSearchButton = () => {
     const useWebSearch = useChatStore(state => state.useWebSearch);

@@ -17,6 +17,12 @@ import {
     IconMessageCircleFilled,
     IconPlus,
     IconTrash,
+    IconPlane,
+    IconChartBar,
+    IconUsers,
+    IconRocket,
+    IconTarget,
+    IconBrandCampaignmonitor,
 } from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
@@ -130,6 +136,64 @@ export const CommandSearch = () => {
         },
     ];
 
+    // JetVision Apollo.io Commands
+    const apolloActions = [
+        {
+            name: 'Find Executive Assistants',
+            icon: IconUsers,
+            description: 'Search for executive assistants at target companies',
+            action: () => {
+                // Trigger Apollo.io executive assistant search
+                onClose();
+            },
+        },
+        {
+            name: 'Track Conversions',
+            icon: IconChartBar,
+            description: 'View conversion rates and campaign performance',
+            action: () => {
+                // Show conversion tracking dashboard
+                onClose();
+            },
+        },
+        {
+            name: 'Launch Campaign',
+            icon: IconRocket,
+            description: 'Start a new jet charter outreach campaign',
+            action: () => {
+                // Launch campaign wizard
+                onClose();
+            },
+        },
+        {
+            name: 'Empty Leg Prospects',
+            icon: IconPlane,
+            description: 'Find prospects for empty leg opportunities',
+            action: () => {
+                // Search for empty leg prospects
+                onClose();
+            },
+        },
+        {
+            name: 'Response Rates',
+            icon: IconTarget,
+            description: 'Analyze email response rates by industry',
+            action: () => {
+                // Show response rate analytics
+                onClose();
+            },
+        },
+        {
+            name: 'Cost Per Lead',
+            icon: IconBrandCampaignmonitor,
+            description: 'Calculate and track cost per lead metrics',
+            action: () => {
+                // Display CPL dashboard
+                onClose();
+            },
+        },
+    ];
+
     return (
         <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
             <div className="flex w-full flex-row items-center gap-2 p-0.5">
@@ -146,7 +210,7 @@ export const CommandSearch = () => {
             </div>
             <CommandList className="max-h-[420px] overflow-y-auto p-0.5 pt-1.5">
                 <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
+                <CommandGroup heading="General">
                     {actions.map(action => (
                         <CommandItem
                             key={action.name}
@@ -160,6 +224,26 @@ export const CommandSearch = () => {
                                 className="text-muted-foreground flex-shrink-0"
                             />
                             {action.name}
+                        </CommandItem>
+                    ))}
+                </CommandGroup>
+                <CommandGroup heading="Apollo.io Intelligence">
+                    {apolloActions.map(action => (
+                        <CommandItem
+                            key={action.name}
+                            className="gap-2"
+                            value={action.name}
+                            onSelect={action.action}
+                        >
+                            <action.icon
+                                size={14}
+                                strokeWidth="2"
+                                className="text-brand flex-shrink-0"
+                            />
+                            <div className="flex flex-col">
+                                <span>{action.name}</span>
+                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                            </div>
                         </CommandItem>
                     ))}
                 </CommandGroup>

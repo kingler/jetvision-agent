@@ -3,7 +3,7 @@ import { FullPageLoader, HistoryItem } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { Thread, useAppStore, useChatStore } from '@repo/common/store';
 import { Button, cn, Flex } from '@repo/ui';
-import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch } from '@tabler/icons-react';
+import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch, IconPlane } from '@tabler/icons-react';
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
@@ -81,6 +81,29 @@ export const Sidebar = () => {
             )}
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
+                {/* JetVision Branding */}
+                <Flex 
+                    className={cn(
+                        "px-2 py-3 border-b border-border/50 mb-2",
+                        isSidebarOpen ? "flex" : "hidden"
+                    )}
+                    items="center"
+                    gap="xs"
+                >
+                    <IconPlane size={20} className="text-brand flex-shrink-0" />
+                    <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground">JetVision</span>
+                        <span className="text-xs text-muted-foreground">Agent Portal</span>
+                    </div>
+                </Flex>
+                
+                {/* When sidebar is collapsed, show just the icon */}
+                {!isSidebarOpen && (
+                    <Flex className="px-2 py-3 mb-2" justify="center">
+                        <IconPlane size={20} className="text-brand" />
+                    </Flex>
+                )}
+                
                 <Flex direction="col" className="w-full px-2" gap="sm">
                     <Button
                         size={isSidebarOpen ? 'sm' : 'icon'}

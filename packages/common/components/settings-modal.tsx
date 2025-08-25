@@ -34,12 +34,13 @@ export const SettingsModal = () => {
             key: SETTING_TABS.CREDITS,
             component: <CreditsSettings />,
         },
-        {
-            icon: <IconKey size={16} strokeWidth={2} className="text-muted-foreground" />,
-            title: 'API Keys',
-            key: SETTING_TABS.API_KEYS,
-            component: <ApiKeySettings />,
-        },
+        // Commented out API Keys since n8n handles all LLM responses
+        // {
+        //     icon: <IconKey size={16} strokeWidth={2} className="text-muted-foreground" />,
+        //     title: 'API Keys',
+        //     key: SETTING_TABS.API_KEYS,
+        //     component: <ApiKeySettings />,
+        // },
         // {
         //     title: 'MCP Tools',
         //     key: SETTING_TABS.MCP_TOOLS,
