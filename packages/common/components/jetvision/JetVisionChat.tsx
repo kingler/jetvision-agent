@@ -15,7 +15,7 @@ import {
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@repo/ui';
-import { scrollToChatInputWithFocus } from '@repo/common/utils/scroll-utils';
+import { scrollToChatInputWithFocus } from '@repo/common/utils';
 
 interface JetVisionChatProps {
     className?: string;

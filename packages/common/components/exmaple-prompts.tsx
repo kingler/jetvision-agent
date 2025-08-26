@@ -1,7 +1,7 @@
 import { useChatStore } from '@repo/common/store';
 import { Editor } from '@tiptap/react';
 import { PromptCards } from './jetvision/PromptCards';
-import { scrollToChatInputWithFocus } from '@repo/common/utils/scroll-utils';
+import { scrollToChatInputWithFocus } from '@repo/common/utils';
 
 export const ExamplePrompts = () => {
     const editor: Editor | undefined = useChatStore(state => state.editor);
