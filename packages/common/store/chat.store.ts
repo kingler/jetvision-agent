@@ -242,8 +242,14 @@ const initializeWorker = () => {
     if (typeof window === 'undefined') return;
 
     try {
+        // Skip SharedWorker initialization if import.meta.url is not available
+        if (!import.meta?.url) {
+            console.warn('SharedWorker initialization skipped: import.meta.url not available');
+            return;
+        }
+
         // Create a shared worker
-        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta?.url), {
+        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta.url), {
             type: 'module',
         });
 

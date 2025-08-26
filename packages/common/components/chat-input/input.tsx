@@ -1,5 +1,5 @@
 'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import {
     ImageAttachment,
     ImageDropzoneRoot,
@@ -10,27 +10,58 @@ import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
 import { useChatEditor } from '../../hooks/use-editor';
 import { useChatStore } from '../../store';
 import { ExamplePrompts } from '../exmaple-prompts';
+import { ChatFooter } from '../chat-footer';
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
 
-export const ChatInput = ({
-    showGreeting = true,
-    showBottomBar = true,
-    isFollowUp = false,
-}: {
+// Scroll utility function
+const scrollToChatInput = (element: HTMLElement) => {
+    if (!element) return;
+
+    // Calculate optimal scroll position (not at the very top)
+    const elementRect = element.getBoundingClientRect();
+    const absoluteElementTop = elementRect.top + window.pageYOffset;
+    const middle = absoluteElementTop - (window.innerHeight / 3); // Position at 1/3 from top
+
+    window.scrollTo({
+        top: Math.max(0, middle),
+        behavior: 'smooth'
+    });
+};
+
+// Export interface for ref
+export interface ChatInputRef {
+    scrollIntoView: () => void;
+}
+
+export const ChatInput = forwardRef<ChatInputRef, {
     showGreeting?: boolean;
     showBottomBar?: boolean;
     isFollowUp?: boolean;
-}) => {
+}>(({
+    showGreeting = true,
+    showBottomBar = true,
+    isFollowUp = false,
+}, ref) => {
     const { isSignedIn } = useAuth();
+    const chatInputRef = useRef<HTMLDivElement>(null);
+
+    // Expose scroll method via ref
+    useImperativeHandle(ref, () => ({
+        scrollIntoView: () => {
+            if (chatInputRef.current) {
+                scrollToChatInput(chatInputRef.current);
+            }
+        }
+    }));
 
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor({
@@ -103,6 +134,7 @@ export const ChatInput = ({
                 (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
             ),
             useWebSearch,
+            useN8n: true, // Force n8n webhook usage
         });
         window.localStorage.removeItem('draft-message');
         editor.commands.clearContent();
@@ -112,6 +144,8 @@ export const ChatInput = ({
     const renderChatInput = () => (
         <AnimatePresence>
             <motion.div
+                ref={chatInputRef}
+                data-chat-input="true"
                 className="w-full px-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -216,47 +250,80 @@ export const ChatInput = ({
     }, [currentThreadId]);
 
     return (
-        <div
-            className={cn(
-                'bg-secondary w-full',
-                currentThreadId
-                    ? 'absolute bottom-0'
-                    : 'absolute inset-0 flex h-full w-full flex-col items-center justify-center'
-            )}
-        >
+        <>
             <div
                 className={cn(
-                    'mx-auto flex w-full max-w-3xl flex-col items-start',
-                    !threadItemsLength && 'justify-start',
-                    size === 'sm' && 'px-8'
+                    'w-full h-full overflow-y-auto',
+                    currentThreadId
+                        ? 'absolute bottom-0 bg-secondary'
+                        : 'flex flex-col'
                 )}
             >
-                <Flex
-                    items="start"
-                    justify="start"
-                    direction="col"
-                    className={cn('w-full pb-4', threadItemsLength > 0 ? 'mb-0' : 'h-full')}
-                >
-                    {!currentThreadId && showGreeting && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.3, ease: 'easeOut' }}
-                            className="mb-4 flex w-full flex-col items-center gap-1"
+                {!currentThreadId ? (
+                    <div className="flex flex-col min-h-full">
+                        {/* Centered Chat Section */}
+                        <div className="flex flex-col items-center justify-center flex-1 min-h-[60vh]">
+                            <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-8">
+                                <Flex
+                                    items="start"
+                                    justify="start"
+                                    direction="col"
+                                    className="w-full pb-4"
+                                >
+                                    {showGreeting && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                                            className="mb-4 flex w-full flex-col items-center gap-1"
+                                        >
+                                            <AnimatedTitles />
+                                        </motion.div>
+                                    )}
+
+                                    {renderChatInput()}
+                                    <MessagesRemainingBadge key="remaining-messages" />
+                                </Flex>
+                            </div>
+                        </div>
+                        
+                        {/* Scrollable Prompts Section */}
+                        {showGreeting && (
+                            <div className="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 py-8 pb-20">
+                                <div className="max-w-6xl mx-auto px-8">
+                                    <div className="mb-6">
+                                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                                            Quick Start Prompts
+                                        </h2>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Select a prompt to get started or type your own question
+                                        </p>
+                                    </div>
+                                    <ExamplePrompts />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    // Thread view - existing layout
+                    <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-8">
+                        <Flex
+                            items="start"
+                            justify="start"
+                            direction="col"
+                            className="w-full pb-4 mb-0"
                         >
-                            <AnimatedTitles />
-                        </motion.div>
-                    )}
-
-                    {renderChatBottom()}
-                    {!currentThreadId && showGreeting && <ExamplePrompts />}
-
-                    {/* <ChatFooter /> */}
-                </Flex>
+                            {renderChatBottom()}
+                        </Flex>
+                    </div>
+                )}
             </div>
-        </div>
+            {!currentThreadId && <ChatFooter />}
+        </>
     );
-};
+});
+
+ChatInput.displayName = 'ChatInput';
 
 type AnimatedTitlesProps = {
     titles?: string[];
@@ -264,17 +331,27 @@ type AnimatedTitlesProps = {
 
 const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
     const [greeting, setGreeting] = React.useState<string>('');
+    const { user, isLoaded } = useUser();
 
     React.useEffect(() => {
         const getTimeBasedGreeting = () => {
             const hour = new Date().getHours();
+            let baseGreeting = '';
 
             if (hour >= 5 && hour < 12) {
-                return 'Good morning';
+                baseGreeting = 'Good morning';
             } else if (hour >= 12 && hour < 18) {
-                return 'Good afternoon';
+                baseGreeting = 'Good afternoon';
             } else {
-                return 'Good evening';
+                baseGreeting = 'Good evening';
+            }
+
+            // Add user's name to the greeting
+            if (isLoaded && user?.firstName) {
+                return `${baseGreeting} ${user.firstName}!`;
+            } else {
+                // Default to "Kham Lam" for testing purposes as requested
+                return `${baseGreeting} Kham Lam!`;
             }
         };
 
@@ -289,7 +366,7 @@ const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
         }, 60000); // Check every minute
 
         return () => clearInterval(interval);
-    }, [greeting]);
+    }, [greeting, user, isLoaded]);
 
     return (
         <Flex

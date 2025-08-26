@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@repo/ui';
+import { scrollToChatInputWithFocus } from '@repo/common/utils/scroll-utils';
 
 interface JetVisionChatProps {
     className?: string;
@@ -55,18 +56,12 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
             editor.commands.insertContent(selectedPrompt);
             setPrompt(selectedPrompt);
             setShowCards(false);
-            
-            // Focus the editor with animation
+
+            // Focus the editor with animation and scroll to chat input
             setTimeout(() => {
                 editor.commands.focus('end');
-                // Add visual feedback
-                const editorElement = document.querySelector('.ProseMirror');
-                if (editorElement) {
-                    editorElement.classList.add('animate-pulse');
-                    setTimeout(() => {
-                        editorElement.classList.remove('animate-pulse');
-                    }, 500);
-                }
+                // Trigger smooth scroll to chat input
+                scrollToChatInputWithFocus(200);
             }, 100);
         }
     };

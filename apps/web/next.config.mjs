@@ -29,8 +29,8 @@ const nextConfig = {
     async redirects() {
         return [{ source: '/', destination: '/chat', permanent: true }];
     },
-    // Skip static generation during build to avoid auth errors
-    output: process.env.VERCEL ? undefined : 'standalone',
+    // Remove output export to allow dynamic routes with middleware
+    // output: 'standalone',
 };
 
 export default withSentryConfig(nextConfig, {
