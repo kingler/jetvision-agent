@@ -18,6 +18,7 @@ export type AgentContextType = {
         messages?: ThreadItem[];
         useWebSearch?: boolean;
         showSuggestions?: boolean;
+        useN8n?: boolean;
     }) => Promise<void>;
     updateContext: (threadId: string, data: any) => void;
 };
@@ -172,10 +173,17 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
 
             try {
-                const response = await fetch('/api/completion', {
+                // Check if n8n webhook is configured and should be used
+                const useN8nWebhook = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL && body.useN8n !== false;
+                const endpoint = useN8nWebhook ? '/api/n8n-webhook' : '/api/completion';
+                
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
+                    body: JSON.stringify({
+                        ...body,
+                        message: body.query || body.prompt || ''
+                    }),
                     credentials: 'include',
                     cache: 'no-store',
                     signal: abortController.signal,
@@ -342,6 +350,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             messages,
             useWebSearch,
             showSuggestions,
+            useN8n,
         }: {
             formData: FormData;
             newThreadId?: string;
@@ -350,6 +359,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             messages?: ThreadItem[];
             useWebSearch?: boolean;
             showSuggestions?: boolean;
+            useN8n?: boolean;
         }) => {
             const mode = (newChatMode || chatMode) as ChatMode;
             if (
@@ -427,6 +437,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 runAgent({
                     mode: newChatMode || chatMode,
                     prompt: query,
+                    query,
                     threadId,
                     messages: coreMessages,
                     mcpConfig: getSelectedMCP(),
@@ -435,6 +446,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     parentThreadItemId: '',
                     webSearch: useWebSearch,
                     showSuggestions: showSuggestions ?? true,
+                    useN8n,
                 });
             }
         },

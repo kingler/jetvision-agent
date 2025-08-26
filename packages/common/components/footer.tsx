@@ -53,8 +53,8 @@ export const Footer = () => {
     ];
 
     return (
-        <footer className="border-t border-border bg-secondary/30">
-            <div className="mx-auto max-w-7xl px-4 py-8">
+        <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+            <div className="mx-auto max-w-7xl px-4 py-3">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                     {/* Brand Section */}
