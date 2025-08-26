@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { cn } from '@repo/ui';
-import { scrollToChatInputWithFocus } from '@repo/common/utils/scroll-utils';
+import { scrollToChatInputWithFocus } from '@repo/common/utils';
 import { 
     IconRocket, 
     IconUsers, 
