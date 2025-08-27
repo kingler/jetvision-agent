@@ -110,13 +110,22 @@ export const formatTickerTime = (seconds: number): string => {
 export const formatDisplayText = (text: string, maxLength: number = 150): string => {
   if (!text || typeof text !== 'string') return 'Untitled';
 
-  // Remove JSON-like structures and clean up the text
-  let cleanText = text
-    // Remove nested JSON objects and arrays (improved pattern matching)
-    .replace(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g, ' ')
-    .replace(/\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]/g, ' ')
-    // Remove specific prompt patterns that appear in JetVision queries
-    .replace(/["']prompt["']\s*:\s*["'][^"']*["']/gi, '')
+  // Clean up JSON-like structures and extract meaningful content
+  let cleanText = text;
+
+  // Handle JSON objects with "prompt" key - extract the prompt value
+  const promptMatch = text.match(/["']prompt["']\s*:\s*["']([^"']+)["']/i);
+  if (promptMatch && promptMatch[1]) {
+    cleanText = promptMatch[1];
+  }
+
+  // Clean up the extracted or original text
+  cleanText = cleanText
+    // Remove remaining JSON brackets and syntax
+    .replace(/[{}[\]]/g, ' ')
+    // Remove JSON key-value patterns that might remain
+    .replace(/["'][^"']*["']\s*:\s*/g, ' ')
+    // Remove specific JetVision prompt prefixes
     .replace(/As a JetVision[^,]*,?\s*/gi, '')
     // Remove markdown formatting
     .replace(/[*_`#]/g, '')
