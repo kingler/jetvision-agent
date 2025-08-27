@@ -45,8 +45,8 @@ fi
 echo -e "${GREEN}✅ All prerequisites met${NC}"
 echo ""
 
-# Navigate to the web app directory
-cd jetvision-agent
+# Navigate to the web app directory (we're already in jetvision-agent)
+# cd jetvision-agent
 
 # Check Git status
 echo -e "${YELLOW}📊 Checking Git status...${NC}"

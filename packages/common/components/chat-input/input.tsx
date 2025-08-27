@@ -85,8 +85,10 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
     const { handleSubmit } = useAgentStream();
     const createThread = useChatStore(state => state.createThread);
+    const createThreadItem = useChatStore(state => state.createThreadItem);
     const useWebSearch = useChatStore(state => state.useWebSearch);
     const isGenerating = useChatStore(state => state.isGenerating);
+    const setIsGenerating = useChatStore(state => state.setIsGenerating);
     const isChatPage = usePathname().startsWith('/chat');
     const imageAttachment = useChatStore(state => state.imageAttachment);
     const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
@@ -107,6 +109,12 @@ export const ChatInput = forwardRef<ChatInputRef, {
         if (!editor?.getText()) {
             return;
         }
+        
+        // Show immediate loading feedback
+        setIsGenerating(true);
+        
+        // Create optimistic UI update for immediate feedback
+        const optimisticItemId = uuidv4();
 
         let threadId = currentThreadId?.toString();
 

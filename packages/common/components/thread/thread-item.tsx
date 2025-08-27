@@ -95,10 +95,10 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {isGenerating && !hasAnswer && (
+                        {(isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING') && (
                             <AgentLoadingStatus 
                                 isLoading={true}
-                                customMessage={undefined}
+                                customMessage={threadItem.status === 'PENDING' ? 'Initializing JetVision Agent...' : undefined}
                             />
                         )}
                         
