@@ -225,3 +225,45 @@ mark.prompt-highlight {
     background: hsl(var(--background));
     border-bottom-right-radius: 10px;
 }
+
+html {
+  color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-first responsive foundation */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure touch targets are at least 44px */
+  button, 
+  [role="button"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Responsive text scaling */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Safe area handling for mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}

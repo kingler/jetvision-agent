@@ -243,16 +243,22 @@ const initializeWorker = () => {
     if (typeof window === 'undefined') return;
 
     try {
-        // Skip SharedWorker initialization if import.meta.url is not available
-        if (!import.meta?.url) {
-            console.warn('SharedWorker initialization skipped: import.meta.url not available');
+        // Skip SharedWorker initialization in environments where it's not supported
+        if (typeof window === 'undefined' || !('SharedWorker' in window)) {
+            console.warn('SharedWorker initialization skipped: not supported in this environment');
             return;
         }
 
-        // Create a shared worker
-        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta.url), {
-            type: 'module',
-        });
+        // Create a shared worker with fallback
+        try {
+            dbWorker = new SharedWorker('/db-sync.worker.js', {
+                type: 'module',
+            });
+        } catch (workerError) {
+            console.warn('SharedWorker creation failed, falling back to localStorage sync:', workerError);
+            initializeTabSync();
+            return;
+        }
 
         // Set up message handler
         dbWorker.port.onmessage = async event => {
