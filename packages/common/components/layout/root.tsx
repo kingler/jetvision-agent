@@ -34,17 +34,9 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     }, []);
 
     return (
-        <div className="bg-tertiary flex h-[100dvh] w-full flex-row overflow-hidden">
-            <div className="bg-tertiary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
-                <div className="flex flex-col items-center justify-center gap-2">
-                    <IconMoodSadDizzy size={24} strokeWidth={2} className="text-muted-foreground" />
-                    <span className="text-muted-foreground text-center text-sm">
-                        Mobile version is coming soon.
-                        <br /> Please use a desktop browser.
-                    </span>
-                </div>
-            </div>
-            <Flex className="hidden lg:flex">
+        <div className="bg-tertiary flex h-[100dvh] w-full flex-col sm:flex-row overflow-hidden">
+            {/* Mobile access enabled - responsive layout below */}
+            <Flex className="hidden sm:flex lg:flex">
                 <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
             </Flex>
 
