@@ -33,7 +33,7 @@ class N8nAgentModelImpl implements N8nAgentModel {
     this.modelId = modelId;
     this.webhookUrl = config.webhookUrl || process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/jetvision-agent';
     this.apiKey = config.apiKey || process.env.NEXT_PUBLIC_N8N_API_KEY;
-    this.timeout = config.timeout || 30000;
+    this.timeout = config.timeout || 10000; // Reduced to 10 seconds for better UX
   }
 
   async doGenerate(options: Parameters<LanguageModelV1['doGenerate']>[0]): Promise<Awaited<ReturnType<LanguageModelV1['doGenerate']>>> {
@@ -199,8 +199,9 @@ class N8nAgentModelImpl implements N8nAgentModel {
         headers['Authorization'] = `Bearer ${this.apiKey}`;
       }
 
-      console.log('Sending to n8n webhook:', this.webhookUrl);
-      console.log('Request body:', JSON.stringify(request, null, 2));
+      console.log('🚀 Sending to n8n webhook:', this.webhookUrl);
+      console.log('📤 Request body:', JSON.stringify(request, null, 2));
+      console.log('⏱️ Timeout set to:', this.timeout, 'ms');
 
       const response = await fetch(this.webhookUrl, {
         method: 'POST',
@@ -213,12 +214,13 @@ class N8nAgentModelImpl implements N8nAgentModel {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('n8n webhook error:', response.status, errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        console.error('❌ n8n webhook error:', response.status, errorText);
+        console.error('🔗 Webhook URL:', this.webhookUrl);
+        throw new Error(`n8n webhook failed (${response.status}): ${errorText || 'Unknown error'}`);
       }
 
       const responseData = await response.json();
-      console.log('n8n webhook response:', JSON.stringify(responseData, null, 2));
+      console.log('✅ n8n webhook response received:', JSON.stringify(responseData, null, 2));
       return responseData;
     } catch (error) {
       clearTimeout(timeoutId);
@@ -238,53 +240,142 @@ class N8nAgentModelImpl implements N8nAgentModel {
   }
 
   private formatResponse(response: any): string {
+    console.log('🔄 Formatting n8n response for Thread system:', response);
+
+    // Handle string responses - perfect for MarkdownContent
+    if (typeof response === 'string') {
+      return response;
+    }
+
     // Handle different response formats from n8n
-    if (response.message) {
+    if (response?.message) {
       return response.message;
     }
-    
-    if (response.results && Array.isArray(response.results)) {
-      // Format results as a structured response
-      return this.formatResults(response.results);
+
+    if (response?.text) {
+      return response.text;
     }
-    
-    if (response.data) {
+
+    if (response?.result) {
+      return typeof response.result === 'string' ? response.result : this.formatStructuredData(response.result);
+    }
+
+    if (response?.results && Array.isArray(response.results)) {
+      // Format results as markdown for better display in ThreadItem
+      return this.formatResultsAsMarkdown(response.results);
+    }
+
+    if (response?.data) {
       if (typeof response.data === 'string') {
         return response.data;
       }
-      return JSON.stringify(response.data, null, 2);
+      return this.formatStructuredData(response.data);
     }
-    
-    return JSON.stringify(response, null, 2);
+
+    // Handle array responses (common in n8n)
+    if (Array.isArray(response) && response.length > 0) {
+      const firstItem = response[0];
+      if (firstItem?.message) return firstItem.message;
+      if (firstItem?.text) return firstItem.text;
+      if (firstItem?.result) return typeof firstItem.result === 'string' ? firstItem.result : this.formatStructuredData(firstItem.result);
+
+      // Format array as markdown list
+      return this.formatArrayAsMarkdown(response);
+    }
+
+    // Default fallback with user-friendly markdown formatting
+    const fallbackResponse = `## JetVision Agent Response
+
+I processed your request successfully, but the response format needs optimization for display.
+
+### Raw Response Data:
+\`\`\`json
+${JSON.stringify(response, null, 2)}
+\`\`\`
+
+Please contact support if you continue to see this message.`;
+
+    console.log('⚠️ Using fallback response format for Thread system');
+    return fallbackResponse;
   }
 
-  private formatResults(results: any[]): string {
+  /**
+   * Format results as markdown for better display in ThreadItem
+   */
+  private formatResultsAsMarkdown(results: any[]): string {
     if (results.length === 0) {
-      return "No results found for your query.";
+      return "## No Results Found\n\nYour query didn't return any results. Please try refining your search terms.";
     }
 
-    let formatted = `Found ${results.length} result${results.length > 1 ? 's' : ''}:\n\n`;
-    
+    let formatted = `## Search Results\n\nFound **${results.length}** result${results.length > 1 ? 's' : ''}:\n\n`;
+
     results.forEach((result, index) => {
-      formatted += `**${index + 1}. ${result.title || result.name || 'Result'}**\n`;
-      
+      formatted += `### ${index + 1}. ${result.title || result.name || 'Untitled Result'}\n\n`;
+
       if (result.subtitle || result.description) {
-        formatted += `${result.subtitle || result.description}\n`;
+        formatted += `${result.subtitle || result.description}\n\n`;
       }
-      
-      if (result.metadata) {
+
+      if (result.metadata && typeof result.metadata === 'object') {
+        formatted += `**Details:**\n`;
         Object.entries(result.metadata).forEach(([key, value]) => {
-          formatted += `- ${key}: ${value}\n`;
+          formatted += `- **${key}**: ${value}\n`;
         });
+        formatted += '\n';
       }
-      
+
       if (result.score) {
-        formatted += `- Match Score: ${result.score}%\n`;
+        formatted += `*Match Score: ${result.score}%*\n\n`;
       }
-      
-      formatted += '\n';
+
+      formatted += '---\n\n';
     });
-    
+
+    return formatted.trim();
+  }
+
+  /**
+   * Format structured data as readable markdown
+   */
+  private formatStructuredData(data: any): string {
+    if (typeof data === 'string') return data;
+    if (typeof data === 'number' || typeof data === 'boolean') return String(data);
+
+    if (Array.isArray(data)) {
+      return this.formatArrayAsMarkdown(data);
+    }
+
+    if (typeof data === 'object' && data !== null) {
+      let formatted = '';
+      Object.entries(data).forEach(([key, value]) => {
+        formatted += `**${key}**: ${typeof value === 'object' ? JSON.stringify(value) : value}\n`;
+      });
+      return formatted;
+    }
+
+    return JSON.stringify(data, null, 2);
+  }
+
+  /**
+   * Format array as markdown list
+   */
+  private formatArrayAsMarkdown(array: any[]): string {
+    if (array.length === 0) return 'No items found.';
+
+    let formatted = '';
+    array.forEach((item, index) => {
+      if (typeof item === 'string') {
+        formatted += `${index + 1}. ${item}\n`;
+      } else if (typeof item === 'object' && item !== null) {
+        formatted += `${index + 1}. ${item.title || item.name || 'Item'}\n`;
+        if (item.description) {
+          formatted += `   ${item.description}\n`;
+        }
+      } else {
+        formatted += `${index + 1}. ${String(item)}\n`;
+      }
+    });
+
     return formatted;
   }
 }

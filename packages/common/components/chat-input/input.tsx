@@ -17,7 +17,7 @@ import { useAgentStream } from '../../hooks/agent-provider';
 import { useChatEditor } from '../../hooks/use-editor';
 import { useChatStore } from '../../store';
 import { ExamplePrompts } from '../exmaple-prompts';
-import { ChatFooter } from '../chat-footer';
+// import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
@@ -95,7 +95,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
-    const sendMessage = async () => {
+    const sendMessage = async (customPrompt?: string, parameters?: Record<string, any>) => {
         if (
             !isSignedIn &&
             !!ChatModeConfig[chatMode as keyof typeof ChatModeConfig]?.isAuthRequired
@@ -119,13 +119,48 @@ export const ChatInput = forwardRef<ChatInputRef, {
             threadId = optimisticId;
         }
 
-        // First submit the message
+        // Get the message text
+        const messageText = customPrompt || editor.getText();
+        
+        // Retrieve stored parameters if not provided directly
+        let promptParams = parameters;
+        if (!promptParams) {
+            const storedParams = sessionStorage.getItem('promptParameters');
+            if (storedParams) {
+                promptParams = JSON.parse(storedParams);
+                sessionStorage.removeItem('promptParameters'); // Clean up after use
+            }
+        }
+        
+        // Create structured JSON payload for n8n webhook
+        const jsonPayload = {
+            prompt: messageText,
+            message: messageText,
+            threadId: threadId,
+            threadItemId: uuidv4(),
+            context: {
+                source: 'jetvision-agent',
+                timestamp: new Date().toISOString(),
+                useWebSearch: useWebSearch,
+                hasImageAttachment: !!imageAttachment?.base64,
+                parameters: promptParams || {},
+            },
+            intent: detectIntent(messageText),
+            expectedOutput: {
+                format: 'structured',
+                includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
+                includeRecommendations: true
+            }
+        };
+        
+        // Log the structured payload for debugging
+        console.log('Sending structured JSON to n8n:', jsonPayload);
+        
+        // Create FormData with the structured JSON
         const formData = new FormData();
-        formData.append('query', editor.getText());
+        formData.append('query', JSON.stringify(jsonPayload));
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
-
-        console.log('threadItems', threadItems);
 
         handleSubmit({
             formData,
@@ -175,7 +210,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                     <ImageAttachment />
                                     <Flex className="flex w-full flex-row items-end gap-0">
                                         <ChatEditor
-                                            sendMessage={sendMessage}
+                                            sendMessage={() => sendMessage()}
                                             editor={editor}
                                             className="px-3 pt-3"
                                         />
@@ -253,10 +288,10 @@ export const ChatInput = forwardRef<ChatInputRef, {
         <>
             <div
                 className={cn(
-                    'w-full h-full overflow-y-auto',
+                    'w-full',
                     currentThreadId
-                        ? 'absolute bottom-0 bg-secondary'
-                        : 'flex flex-col'
+                        ? 'sticky bottom-0 z-10 bg-secondary border-t border-border'
+                        : 'flex flex-col h-full overflow-y-auto'
                 )}
             >
                 {!currentThreadId ? (
@@ -305,31 +340,41 @@ export const ChatInput = forwardRef<ChatInputRef, {
                         )}
                     </div>
                 ) : (
-                    // Thread view - existing layout
-                    <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-8">
-                        <Flex
-                            items="start"
-                            justify="start"
-                            direction="col"
-                            className="w-full pb-4 mb-0"
-                        >
-                            {renderChatBottom()}
-                        </Flex>
+                    // Thread view - chat input at bottom
+                    <div className="mx-auto flex w-full max-w-3xl flex-col items-center py-4">
+                        {renderChatInput()}
                     </div>
                 )}
             </div>
-            {!currentThreadId && <ChatFooter />}
+            {/* {!currentThreadId && <ChatFooter />} // Removed JetVision footer */}
         </>
     );
 });
 
 ChatInput.displayName = 'ChatInput';
 
+// Intent detection helper function
+const detectIntent = (message: string): string => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('aircraft') || lowerMessage.includes('fleet') || lowerMessage.includes('avinode') || lowerMessage.includes('charter')) {
+        return 'fleet_operations';
+    } else if (lowerMessage.includes('lead') || lowerMessage.includes('prospect') || lowerMessage.includes('apollo') || lowerMessage.includes('campaign')) {
+        return 'lead_generation';
+    } else if (lowerMessage.includes('travel') || lowerMessage.includes('itinerary') || lowerMessage.includes('ground') || lowerMessage.includes('weather')) {
+        return 'travel_coordination';
+    } else if (lowerMessage.includes('conversion') || lowerMessage.includes('roi') || lowerMessage.includes('metric') || lowerMessage.includes('analytic')) {
+        return 'analytics';
+    }
+    
+    return 'general';
+};
+
 type AnimatedTitlesProps = {
     titles?: string[];
 };
 
-const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
+const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
     const [greeting, setGreeting] = React.useState<string>('');
     const { user, isLoaded } = useUser();
 

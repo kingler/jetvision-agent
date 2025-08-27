@@ -247,6 +247,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
                                 try {
                                     const data = JSON.parse(dataMatch[1]);
+                                    
+                                    // Debug logging for message flow
+                                    console.log('[DEBUG] Processing event:', currentEvent, 'Thread:', data?.threadId);
+                                    if (currentEvent === 'answer' && data?.answer) {
+                                        console.log('[DEBUG] Answer received:', data.answer.text?.substring(0, 100));
+                                    }
+                                    
                                     if (
                                         EVENT_TYPES.includes(currentEvent) &&
                                         data?.threadId &&

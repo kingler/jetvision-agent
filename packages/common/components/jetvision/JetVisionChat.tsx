@@ -1,14 +1,14 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@repo/ui';
-import { useChatEditor } from '@repo/common/hooks';
+import { useChatEditor, useAgentStream } from '@repo/common/hooks';
+import { useChatStore } from '@repo/common/store';
 import { ChatEditor } from '../chat-input/chat-editor';
 import { PromptCards } from './PromptCards';
-import { SearchResultsPanel, SearchResult } from './SearchResultsPanel';
-import { n8nWebhook, N8nWebhookRequest } from '../../services/n8n-webhook.service';
-import { 
-    IconSend, 
-    IconLoader2, 
+import { Thread, TableOfMessages } from '@repo/common/components';
+import {
+    IconSend,
+    IconLoader2,
     IconSparkles,
     IconPlane,
     IconCommand
@@ -16,6 +16,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@repo/ui';
 import { scrollToChatInputWithFocus } from '@repo/common/utils';
+import { useParams, useRouter } from 'next/navigation';
+import { useShallow } from 'zustand/react/shallow';
 
 interface JetVisionChatProps {
     className?: string;
@@ -29,15 +31,32 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
     userId 
 }) => {
     const [prompt, setPrompt] = useState('');
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [showResults, setShowResults] = useState(false);
-    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-    const [error, setError] = useState<string | null>(null);
     const [showCards, setShowCards] = useState(true);
-    const inputRef = useRef<HTMLTextAreaElement>(null);
+    const router = useRouter();
+    const currentThreadId = threadId?.toString() ?? '';
+
+    // Use main chat store and agent stream
+    const { handleSubmit: handleAgentSubmit } = useAgentStream();
+    const {
+        isGenerating,
+        switchThread,
+        createThread,
+        editor: storeEditor,
+        setEditor
+    } = useChatStore(useShallow(state => ({
+        isGenerating: state.isGenerating,
+        switchThread: state.switchThread,
+        createThread: state.createThread,
+        editor: state.editor,
+        setEditor: state.setEditor
+    })));
 
     const { editor } = useChatEditor({
         placeholder: 'Ask about Apollo.io campaigns, Avinode availability, or system operations...',
+        onInit: ({ editor }) => {
+            // Set editor in store for integration with main chat system
+            setEditor(editor);
+        },
         onUpdate: ({ editor }) => {
             setPrompt(editor.getText());
             // Hide cards when user starts typing
@@ -47,15 +66,21 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
         },
     });
 
-    // Handle prompt selection from cards
-    const handlePromptSelect = (selectedPrompt: string) => {
+    // Handle prompt selection from cards with enhanced parameters support
+    const handlePromptSelect = (_prompt: string, fullPrompt: string, parameters?: Record<string, any>) => {
         if (editor) {
             // Clear existing content
             editor.commands.clearContent();
-            // Set the new prompt
-            editor.commands.insertContent(selectedPrompt);
-            setPrompt(selectedPrompt);
+            // Use the full enhanced prompt
+            editor.commands.insertContent(fullPrompt);
+            setPrompt(fullPrompt);
             setShowCards(false);
+
+            // Store parameters if needed for later use
+            if (parameters) {
+                // Store parameters in session storage for n8n processing
+                sessionStorage.setItem('promptParameters', JSON.stringify(parameters));
+            }
 
             // Focus the editor with animation and scroll to chat input
             setTimeout(() => {
@@ -66,85 +91,57 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
         }
     };
 
-    // Submit prompt to n8n webhook
+    // Handle form submission using main chat system
     const handleSubmit = async () => {
-        if (!prompt.trim() || isProcessing) return;
-
-        setIsProcessing(true);
-        setError(null);
-        setShowResults(true);
-
-        const request: N8nWebhookRequest = {
-            prompt: prompt.trim(),
-            context: {
-                userId,
-                sessionId,
-                timestamp: new Date().toISOString(),
-                source: detectSource(prompt),
-            },
-        };
+        if (!prompt.trim() || isGenerating) return;
 
         try {
-            const response = await n8nWebhook.sendPrompt(request);
-
-            if (response.success) {
-                const results = n8nWebhook.transformToSearchResults(response.data);
-                setSearchResults(results);
-                
-                // Show success toast
-                toast({
-                    title: "Query Processed",
-                    description: `Found ${results.length} results from ${request.context?.source || 'JetVision'} system`,
-                });
-            } else {
-                setError(response.error || 'Failed to process request');
-                toast({
-                    title: "Error",
-                    description: response.error || 'Failed to process request',
-                    variant: "destructive",
-                });
+            // Create or switch to thread if needed
+            let activeThreadId = currentThreadId;
+            if (!activeThreadId) {
+                const newThread = await createThread();
+                activeThreadId = newThread.id;
+                // Navigate to the new thread
+                router.push(`/chat/${activeThreadId}`);
             }
+
+            // Prepare form data for agent stream
+            const formData = new FormData();
+            formData.append('query', prompt.trim());
+
+            // Add parameters from session storage if available
+            const storedParameters = sessionStorage.getItem('promptParameters');
+            if (storedParameters) {
+                formData.append('parameters', storedParameters);
+                // Clear parameters after use
+                sessionStorage.removeItem('promptParameters');
+            }
+
+            // Submit using main agent stream handler
+            await handleAgentSubmit({
+                formData,
+                useWebSearch: false, // JetVision uses n8n, not web search
+            });
+
+            // Clear the input and hide cards
+            if (editor) {
+                editor.commands.clearContent();
+                setPrompt('');
+            }
+            setShowCards(false);
+
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-            setError(errorMessage);
             toast({
                 title: "Connection Error",
                 description: errorMessage,
                 variant: "destructive",
             });
-        } finally {
-            setIsProcessing(false);
         }
     };
 
-    // Detect source based on prompt content
-    const detectSource = (text: string): 'apollo' | 'avinode' | 'integration' => {
-        const lowerText = text.toLowerCase();
-        if (lowerText.includes('apollo') || lowerText.includes('campaign') || lowerText.includes('lead') || lowerText.includes('executive')) {
-            return 'apollo';
-        }
-        if (lowerText.includes('avinode') || lowerText.includes('aircraft') || lowerText.includes('fleet') || lowerText.includes('flight')) {
-            return 'avinode';
-        }
-        return 'integration';
-    };
-
-    // Handle result selection
-    const handleResultSelect = (result: SearchResult) => {
-        // You can implement detailed view or action based on result type
-        console.log('Selected result:', result);
-        toast({
-            title: "Result Selected",
-            description: `Viewing details for ${result.title}`,
-        });
-    };
-
-    // Refresh results
-    const handleRefresh = () => {
-        if (prompt.trim()) {
-            handleSubmit();
-        }
-    };
+    // Check if we have an active thread with messages
+    const hasActiveThread = currentThreadId && currentThreadId.length > 0;
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -192,46 +189,61 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
             {/* Main Content Area */}
             <div className="relative flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-4xl p-6">
-                    {/* Welcome Message */}
-                    <AnimatePresence>
-                        {showCards && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                className="mb-8 text-center"
-                            >
-                                <div className="mb-2 flex items-center justify-center gap-2">
-                                    <IconSparkles size={20} className="text-brand" />
-                                    <h2 className="text-lg font-medium text-foreground">
-                                        How can JetVision Agent assist you today?
-                                    </h2>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    Select a prompt card or type your own query about Apollo.io campaigns or Avinode operations
-                                </p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    {/* Show prompt cards when no active thread */}
+                    {!hasActiveThread && (
+                        <>
+                            {/* Welcome Message */}
+                            <AnimatePresence>
+                                {showCards && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        className="mb-8 text-center"
+                                    >
+                                        <div className="mb-2 flex items-center justify-center gap-2">
+                                            <IconSparkles size={20} className="text-brand" />
+                                            <h2 className="text-lg font-medium text-foreground">
+                                                How can JetVision Agent assist you today?
+                                            </h2>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            Select a prompt card or type your own query about Apollo.io campaigns or Avinode operations
+                                        </p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                    {/* Prompt Cards */}
-                    <AnimatePresence>
-                        {showCards && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <PromptCards onSelectPrompt={handlePromptSelect} />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                            {/* Prompt Cards */}
+                            <AnimatePresence>
+                                {showCards && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <PromptCards onSelectPrompt={handlePromptSelect} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
+                    )}
+
+                    {/* Show Thread when we have an active conversation */}
+                    {hasActiveThread && (
+                        <div className="w-full">
+                            <Thread />
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Input Area - Fixed at bottom */}
-            <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div
+                className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+                data-chat-input="true"
+            >
                 <div className="mx-auto max-w-4xl p-4">
                     <div className="flex gap-3">
                         <div className="relative flex-1">
@@ -250,22 +262,22 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                         </div>
                         <button
                             onClick={handleSubmit}
-                            disabled={!prompt.trim() || isProcessing}
+                            disabled={!prompt.trim() || isGenerating}
                             className={cn(
                                 "flex h-12 w-12 items-center justify-center rounded-lg transition-all",
                                 "bg-brand text-brand-foreground hover:bg-brand/90",
                                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                                isProcessing && "animate-pulse"
+                                isGenerating && "animate-pulse"
                             )}
                         >
-                            {isProcessing ? (
+                            {isGenerating ? (
                                 <IconLoader2 size={20} className="animate-spin" />
                             ) : (
                                 <IconSend size={20} />
                             )}
                         </button>
                     </div>
-                    {!showCards && (
+                    {!showCards && !hasActiveThread && (
                         <button
                             onClick={() => setShowCards(true)}
                             className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-brand"
@@ -277,16 +289,8 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                 </div>
             </div>
 
-            {/* Results Panel */}
-            <SearchResultsPanel
-                isOpen={showResults}
-                onClose={() => setShowResults(false)}
-                results={searchResults}
-                loading={isProcessing}
-                error={error || undefined}
-                onRefresh={handleRefresh}
-                onSelectResult={handleResultSelect}
-            />
+            {/* Table of Messages for navigation */}
+            {hasActiveThread && <TableOfMessages />}
         </div>
     );
 };

@@ -8,7 +8,8 @@
         "./store": "./store/index.ts",
         "./components": "./components/index.ts",
         "./components/jetvision": "./components/jetvision/index.ts",
-        "./utils": "./utils/index.ts"
+        "./utils": "./utils/index.ts",
+        "./utils/scroll-utils": "./utils/scroll-utils.ts"
     },
     "scripts": {
         "lint": "eslint . --max-warnings 0",

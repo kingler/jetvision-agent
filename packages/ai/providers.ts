@@ -6,7 +6,7 @@ import { LanguageModelV1 } from '@ai-sdk/provider';
 import { createTogetherAI } from '@ai-sdk/togetherai';
 import { LanguageModelV1Middleware, wrapLanguageModel } from 'ai';
 import { ModelEnum, models } from './models';
-import { createN8nAgent } from './providers/n8n-provider-enhanced';
+import { createN8nAgent } from './providers/n8n-provider';
 
 export const Providers = {
   OPENAI: 'openai',
@@ -100,16 +100,14 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
       return createN8nAgent({
         webhookUrl: process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'https://n8n.vividwalls.blog/webhook/jetvision-agent',
         apiKey: process.env.NEXT_PUBLIC_N8N_API_KEY,
-        streamingEnabled: true,
-        timeout: 30000,
+        timeout: 10000, // Improved timeout for better UX
       });
     default:
       // Default to n8n agent for JetVision
       return createN8nAgent({
         webhookUrl: process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'https://n8n.vividwalls.blog/webhook/jetvision-agent',
         apiKey: process.env.NEXT_PUBLIC_N8N_API_KEY,
-        streamingEnabled: true,
-        timeout: 30000,
+        timeout: 10000, // Improved timeout for better UX
       });
   }
 };
