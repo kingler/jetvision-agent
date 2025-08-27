@@ -9,6 +9,7 @@ import {
     SourceGrid,
     Steps,
 } from '@repo/common/components';
+import AgentLoadingStatus from '../agent-loading-status';
 import { useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem as ThreadItemType } from '@repo/shared/types';
@@ -94,7 +95,14 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {!hasResponse && (
+                        {!hasResponse && isGenerating && (
+                            <AgentLoadingStatus 
+                                isLoading={true}
+                                customMessage={undefined}
+                            />
+                        )}
+                        
+                        {!hasResponse && !isGenerating && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
                                 <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
                                 <MotionSkeleton className="w-full bg-gradient-to-r" />

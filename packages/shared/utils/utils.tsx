@@ -100,3 +100,82 @@ export const formatTickerTime = (seconds: number): string => {
   const remainingSeconds = seconds % 60;
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
+
+/**
+ * Formats text for display in chat history and UI components
+ * - Removes JSON formatting and raw code display
+ * - Truncates to specified length (default 34 characters)
+ * - Cleans up whitespace and special characters
+ */
+export const formatDisplayText = (text: string, maxLength: number = 34): string => {
+  if (!text || typeof text !== 'string') return 'Untitled';
+
+  // Remove JSON-like structures and clean up the text
+  let cleanText = text
+    // Remove complete JSON objects and arrays (more precise matching)
+    .replace(/\{[^{}]*\}/g, ' ')
+    .replace(/\[[^\[\]]*\]/g, ' ')
+    // Remove markdown formatting
+    .replace(/[*_`#]/g, '')
+    // Remove extra whitespace and newlines
+    .replace(/\s+/g, ' ')
+    // Remove leading/trailing whitespace
+    .trim();
+
+  // If text is empty after cleaning, return a default
+  if (!cleanText) return 'Untitled';
+
+  // Truncate to maxLength and add ellipsis if needed
+  if (cleanText.length > maxLength) {
+    return cleanText.substring(0, maxLength - 3).trim() + '...';
+  }
+
+  return cleanText;
+};
+
+/**
+ * Formats prompt text for clean display in chat input
+ * - Removes verbose instructions and technical details
+ * - Keeps the core user intent
+ */
+export const formatPromptForDisplay = (prompt: string): string => {
+  if (!prompt || typeof prompt !== 'string') return '';
+
+  // If it's a long technical prompt, extract the core intent
+  if (prompt.length > 200 && prompt.includes('As a JetVision')) {
+    // Look for patterns that indicate the core user request
+    const patterns = [
+      /search for ([^.!?]+)/i,
+      /find ([^.!?]+)/i,
+      /check ([^.!?]+)/i,
+      /analyze ([^.!?]+)/i,
+      /generate ([^.!?]+)/i,
+      /identify ([^.!?]+)/i,
+      /compare ([^.!?]+)/i,
+      /calculate ([^.!?]+)/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = prompt.match(pattern);
+      if (match && match[1]) {
+        const coreRequest = match[0].trim();
+        // Capitalize first letter and ensure it's a complete thought
+        return coreRequest.charAt(0).toUpperCase() + coreRequest.slice(1);
+      }
+    }
+
+    // Fallback: try to extract a meaningful sentence from the beginning
+    const sentences = prompt.split(/[.!?]+/);
+    for (const sentence of sentences) {
+      const cleanSentence = sentence.replace(/^As a JetVision[^,]+,\s*/i, '').trim();
+      if (cleanSentence.length > 10 && cleanSentence.length < 100) {
+        return cleanSentence.charAt(0).toUpperCase() + cleanSentence.slice(1);
+      }
+    }
+  }
+
+  // For shorter prompts, just clean them up
+  return prompt
+    .replace(/\s+/g, ' ')
+    .trim();
+};

@@ -10,6 +10,8 @@
         "generate": "bunx drizzle-kit generate"
     },
     "dependencies": {
+        "@alloc/quick-lru": "^5.2.0",
+        "@clerk/backend": "^2.10.0",
         "@clerk/nextjs": "^6.12.3",
         "@electric-sql/pglite": "0.2.13",
         "@electric-sql/pglite-repl": "^0.2.15",

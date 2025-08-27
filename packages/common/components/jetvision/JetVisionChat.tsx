@@ -18,6 +18,7 @@ import { toast } from '@repo/ui';
 import { scrollToChatInputWithFocus } from '@repo/common/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
+import { nanoid } from 'nanoid';
 
 interface JetVisionChatProps {
     className?: string;
@@ -33,6 +34,7 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
     const [prompt, setPrompt] = useState('');
     const [showCards, setShowCards] = useState(true);
     const router = useRouter();
+    const { threadId } = useParams();
     const currentThreadId = threadId?.toString() ?? '';
 
     // Use main chat store and agent stream
@@ -67,20 +69,22 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
     });
 
     // Handle prompt selection from cards with enhanced parameters support
-    const handlePromptSelect = (_prompt: string, fullPrompt: string, parameters?: Record<string, any>) => {
+    const handlePromptSelect = (displayPrompt: string, fullPrompt: string, parameters?: Record<string, any>) => {
         if (editor) {
             // Clear existing content
             editor.commands.clearContent();
-            // Use the full enhanced prompt
-            editor.commands.insertContent(fullPrompt);
-            setPrompt(fullPrompt);
+            // Use the clean display prompt for user interface
+            editor.commands.insertContent(displayPrompt);
+            setPrompt(displayPrompt);
             setShowCards(false);
 
-            // Store parameters if needed for later use
+            // Store the full prompt and parameters for processing
             if (parameters) {
                 // Store parameters in session storage for n8n processing
                 sessionStorage.setItem('promptParameters', JSON.stringify(parameters));
             }
+            // Store the full prompt for backend processing
+            sessionStorage.setItem('fullPrompt', fullPrompt);
 
             // Focus the editor with animation and scroll to chat input
             setTimeout(() => {
@@ -99,7 +103,7 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
             // Create or switch to thread if needed
             let activeThreadId = currentThreadId;
             if (!activeThreadId) {
-                const newThread = await createThread();
+                const newThread = await createThread(nanoid());
                 activeThreadId = newThread.id;
                 // Navigate to the new thread
                 router.push(`/chat/${activeThreadId}`);

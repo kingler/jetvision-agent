@@ -2,9 +2,10 @@
 import React from 'react';
 import { cn } from '@repo/ui';
 import { scrollToChatInputWithFocus } from '@repo/common/utils';
-import { 
-    IconRocket, 
-    IconUsers, 
+import { formatPromptForDisplay } from '@repo/shared/utils';
+import {
+    IconRocket,
+    IconUsers,
     IconChartBar,
     IconPlane,
     IconCalendar,
@@ -464,7 +465,10 @@ export const PromptCards: React.FC<PromptCardsProps> = ({ onSelectPrompt, classN
                                     >
                                         <button
                                             onClick={() => {
-                                                onSelectPrompt(card.fullPrompt, card.fullPrompt, card.parameters);
+                                                // Use the clean, user-friendly prompt for display
+                                                const displayPrompt = formatPromptForDisplay(card.prompt);
+                                                // Pass the full prompt for processing but display the clean version
+                                                onSelectPrompt(displayPrompt, card.fullPrompt, card.parameters);
                                                 // Trigger smooth scroll to chat input after prompt selection
                                                 scrollToChatInputWithFocus(100);
                                             }}

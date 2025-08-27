@@ -1,5 +1,4 @@
-// Sentry temporarily disabled for performance
-// import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
     transpilePackages: ['next-mdx-remote'],
@@ -8,7 +7,7 @@ const nextConfig = {
     compress: true,
     poweredByHeader: false,
     reactStrictMode: true,
-    // swcMinify is now default in Next.js 15, no longer needed
+    swcMinify: true,
     
     images: {
         formats: ['image/avif', 'image/webp'],
@@ -42,7 +41,11 @@ const nextConfig = {
         externalDir: true,
         // Enable React compiler for better optimization
         forceSwcTransforms: true,
-        // Server Components optimizations (keep in experimental for Next.js 14)
+        // Optimize CSS
+        optimizeCss: true,
+        // Partial Prerendering (experimental)
+        ppr: true,
+        // Server Components optimizations
         serverComponentsExternalPackages: [
             'langchain',
             '@langchain/core',
@@ -92,7 +95,11 @@ const nextConfig = {
                                 return module.size() > 160000 &&
                                     /node_modules[\\/]/.test(module.identifier());
                             },
-                            name: 'lib',
+                            name(module) {
+                                const hash = require('crypto').createHash('sha1');
+                                hash.update(module.identifier());
+                                return 'lib-' + hash.digest('hex').substring(0, 8);
+                            },
                             priority: 30,
                             minChunks: 1,
                             reuseExistingChunk: true,
@@ -106,7 +113,13 @@ const nextConfig = {
                         },
                         // Shared modules
                         shared: {
-                            name: 'shared',
+                            name(module, chunks) {
+                                const hash = require('crypto')
+                                    .createHash('sha1')
+                                    .update(chunks.reduce((acc, chunk) => acc + chunk.name, ''))
+                                    .digest('hex');
+                                return 'shared-' + hash.substring(0, 8);
+                            },
                             priority: 10,
                             minChunks: 2,
                             reuseExistingChunk: true,
@@ -189,7 +202,18 @@ const nextConfig = {
 };
 
 // Conditionally apply Sentry (disable in dev for better performance)
-// Temporarily disabled Sentry to fix editor issues
-const finalConfig = nextConfig;
+const finalConfig = process.env.NODE_ENV === 'production' 
+    ? withSentryConfig(nextConfig, {
+        org: 'saascollect',
+        project: 'javascript-nextjs',
+        silent: !process.env.CI,
+        widenClientFileUpload: true,
+        hideSourceMaps: true,
+        disableLogger: true,
+        automaticVercelMonitors: true,
+        tunnelRoute: '/monitoring',
+        hideSourcemaps: true,
+    })
+    : nextConfig;
 
 export default finalConfig;

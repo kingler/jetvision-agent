@@ -2,7 +2,7 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
-import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
+import { buildCoreMessagesFromThreadItems, plausible, formatDisplayText } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
@@ -381,8 +381,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             const threadId = currentThreadId?.toString() || newThreadId;
             if (!threadId) return;
 
-            // Update thread title
-            updateThread({ id: threadId, title: formData.get('query') as string });
+            // Update thread title with formatted text (truncated to 34 characters)
+            const rawQuery = formData.get('query') as string;
+            const formattedTitle = formatDisplayText(rawQuery, 34);
+            updateThread({ id: threadId, title: formattedTitle });
 
             const optimisticAiThreadItemId = existingThreadItemId || nanoid();
             const query = formData.get('query') as string;

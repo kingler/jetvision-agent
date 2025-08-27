@@ -144,10 +144,12 @@ export async function POST(request: NextRequest) {
         const stream = new ReadableStream({
             async start(controller) {
                 try {
-                    // Send initial status
+                    // Send initial status with loading state
                     controller.enqueue(encoder.encode(`event: status\ndata: ${JSON.stringify({ 
                         status: 'connecting',
-                        message: 'Connecting to n8n workflow...',
+                        message: 'Connecting to JetVision Agent...',
+                        isLoading: true,
+                        progress: 5,
                         threadId,
                         threadItemId
                     })}\n\n`));
@@ -166,7 +168,24 @@ export async function POST(request: NextRequest) {
                         });
                         
                         if (webhookResponse.ok) {
-                            const webhookData = await webhookResponse.json();
+                            // Check if response has content
+                            const contentType = webhookResponse.headers.get('content-type');
+                            let webhookData: any = {};
+                            
+                            if (contentType && contentType.includes('application/json')) {
+                                try {
+                                    webhookData = await webhookResponse.json();
+                                } catch (jsonError) {
+                                    console.warn('Failed to parse JSON response from webhook:', jsonError);
+                                    webhookData = {};
+                                }
+                            } else {
+                                // If not JSON, try to read as text
+                                const textResponse = await webhookResponse.text();
+                                console.log('Non-JSON webhook response:', textResponse);
+                                webhookData = { response: textResponse };
+                            }
+                            
                             executionId = webhookData.executionId || webhookData.execution?.id;
                             
                             // If we got an immediate response, use it
@@ -189,7 +208,23 @@ export async function POST(request: NextRequest) {
                             
                             console.log('Workflow started with execution ID:', executionId);
                         } else {
-                            throw new Error(`Webhook failed: ${webhookResponse.statusText}`);
+                            // Try to get error details from response
+                            let errorMessage = `Webhook failed: ${webhookResponse.status} ${webhookResponse.statusText}`;
+                            try {
+                                const contentType = webhookResponse.headers.get('content-type');
+                                if (contentType && contentType.includes('application/json')) {
+                                    const errorData = await webhookResponse.json();
+                                    errorMessage = errorData.message || errorData.error || errorMessage;
+                                } else {
+                                    const textError = await webhookResponse.text();
+                                    if (textError) {
+                                        errorMessage = textError.substring(0, 200); // Limit error message length
+                                    }
+                                }
+                            } catch (e) {
+                                // Ignore parse errors
+                            }
+                            throw new Error(errorMessage);
                         }
                     } catch (error) {
                         console.error('Failed to start workflow:', error);
@@ -200,7 +235,9 @@ export async function POST(request: NextRequest) {
                     if (executionId && N8N_API_KEY) {
                         controller.enqueue(encoder.encode(`event: status\ndata: ${JSON.stringify({ 
                             status: 'executing',
-                            message: 'Workflow is running...',
+                            message: 'Processing your request with JetVision Agent...',
+                            isLoading: true,
+                            progress: 20,
                             executionId,
                             threadId,
                             threadItemId
@@ -219,10 +256,17 @@ export async function POST(request: NextRequest) {
                                 // Send progress update if status changed
                                 if (execution.status !== lastStatus) {
                                     lastStatus = execution.status;
+                                    const statusMessages: Record<string, string> = {
+                                        'running': 'Analyzing data and preparing response...',
+                                        'success': 'Finalizing your personalized insights...',
+                                        'waiting': 'Gathering information from data sources...',
+                                        'error': 'Encountered an issue, attempting recovery...'
+                                    };
                                     controller.enqueue(encoder.encode(`event: status\ndata: ${JSON.stringify({ 
                                         status: execution.status,
-                                        message: `Workflow ${execution.status}...`,
-                                        progress: Math.min((pollAttempts / MAX_POLL_ATTEMPTS) * 100, 90),
+                                        message: statusMessages[execution.status] || `Processing ${execution.status}...`,
+                                        isLoading: true,
+                                        progress: Math.min(20 + (pollAttempts / MAX_POLL_ATTEMPTS) * 70, 90),
                                         threadId,
                                         threadItemId
                                     })}\n\n`));
@@ -313,7 +357,8 @@ Please try again in a moment or contact support.`;
                     })}\n\n`));
                     
                 } finally {
-                    controller.close();
+                    // Controller is automatically closed when the stream ends
+                    // Don't manually close it here to avoid "Controller is already closed" error
                 }
             }
         });

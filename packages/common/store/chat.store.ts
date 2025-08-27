@@ -3,6 +3,7 @@
 import { Model, models, ModelEnum } from '@repo/ai/models';
 import { ChatMode } from '@repo/shared/config';
 import { MessageGroup, Thread, ThreadItem } from '@repo/shared/types';
+import { formatDisplayText } from '@repo/shared/utils';
 import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
@@ -664,9 +665,10 @@ export const useChatStore = create(
 
         createThread: async (optimisticId: string, thread?: Pick<Thread, 'title'>) => {
             const threadId = optimisticId || nanoid();
+            const formattedTitle = thread?.title ? formatDisplayText(thread.title, 34) : 'New Thread';
             const newThread = {
                 id: threadId,
-                title: thread?.title || 'New Thread',
+                title: formattedTitle,
                 updatedAt: new Date(),
                 createdAt: new Date(),
                 pinned: false,

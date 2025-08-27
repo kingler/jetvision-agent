@@ -93,7 +93,7 @@ class N8nAgentModelImpl implements N8nAgentModel {
       console.log('Last message:', userMessage);
       
       if (userMessage?.content && Array.isArray(userMessage.content)) {
-        const textContent = userMessage.content.find(c => c.type === 'text');
+        const textContent = userMessage.content.find((c: any) => c.type === 'text');
         query = textContent?.text || '';
         console.log('Extracted query from array content:', query);
       } else if (typeof userMessage?.content === 'string') {
