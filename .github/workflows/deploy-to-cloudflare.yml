@@ -1,0 +1,150 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'bun.lockb'
+      - '.github/workflows/deploy-to-cloudflare.yml'
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: 1.2.21
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.bun/install/cache
+          node_modules
+          apps/web/.next/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install dependencies
+      run: bun install --frozen-lockfile
+
+    - name: Run tests
+      run: bun test
+      continue-on-error: true
+
+    - name: Build Next.js app
+      run: |
+        cd apps/web
+        bun run build
+      env:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+        NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+        NODE_ENV: production
+
+    - name: Install Cloudflare adapter
+      run: |
+        cd apps/web
+        bun add -D @cloudflare/next-on-pages@1 vercel
+
+    - name: Build for Cloudflare Pages
+      run: |
+        cd apps/web
+        npx @cloudflare/next-on-pages
+      env:
+        NODE_ENV: production
+
+    - name: Deploy to Cloudflare Pages (Production)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: jetvision-agent
+        directory: apps/web/.vercel/output/static
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        deploymentName: production
+        wranglerVersion: '3'
+
+    - name: Deploy to Cloudflare Pages (Preview)
+      if: github.event_name == 'pull_request'
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: jetvision-agent
+        directory: apps/web/.vercel/output/static
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        deploymentName: preview-${{ github.event.pull_request.number }}
+        wranglerVersion: '3'
+
+    - name: Comment deployment URL on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const deployment_url = `https://preview-${{ github.event.pull_request.number }}.jetvision-agent.pages.dev`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Preview deployment is ready!\n\n🔗 ${deployment_url}`
+          })
+
+    - name: Purge Cloudflare cache
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"purge_everything":true}'
+
+  notify-slack:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify deployment status
+        uses: 8398a7/action-slack@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deployment ${{ job.status == 'success' && 'succeeded' || 'failed' }}
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
