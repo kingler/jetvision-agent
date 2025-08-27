@@ -101,7 +101,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                 )}
                 {threadItem.mode && (
                     <p className="text-muted-foreground px-2 text-xs">
-                        Generated with {getChatModeName(threadItem.mode)}
+                        Generated with JetVision Agent (O3 via n8n workflow)
                     </p>
                 )}
             </div>

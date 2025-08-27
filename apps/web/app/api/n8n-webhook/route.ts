@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
                                     threadItemId
                                 })}\n\n`));
                                 
-                                controller.close();
+                                // Controller closes automatically when the stream ends
                                 return;
                             }
                             
@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
                                             threadItemId
                                         })}\n\n`));
                                         
-                                        controller.close();
+                                        // Controller closes automatically when the stream ends
                                         return;
                                     }
                                     break;

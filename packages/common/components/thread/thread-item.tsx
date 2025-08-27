@@ -95,7 +95,7 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {!hasResponse && isGenerating && (
+                        {isGenerating && !hasAnswer && (
                             <AgentLoadingStatus 
                                 isLoading={true}
                                 customMessage={undefined}

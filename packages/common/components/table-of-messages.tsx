@@ -4,11 +4,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { formatDisplayText } from '@repo/shared/utils';
 
 export const TableOfMessages = () => {
     const { threadId } = useParams();
     const currentThreadId = threadId?.toString() ?? '';
     const [isHovering, setIsHovering] = useState(false);
+    const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
     const previousThreadItems = useChatStore(
         useShallow(state => state.getPreviousThreadItems(currentThreadId))
     );
@@ -17,6 +19,18 @@ export const TableOfMessages = () => {
     );
     const activeItemId = useChatStore(state => state.activeThreadItemView);
     const allItems = [...previousThreadItems, currentThreadItem].filter(Boolean);
+
+    const toggleExpanded = (itemId: string) => {
+        setExpandedItems(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(itemId)) {
+                newSet.delete(itemId);
+            } else {
+                newSet.add(itemId);
+            }
+            return newSet;
+        });
+    };
 
     if (allItems?.length <= 1) {
         return null;
@@ -73,28 +87,49 @@ export const TableOfMessages = () => {
                                 <div className="no-scrollbar max-h-60 overflow-y-auto">
                                     {allItems.map((item, index) => {
                                         const isActive = activeItemId === item?.id;
+                                        const isExpanded = expandedItems.has(item?.id || '');
+                                        const rawText = item?.query || '';
+                                        const formattedText = formatDisplayText(rawText, 150);
+                                        const needsExpansion = rawText.length > 150;
+                                        const displayText = isExpanded ? rawText : formattedText;
+
                                         return (
-                                            <Button
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    if (item?.id) {
-                                                        const element = document.getElementById(
-                                                            `thread-item-${item.id}`
-                                                        );
-                                                        element?.scrollIntoView({
-                                                            behavior: 'instant',
-                                                        });
-                                                    }
-                                                }}
-                                                variant="ghost"
-                                                key={index}
-                                                className={cn(
-                                                    'text-muted-foreground/50 hover:text-foreground group line-clamp-2 h-auto min-h-7 w-full max-w-full cursor-pointer justify-end overflow-hidden whitespace-normal py-1 text-left text-sm',
-                                                    isActive && 'text-foreground'
+                                            <div key={index} className="relative">
+                                                <Button
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        if (item?.id) {
+                                                            const element = document.getElementById(
+                                                                `thread-item-${item.id}`
+                                                            );
+                                                            element?.scrollIntoView({
+                                                                behavior: 'instant',
+                                                            });
+                                                        }
+                                                    }}
+                                                    variant="ghost"
+                                                    className={cn(
+                                                        'text-muted-foreground/50 hover:text-foreground group h-auto min-h-7 w-full max-w-full cursor-pointer justify-start overflow-hidden whitespace-normal py-2 pr-8 text-left text-sm leading-relaxed',
+                                                        isActive && 'text-foreground',
+                                                        isExpanded ? 'line-clamp-none' : 'line-clamp-3'
+                                                    )}
+                                                >
+                                                    {displayText}
+                                                </Button>
+                                                {needsExpansion && (
+                                                    <Button
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                            toggleExpanded(item?.id || '');
+                                                        }}
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="absolute right-1 top-1 h-6 w-6 p-0 text-xs text-muted-foreground/70 hover:text-foreground"
+                                                    >
+                                                        {isExpanded ? '−' : '⋯'}
+                                                    </Button>
                                                 )}
-                                            >
-                                                {item?.query}
-                                            </Button>
+                                            </div>
                                         );
                                     })}
                                 </div>

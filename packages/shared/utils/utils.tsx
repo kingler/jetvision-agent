@@ -104,17 +104,20 @@ export const formatTickerTime = (seconds: number): string => {
 /**
  * Formats text for display in chat history and UI components
  * - Removes JSON formatting and raw code display
- * - Truncates to specified length (default 34 characters)
+ * - Truncates to specified length (default 150 characters for better readability)
  * - Cleans up whitespace and special characters
  */
-export const formatDisplayText = (text: string, maxLength: number = 34): string => {
+export const formatDisplayText = (text: string, maxLength: number = 150): string => {
   if (!text || typeof text !== 'string') return 'Untitled';
 
   // Remove JSON-like structures and clean up the text
   let cleanText = text
-    // Remove complete JSON objects and arrays (more precise matching)
-    .replace(/\{[^{}]*\}/g, ' ')
-    .replace(/\[[^\[\]]*\]/g, ' ')
+    // Remove nested JSON objects and arrays (improved pattern matching)
+    .replace(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g, ' ')
+    .replace(/\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]/g, ' ')
+    // Remove specific prompt patterns that appear in JetVision queries
+    .replace(/["']prompt["']\s*:\s*["'][^"']*["']/gi, '')
+    .replace(/As a JetVision[^,]*,?\s*/gi, '')
     // Remove markdown formatting
     .replace(/[*_`#]/g, '')
     // Remove extra whitespace and newlines
