@@ -10,6 +10,7 @@ coverage/
 
 # Next.js
 .next/
+.history/
 out/
 build/
 dist/
@@ -23,6 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 lerna-debug.log*
+*.pem
 
 # Env files
 .env

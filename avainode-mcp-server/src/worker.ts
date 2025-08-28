@@ -4,7 +4,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { Router } from 'itty-router';
-import { AvainodeTools } from './avainode-tools';
+import { AvainodeTools } from './avainode-tools-worker';
 
 export interface Env {
   AVAINODE_API_KEY: string;

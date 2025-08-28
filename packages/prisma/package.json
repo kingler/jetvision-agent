@@ -1,0 +1,24 @@
+{
+    "name": "@repo/prisma",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./client.ts",
+    "types": "./client.ts",
+    "scripts": {
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push --skip-generate",
+        "db:migrate": "prisma migrate dev",
+        "db:seed": "tsx seed.ts",
+        "postinstall": "prisma generate"
+    },
+    "prisma": {
+        "seed": "tsx seed.ts"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.10.0"
+    },
+    "devDependencies": {
+        "prisma": "^5.10.0",
+        "tsx": "^4.20.5"
+    }
+}
