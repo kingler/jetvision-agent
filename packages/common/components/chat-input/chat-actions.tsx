@@ -345,6 +345,15 @@ export const SendStopButton = ({
                             disabled={!hasTextInput || isGenerating}
                             onClick={() => {
                                 console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
+                                if (!hasTextInput) {
+                                    console.error('[SendButton] No text input detected!');
+                                    return;
+                                }
+                                if (isGenerating) {
+                                    console.error('[SendButton] Already generating!');
+                                    return;
+                                }
+                                console.log('[SendButton] Calling sendMessage()...');
                                 sendMessage();
                             }}
                         >

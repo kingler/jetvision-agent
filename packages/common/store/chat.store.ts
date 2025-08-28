@@ -251,9 +251,7 @@ const initializeWorker = () => {
 
         // Create a shared worker with fallback
         try {
-            dbWorker = new SharedWorker('/db-sync.worker.js', {
-                type: 'module',
-            });
+            dbWorker = new SharedWorker('/db-sync.worker.js');
         } catch (workerError) {
             console.warn('SharedWorker creation failed, falling back to localStorage sync:', workerError);
             initializeTabSync();

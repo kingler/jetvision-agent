@@ -2,7 +2,7 @@ import React from 'react';
 import { ApolloDataDisplay } from '../../jetvision/ApolloDataDisplay';
 import { AvinodeDataDisplay } from '../../jetvision/AvinodeDataDisplay';
 import { Badge } from '@repo/ui';
-import { IconDatabase, IconWorkflow } from '@tabler/icons-react';
+import { IconDatabase, IconNetwork } from '@tabler/icons-react';
 
 interface StructuredDataDisplayProps {
     data: any;
@@ -27,7 +27,7 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
             {/* Metadata Badge */}
             {metadata && metadata.source === 'n8n' && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <IconWorkflow className="h-3 w-3" />
+                    <IconNetwork className="h-3 w-3" />
                     <span>Powered by n8n workflow</span>
                     {metadata.executionId && (
                         <Badge variant="outline" className="text-xs">

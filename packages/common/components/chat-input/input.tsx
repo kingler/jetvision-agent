@@ -3,14 +3,13 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import {
     ImageAttachment,
     ImageDropzoneRoot,
-    MessagesRemainingBadge,
 } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
 import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
@@ -68,15 +67,31 @@ export const ChatInput = forwardRef<ChatInputRef, {
         placeholder: isFollowUp ? 'Ask a follow-up question about your flight' : 'Ask about executive travel, jet charter, or Apollo.io campaigns',
         onInit: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
+                // Clear the draft on page reload to prevent stale content
                 const draftMessage = window.localStorage.getItem('draft-message');
-                if (draftMessage) {
+                // Only load draft if it's not the placeholder text
+                if (draftMessage && 
+                    draftMessage !== 'Ask about executive travel, jet charter, or Apollo.io campaigns' &&
+                    draftMessage !== 'Ask a follow-up question about your flight') {
                     editor.commands.setContent(draftMessage);
+                } else {
+                    // Clear any stale draft
+                    window.localStorage.removeItem('draft-message');
                 }
             }
         },
         onUpdate: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp) {
-                window.localStorage.setItem('draft-message', editor.getText());
+                const text = editor.getText();
+                // Only save to localStorage if it's actual user content
+                if (text && 
+                    text !== 'Ask about executive travel, jet charter, or Apollo.io campaigns' &&
+                    text !== 'Ask a follow-up question about your flight') {
+                    window.localStorage.setItem('draft-message', text);
+                } else {
+                    // Remove draft if it's empty or placeholder
+                    window.localStorage.removeItem('draft-message');
+                }
             }
         },
     });
@@ -93,12 +108,42 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const imageAttachment = useChatStore(state => state.imageAttachment);
     const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
     const stopGeneration = useChatStore(state => state.stopGeneration);
-    const hasTextInput = !!editor?.getText()?.trim();
+    
+    // Track editor text in state for reactivity
+    const [editorContent, setEditorContent] = useState('');
+    
+    useEffect(() => {
+        if (editor) {
+            console.log('[ChatInput Debug] Editor initialized, text:', editor.getText());
+            // Set initial content
+            setEditorContent(editor.getText());
+            
+            // Listen to editor updates
+            const updateHandler = () => {
+                const text = editor.getText();
+                console.log('[ChatInput Debug] Editor text updated:', text);
+                setEditorContent(text);
+            };
+            
+            editor.on('update', updateHandler);
+            
+            return () => {
+                editor.off('update', updateHandler);
+            };
+        }
+    }, [editor]);
+    
+    const hasTextInput = !!editorContent.trim();
+    
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
     const sendMessage = async (customPrompt?: string, parameters?: Record<string, any>) => {
         console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode);
+        
+        // Get the current text from the editor
+        const currentText = editor?.getText()?.trim();
+        console.log('[SendMessage] Current editor text:', currentText, 'Custom prompt:', customPrompt);
         
         if (
             !isSignedIn &&
@@ -108,11 +153,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
             push('/sign-in');
             return;
         }
-
-        const editorText = editor?.getText();
-        console.log('[SendMessage] Editor text:', editorText, 'Custom prompt:', customPrompt);
         
-        if (!editorText && !customPrompt) {
+        if (!currentText && !customPrompt) {
             console.log('[SendMessage] No text to send - aborting');
             return;
         }
@@ -136,7 +178,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
         }
 
         // Get the message text
-        const messageText = customPrompt || editorText;
+        const messageText = customPrompt || currentText;
         
         // Create optimistic thread item for immediate visual feedback
         const optimisticThreadItem = {
@@ -295,7 +337,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
                     </ImageDropzoneRoot>
                 </Flex>
             </motion.div>
-            <MessagesRemainingBadge key="remaining-messages" />
         </AnimatePresence>
     );
 
@@ -345,7 +386,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                     )}
 
                                     {renderChatInput()}
-                                    <MessagesRemainingBadge key="remaining-messages" />
                                 </Flex>
                             </div>
                         </div>
@@ -412,11 +452,11 @@ const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
             let baseGreeting = '';
 
             if (hour >= 5 && hour < 12) {
-                baseGreeting = 'Good morning';
+                baseGreeting = 'JetVision Agent\nGood morning';
             } else if (hour >= 12 && hour < 18) {
-                baseGreeting = 'Good afternoon';
+                baseGreeting = 'JetVision Agent\nGood afternoon';
             } else {
-                baseGreeting = 'Good evening';
+                baseGreeting = 'JetVision Agent\nGood evening';
             }
 
             // Add user's name to the greeting
@@ -444,7 +484,7 @@ const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
     return (
         <Flex
             direction="col"
-            className="relative h-[60px] w-full items-center justify-center overflow-hidden"
+            className="relative h-[100px] w-full items-center justify-center overflow-hidden"
         >
             <AnimatePresence mode="wait">
                 <motion.h1
@@ -456,7 +496,7 @@ const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
+                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent whitespace-pre-line"
                 >
                     {greeting}
                 </motion.h1>
