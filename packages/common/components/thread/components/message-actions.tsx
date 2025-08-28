@@ -100,9 +100,17 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                     </Button>
                 )}
                 {threadItem.mode && (
-                    <p className="text-muted-foreground px-2 text-xs">
-                        Generated with JetVision Agent (O3 via n8n workflow)
-                    </p>
+                    <div className="flex items-center gap-3 text-muted-foreground text-xs">
+                        {threadItem.executionTime && (
+                            <>
+                                <span className="font-medium">
+                                    Thought for {Math.round(threadItem.executionTime / 1000)} seconds
+                                </span>
+                                <span className="text-gray-300">•</span>
+                            </>
+                        )}
+                        <span>JetVision Agent (O3 via n8n)</span>
+                    </div>
                 )}
             </div>
         );

@@ -1,5 +1,6 @@
 'use client';
 export { default as AgentLoadingStatus } from './agent-loading-status';
+export { default as AgentThinkingStatus } from './agent-thinking-status';
 export { default as LoadingThreeDotsJumping } from './loading-dots';
 export * from './chat-input';
 export * from './code-block/code-block';

@@ -8,7 +8,7 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 import { Text } from '@tiptap/extension-text';
 
 import { Editor, useEditor } from '@tiptap/react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useChatStore } from '../store';
 
 export const useChatEditor = (editorProps: {
@@ -20,6 +20,8 @@ export const useChatEditor = (editorProps: {
     onUpdate?: (props: { editor: Editor }) => void;
 }) => {
     const setEditor = useChatStore(state => state.setEditor);
+    const [isInitialized, setIsInitialized] = useState(false);
+
     const editor = useEditor({
         extensions: [
             Document,
@@ -27,6 +29,8 @@ export const useChatEditor = (editorProps: {
             Text,
             Placeholder.configure({
                 placeholder: editorProps?.placeholder || 'Ask anything',
+                emptyEditorClass: 'is-editor-empty',
+                emptyNodeClass: 'is-empty',
             }),
             CharacterCount.configure({
                 limit: editorProps?.charLimit || 400000,
@@ -40,15 +44,24 @@ export const useChatEditor = (editorProps: {
             HardBreak,
         ],
         immediatelyRender: false,
-        content: '',
+        content: editorProps?.defaultContent || '',
         autofocus: true,
-
+        editable: true,
+        parseOptions: {
+            preserveWhitespace: 'full',
+        },
+        editorProps: {
+            attributes: {
+                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none',
+            },
+        },
         onTransaction(props) {
             const { editor } = props;
             const text = editor.getText();
             const html = editor.getHTML();
+            
             if (text === '/') {
-                // setOpenPromptsBotCombo(true);
+                // Command palette trigger logic can go here
             } else {
                 const newHTML = html.replace(/::((?:(?!::).)+)::/g, (_, content) => {
                     return ` <mark class="prompt-highlight">${content}</mark> `;
@@ -59,42 +72,55 @@ export const useChatEditor = (editorProps: {
                         preserveWhitespace: true,
                     });
                 }
-                // setOpenPromptsBotCombo(false);
             }
         },
-        onCreate(props) {
+        onCreate: useCallback((props) => {
+            console.log('TipTap editor created successfully');
+            setIsInitialized(true);
+            
             if (editorProps?.defaultContent) {
-                props.editor.commands.setContent(editorProps?.defaultContent || '', true, {
+                props.editor.commands.setContent(editorProps.defaultContent, true, {
                     preserveWhitespace: true,
                 });
             }
+            
             if (editorProps?.onInit) {
                 editorProps.onInit({ editor: props.editor });
             }
-        },
-        onUpdate(props) {
+        }, [editorProps?.defaultContent, editorProps?.onInit]),
+        
+        onUpdate: useCallback((props) => {
             const { editor } = props;
             if (editorProps?.onUpdate) {
                 editorProps.onUpdate({ editor });
             }
-        },
+        }, [editorProps?.onUpdate]),
 
-        parseOptions: {
-            preserveWhitespace: 'full',
-        },
+        onDestroy: useCallback(() => {
+            console.log('TipTap editor destroyed');
+            setIsInitialized(false);
+        }, []),
     });
 
     useEffect(() => {
-        setEditor(editor);
-    }, [editor]);
+        if (editor && isInitialized) {
+            setEditor(editor);
+        }
+    }, [editor, isInitialized, setEditor]);
 
     useEffect(() => {
-        if (editor) {
-            editor.commands.focus('end');
+        if (editor && isInitialized) {
+            // Small delay to ensure DOM is ready
+            const focusTimer = setTimeout(() => {
+                editor.commands.focus('end');
+            }, 100);
+            
+            return () => clearTimeout(focusTimer);
         }
-    }, [editor]);
+    }, [editor, isInitialized]);
 
     return {
         editor,
+        isInitialized,
     };
 };

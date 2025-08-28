@@ -192,6 +192,10 @@ export const Sidebar = () => {
                             tooltip={isSidebarOpen ? undefined : 'New Thread'}
                             tooltipSide="right"
                             className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
+                            onClick={() => {
+                                // Clear any existing state and reload the chat page
+                                window.location.href = '/chat';
+                            }}
                         >
                             <IconPlus size={16} strokeWidth={2} className={cn(isSidebarOpen)} />
                             {isSidebarOpen && 'New Thread'}

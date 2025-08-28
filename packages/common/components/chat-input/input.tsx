@@ -64,7 +64,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
     }));
 
     const { threadId: currentThreadId } = useParams();
-    const { editor } = useChatEditor({
+    const { editor, isInitialized } = useChatEditor({
         placeholder: isFollowUp ? 'Ask a follow-up question about your flight' : 'Ask about executive travel, jet charter, or Apollo.io campaigns',
         onInit: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
@@ -130,6 +130,34 @@ export const ChatInput = forwardRef<ChatInputRef, {
         // Get the message text
         const messageText = customPrompt || editor.getText();
         
+        // Create optimistic thread item for immediate visual feedback
+        const optimisticThreadItem = {
+            id: optimisticItemId,
+            threadId: threadId,
+            query: messageText,
+            status: 'PENDING' as const,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            mode: 'jetvision-agent' as any,
+            answer: undefined,
+            sources: [],
+        };
+        
+        createThreadItem(optimisticThreadItem);
+        
+        // Clear input immediately for better UX
+        window.localStorage.removeItem('draft-message');
+        editor.commands.clearContent();
+        clearImageAttachment();
+        
+        // Smooth scroll to bottom after a brief delay to allow DOM update
+        setTimeout(() => {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
+        
         // Retrieve stored parameters if not provided directly
         let promptParams = parameters;
         if (!promptParams) {
@@ -145,7 +173,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
             prompt: messageText,
             message: messageText,
             threadId: threadId,
-            threadItemId: uuidv4(),
+            threadItemId: optimisticItemId,
             context: {
                 source: 'jetvision-agent',
                 timestamp: new Date().toISOString(),
@@ -179,9 +207,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
             useWebSearch,
             useN8n: true, // Force n8n webhook usage
         });
-        window.localStorage.removeItem('draft-message');
-        editor.commands.clearContent();
-        clearImageAttachment();
     };
 
     const renderChatInput = () => (
@@ -208,7 +233,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                             transition={{ duration: 0.15 }}
                             className="flex w-full flex-shrink-0 overflow-hidden rounded-lg"
                         >
-                            {editor?.isEditable ? (
+                            {(editor?.isEditable && isInitialized) || (!editor && !isInitialized) ? (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -220,6 +245,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                         <ChatEditor
                                             sendMessage={() => sendMessage()}
                                             editor={editor}
+                                            isInitialized={isInitialized}
                                             className="px-3 pt-3"
                                         />
                                     </Flex>

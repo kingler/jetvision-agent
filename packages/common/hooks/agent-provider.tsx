@@ -147,6 +147,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     setIsGenerating(false);
                     setTimeout(fetchRemainingCredits, 1000);
                     if (data?.threadItemId) {
+                        // Calculate execution time if we have a start time
+                        const threadItem = threadItemMap.get(data.threadItemId);
+                        if (threadItem && threadItem.createdAt) {
+                            const executionTime = Date.now() - new Date(threadItem.createdAt).getTime();
+                            updateThreadItem(data.threadId || '', {
+                                id: data.threadItemId,
+                                executionTime,
+                                status: 'COMPLETED'
+                            });
+                        }
                         threadItemMap.delete(data.threadItemId);
                     }
                 }
@@ -275,6 +285,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     } else if (currentEvent === 'done' && data.type === 'done') {
                                         setIsGenerating(false);
                                         const streamDuration = performance.now() - streamStartTime;
+                                        
+                                        // Store execution time in thread item
+                                        if (data.threadItemId) {
+                                            updateThreadItem(body.threadId, {
+                                                id: data.threadItemId,
+                                                executionTime: streamDuration,
+                                                status: 'COMPLETED'
+                                            });
+                                        }
+                                        
                                         console.log(
                                             'done event received',
                                             eventCount,

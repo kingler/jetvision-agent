@@ -10,12 +10,13 @@ import {
     Steps,
 } from '@repo/common/components';
 import AgentLoadingStatus from '../agent-loading-status';
+import AgentThinkingStatus from '../agent-thinking-status';
 import { useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem as ThreadItemType } from '@repo/shared/types';
 import { Alert, AlertDescription, cn } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 export const ThreadItem = memo(
@@ -29,6 +30,9 @@ export const ThreadItem = memo(
         isGenerating: boolean;
         isLast: boolean;
     }) => {
+        const [startTime] = useState(() => 
+            threadItem.status === 'PENDING' || isGenerating ? Date.now() : undefined
+        );
         const { isAnimationComplete, text: animatedText } = useAnimatedText(
             threadItem.answer?.text || '',
             isLast && isGenerating
@@ -95,10 +99,10 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {(isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING') && (
-                            <AgentLoadingStatus 
-                                isLoading={true}
-                                customMessage={threadItem.status === 'PENDING' ? 'Initializing JetVision Agent...' : undefined}
+                        {((isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING')) && (
+                            <AgentThinkingStatus 
+                                isThinking={true}
+                                startTime={startTime}
                             />
                         )}
                         
