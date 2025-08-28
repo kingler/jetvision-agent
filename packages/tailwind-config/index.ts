@@ -5,8 +5,19 @@ const config: any = {
     theme: {
         container: {
             center: true,
-            padding: '2rem',
+            padding: {
+                DEFAULT: '1rem',
+                sm: '1.5rem',
+                md: '2rem',
+                lg: '2rem',
+                xl: '2rem',
+                '2xl': '2rem',
+            },
             screens: {
+                sm: '640px',
+                md: '768px',
+                lg: '1024px',
+                xl: '1280px',
                 '2xl': '1400px',
             },
         },
@@ -80,6 +91,17 @@ const config: any = {
                 '3xl': ['1.375rem', { lineHeight: '2.5rem' }],
                 '4xl': ['1.475rem', { lineHeight: '2.75rem' }],
                 '5xl': ['3.052rem'],
+                // Mobile-optimized sizes
+                'mobile-xs': ['0.65rem', { lineHeight: '1.1rem' }],
+                'mobile-sm': ['0.7rem', { lineHeight: '1.2rem' }],
+                'mobile-base': ['0.8rem', { lineHeight: '1.4rem' }],
+                'mobile-lg': ['0.9rem', { lineHeight: '1.6rem' }],
+            },
+            spacing: {
+                'mobile-safe-top': 'env(safe-area-inset-top)',
+                'mobile-safe-bottom': 'env(safe-area-inset-bottom)',
+                'mobile-safe-left': 'env(safe-area-inset-left)',
+                'mobile-safe-right': 'env(safe-area-inset-right)',
             },
             fontWeight: {
                 normal: '350',

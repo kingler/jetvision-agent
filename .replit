@@ -1,0 +1,24 @@
+modules = ["nodejs-20", "bash", "web"]
+run = "Bun run dev"
+
+[nix]
+channel = "stable-25_05"
+
+[deployment]
+run = ["sh", "-c", "Bun run dev"]
+
+[workflows]
+runButton = "Run"
+
+[[workflows.workflow]]
+name = "Run"
+author = 29358209
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bun run dev"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
