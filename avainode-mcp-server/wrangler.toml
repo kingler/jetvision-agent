@@ -1,11 +1,12 @@
 name = "avainode-mcp"
-main = "src/worker.ts"
+main = "src/worker-n8n.ts"
 compatibility_date = "2024-01-15"
 compatibility_flags = ["nodejs_compat"]
 
 # Account and routing
 account_id = "485f44eabd68fe8c5301c12472a02612"
-route = { pattern = "avainode-mcp.designthru.ai/*", zone_name = "designthru.ai" }
+workers_dev = true
+# route = { pattern = "avainode-mcp.designthru.ai/*", zone_name = "designthru.ai" }
 
 # Build configuration handled by wrangler
 
