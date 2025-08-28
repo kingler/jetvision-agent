@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Git pre-push hook for automated deployment
+# Install: cp .github/hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+echo "🔍 Checking for deployment flag..."
+
+# Check for [deploy] tag in recent commits
+if git log --oneline -n 5 | grep -q "\[deploy\]"; then
+    echo "🚀 [deploy] tag found - triggering deployment"
+    
+    # Get the project root
+    PROJECT_ROOT=$(git rev-parse --show-toplevel)
+    
+    # Run deployment
+    if [ -f "${PROJECT_ROOT}/UPDATE_DEPLOY.sh" ]; then
+        echo "📦 Running deployment script..."
+        "${PROJECT_ROOT}/UPDATE_DEPLOY.sh"
+        
+        if [ $? -eq 0 ]; then
+            echo "✅ Deployment successful!"
+        else
+            echo "❌ Deployment failed! Push cancelled."
+            exit 1
+        fi
+    fi
+fi
+
+exit 0

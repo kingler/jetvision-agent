@@ -1,0 +1,59 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'jetvision-agent/**'
+      - 'apollo-io-mcp-server/**'
+      - 'avainode-mcp-server/**'
+  workflow_dispatch:
+    inputs:
+      deploy_mcp:
+        description: 'Deploy MCP servers'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        working-directory: ./jetvision-agent
+        run: bun install
+      
+      - name: Build application
+        working-directory: ./jetvision-agent/apps/web
+        run: |
+          # Use static config
+          cp next.config.static.mjs next.config.mjs
+          
+          # Build with environment validation skip
+          SKIP_ENV_VALIDATION=1 bun run build
+      
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=jetvision-agent
+          workingDirectory: ./jetvision-agent/apps/web
+      
+      - name: Deploy MCP Servers
+        if: github.event.inputs.deploy_mcp == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: |
+            cd apollo-io-mcp-server && wrangler deploy
+            cd ../avainode-mcp-server && wrangler deploy

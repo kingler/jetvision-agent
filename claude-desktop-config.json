@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "apollo-io-jetvision": {
+      "command": "node",
+      "args": [
+        "/Volumes/SeagatePortableDrive/Projects/jetvision-agent/mcp-http-client.js",
+        "https://apollo-mcp.designthru.ai/mcp"
+      ],
+      "env": {
+        "SERVER_NAME": "Apollo.io MCP Server",
+        "SERVER_TYPE": "apollo"
+      },
+      "enabled": true
+    },
+    "avainode-jetvision": {
+      "command": "node",
+      "args": [
+        "/Volumes/SeagatePortableDrive/Projects/jetvision-agent/mcp-http-client.js",
+        "https://avainode-mcp.designthru.ai/mcp"
+      ],
+      "env": {
+        "SERVER_NAME": "Avainode MCP Server",
+        "SERVER_TYPE": "avainode"
+      },
+      "enabled": true
+    },
+    "apollo-io-local": {
+      "command": "node",
+      "args": [
+        "/Volumes/SeagatePortableDrive/Projects/jetvision-agent/apollo-io-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "APOLLO_API_KEY": "${APOLLO_API_KEY}",
+        "PORT": "8123"
+      },
+      "enabled": false
+    },
+    "avainode-local": {
+      "command": "node",
+      "args": [
+        "/Volumes/SeagatePortableDrive/Projects/jetvision-agent/avainode-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "AVAINODE_API_KEY": "${AVAINODE_API_KEY}",
+        "PORT": "8124"
+      },
+      "enabled": false
+    }
+  }
+}

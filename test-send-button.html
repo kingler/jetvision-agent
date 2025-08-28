@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JetVision Send Button Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .response-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response-container pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .test-results {
+            margin-top: 20px;
+        }
+        .test-result {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+        .test-result .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        .pending { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 JetVision Send Button Test</h1>
+        
+        <div class="test-section">
+            <h2>Test Configuration</h2>
+            <label>n8n Webhook URL:</label>
+            <input type="text" class="test-input" id="webhookUrl" value="http://localhost:3000/api/n8n-webhook" />
+            
+            <label>Test Message:</label>
+            <input type="text" class="test-input" id="testMessage" value="Find executive assistants at tech companies in California" />
+            
+            <label>Thread ID:</label>
+            <input type="text" class="test-input" id="threadId" value="test-thread-123" />
+        </div>
+
+        <div class="test-section">
+            <h2>Test Actions</h2>
+            <button class="test-button" onclick="testSendButton()">
+                🧪 Test Send Button
+            </button>
+            <button class="test-button" onclick="testHealthCheck()">
+                ❤️ Health Check
+            </button>
+            <button class="test-button" onclick="testValidation()">
+                ✅ Test Validation
+            </button>
+            <button class="test-button" onclick="runAllTests()">
+                🔄 Run All Tests
+            </button>
+            <button class="test-button" onclick="clearResults()">
+                🗑️ Clear Results
+            </button>
+        </div>
+
+        <div id="status"></div>
+        
+        <div class="test-results" id="testResults"></div>
+        
+        <div class="response-container" id="responseContainer" style="display:none;">
+            <h3>Response Data:</h3>
+            <pre id="responseData"></pre>
+        </div>
+    </div>
+
+    <script>
+        let isGenerating = false;
+        
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = type === 'info' && message.includes('Processing') 
+                ? message + '<div class="loading"></div>' 
+                : message;
+        }
+        
+        function showResponse(data) {
+            const container = document.getElementById('responseContainer');
+            const dataDiv = document.getElementById('responseData');
+            container.style.display = 'block';
+            dataDiv.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+        
+        function addTestResult(name, passed, details = '') {
+            const resultsDiv = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'test-result';
+            resultDiv.innerHTML = `
+                <span class="icon ${passed ? 'pass' : 'fail'}">${passed ? '✅' : '❌'}</span>
+                <strong>${name}:</strong>&nbsp;${passed ? 'PASSED' : 'FAILED'}
+                ${details ? `<small style="margin-left: 10px; color: #666;">(${details})</small>` : ''}
+            `;
+            resultsDiv.appendChild(resultDiv);
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            document.getElementById('responseContainer').style.display = 'none';
+            document.getElementById('status').innerHTML = '';
+        }
+        
+        async function testSendButton() {
+            console.log('[Test] Starting send button test...');
+            clearResults();
+            
+            // Simulate the exact behavior of the send button
+            const hasTextInput = document.getElementById('testMessage').value.trim().length > 0;
+            
+            console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
+            
+            if (!hasTextInput) {
+                console.error('[SendButton] No text input detected!');
+                showStatus('❌ No text input detected!', 'error');
+                addTestResult('Text Input Check', false, 'No text provided');
+                return;
+            }
+            
+            if (isGenerating) {
+                console.error('[SendButton] Already generating!');
+                showStatus('⚠️ Already generating!', 'warning');
+                addTestResult('Generation State Check', false, 'Already generating');
+                return;
+            }
+            
+            console.log('[SendButton] Calling sendMessage()...');
+            addTestResult('Button Click Handler', true, 'Triggered successfully');
+            
+            // Now call the actual send message function
+            await sendMessage();
+        }
+        
+        async function sendMessage() {
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            const message = document.getElementById('testMessage').value;
+            const threadId = document.getElementById('threadId').value;
+            const threadItemId = `item-${Date.now()}`;
+            
+            console.log('[SendMessage] Starting - message:', message);
+            showStatus('🚀 Sending message to n8n workflow...', 'info');
+            
+            isGenerating = true;
+            addTestResult('Set isGenerating', true, 'State updated');
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message,
+                        threadId,
+                        threadItemId,
+                        context: {
+                            source: 'test-interface',
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+                
+                addTestResult('HTTP Request', response.ok, `Status: ${response.status}`);
+                
+                if (response.headers.get('content-type')?.includes('event-stream')) {
+                    console.log('[SendMessage] Received SSE stream');
+                    showStatus('📡 Receiving stream response...', 'info');
+                    addTestResult('SSE Stream', true, 'Stream established');
+                    
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let events = [];
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('event:')) {
+                                const eventType = line.substring(6).trim();
+                                console.log('[Stream] Event:', eventType);
+                                events.push(eventType);
+                                
+                                if (eventType === 'status') {
+                                    showStatus('⏳ Processing with n8n workflow...', 'info');
+                                } else if (eventType === 'answer') {
+                                    showStatus('✅ Received answer from n8n!', 'success');
+                                    addTestResult('Answer Event', true, 'Response received');
+                                } else if (eventType === 'error') {
+                                    showStatus('❌ Error from n8n workflow', 'error');
+                                    addTestResult('Error Handling', true, 'Error captured');
+                                } else if (eventType === 'done') {
+                                    showStatus('✅ Request completed successfully!', 'success');
+                                    addTestResult('Completion', true, 'Stream closed properly');
+                                }
+                            } else if (line.startsWith('data:')) {
+                                try {
+                                    const data = JSON.parse(line.substring(5).trim());
+                                    console.log('[Stream] Data:', data);
+                                    showResponse(data);
+                                } catch (e) {
+                                    console.error('[Stream] Parse error:', e);
+                                }
+                            }
+                        }
+                    }
+                    
+                    addTestResult('Events Received', events.length > 0, `${events.length} events`);
+                    console.log('[SendMessage] Stream completed. Events:', events);
+                    
+                } else {
+                    const data = await response.json();
+                    showResponse(data);
+                    
+                    if (data.error) {
+                        showStatus(`❌ Error: ${data.error}`, 'error');
+                        addTestResult('Response', false, data.error);
+                    } else {
+                        showStatus('✅ Response received!', 'success');
+                        addTestResult('Response', true, 'JSON response');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('[SendMessage] Error:', error);
+                showStatus(`❌ Error: ${error.message}`, 'error');
+                addTestResult('Network Request', false, error.message);
+            } finally {
+                isGenerating = false;
+                console.log('[SendMessage] Completed');
+            }
+        }
+        
+        async function testHealthCheck() {
+            clearResults();
+            showStatus('🔍 Checking n8n webhook health...', 'info');
+            
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                
+                addTestResult('Health Check', response.ok, `Status: ${data.status}`);
+                addTestResult('Circuit Breaker', !data.webhook?.circuitBreaker?.isOpen, 
+                    data.webhook?.circuitBreaker?.isOpen ? 'OPEN' : 'CLOSED');
+                addTestResult('API Key', data.configuration?.hasApiKey, 
+                    data.configuration?.hasApiKey ? 'Configured' : 'Not configured');
+                
+                showResponse(data);
+                showStatus(`✅ Health: ${data.status}`, 'success');
+                
+            } catch (error) {
+                showStatus(`❌ Health check failed: ${error.message}`, 'error');
+                addTestResult('Health Check', false, error.message);
+            }
+        }
+        
+        async function testValidation() {
+            clearResults();
+            showStatus('🧪 Testing validation rules...', 'info');
+            
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            
+            // Test empty message
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '', threadId: 'test' })
+                });
+                
+                const data = await response.json();
+                addTestResult('Empty Message Validation', 
+                    response.status === 400 && data.error?.includes('required'),
+                    data.error || 'No error');
+                
+            } catch (error) {
+                addTestResult('Empty Message Validation', false, error.message);
+            }
+            
+            // Test long message
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: 'a'.repeat(4001), 
+                        threadId: 'test' 
+                    })
+                });
+                
+                const data = await response.json();
+                addTestResult('Long Message Validation', 
+                    response.status === 400 && data.error?.includes('too long'),
+                    data.error || 'No error');
+                
+            } catch (error) {
+                addTestResult('Long Message Validation', false, error.message);
+            }
+            
+            showStatus('✅ Validation tests completed', 'success');
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            showStatus('🔄 Running all tests...', 'info');
+            
+            await testHealthCheck();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testValidation();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testSendButton();
+        }
+        
+        // Log to console for debugging
+        console.log('Test interface loaded. Use the buttons to test n8n webhook integration.');
+    </script>
+</body>
+</html>

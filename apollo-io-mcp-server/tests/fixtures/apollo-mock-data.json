@@ -1,0 +1,145 @@
+{
+  "searchPeopleResponse": {
+    "people": [
+      {
+        "id": "5f5e3d4c3b2a1d0001234567",
+        "first_name": "John",
+        "last_name": "Smith",
+        "name": "John Smith",
+        "title": "CEO",
+        "email": "john.smith@aviationco.com",
+        "organization": {
+          "id": "5f5e3d4c3b2a1d0001234568",
+          "name": "Aviation Co",
+          "industry": "Aviation",
+          "estimated_num_employees": 150
+        },
+        "phone_numbers": [
+          {
+            "raw_number": "+1-555-0123",
+            "type": "work"
+          }
+        ],
+        "employment_history": [
+          {
+            "organization_name": "Aviation Co",
+            "title": "CEO",
+            "start_date": "2020-01-01",
+            "current": true
+          }
+        ]
+      },
+      {
+        "id": "5f5e3d4c3b2a1d0001234569",
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "name": "Jane Doe",
+        "title": "CFO",
+        "email": "jane.doe@jetservices.com",
+        "organization": {
+          "id": "5f5e3d4c3b2a1d000123456a",
+          "name": "Jet Services Inc",
+          "industry": "Aviation",
+          "estimated_num_employees": 250
+        }
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "per_page": 25,
+      "total_entries": 2,
+      "total_pages": 1
+    }
+  },
+  "enrichContactResponse": {
+    "person": {
+      "id": "5f5e3d4c3b2a1d0001234567",
+      "first_name": "John",
+      "last_name": "Smith",
+      "name": "John Smith",
+      "title": "CEO",
+      "email": "john.smith@aviationco.com",
+      "linkedin_url": "https://linkedin.com/in/johnsmith",
+      "twitter_url": "https://twitter.com/johnsmith",
+      "github_url": null,
+      "facebook_url": null,
+      "organization": {
+        "id": "5f5e3d4c3b2a1d0001234568",
+        "name": "Aviation Co",
+        "website_url": "https://aviationco.com",
+        "industry": "Aviation",
+        "estimated_num_employees": 150,
+        "annual_revenue": 50000000
+      },
+      "phone_numbers": [
+        {
+          "raw_number": "+1-555-0123",
+          "type": "work"
+        }
+      ]
+    }
+  },
+  "createSequenceResponse": {
+    "emailer_campaign": {
+      "id": "5f5e3d4c3b2a1d000123456b",
+      "name": "JetVision Outreach Campaign",
+      "created_at": "2024-01-15T10:00:00Z",
+      "user_id": "5f5e3d4c3b2a1d000123456c",
+      "num_steps": 3,
+      "active": true,
+      "archived": false,
+      "contacts_count": 25
+    }
+  },
+  "accountDataResponse": {
+    "accounts": [
+      {
+        "id": "5f5e3d4c3b2a1d000123456d",
+        "name": "JetVision",
+        "domain": "jetvision.com",
+        "industry": "Aviation",
+        "estimated_num_employees": 150,
+        "annual_revenue": 50000000,
+        "phone": "+1-555-0100",
+        "linkedin_url": "https://linkedin.com/company/jetvision",
+        "twitter_url": "https://twitter.com/jetvision",
+        "facebook_url": "https://facebook.com/jetvision",
+        "primary_domain": "jetvision.com",
+        "publicly_traded_symbol": null,
+        "publicly_traded_exchange": null,
+        "logo_url": "https://jetvision.com/logo.png",
+        "headquarters": {
+          "street_address": "123 Aviation Way",
+          "city": "San Francisco",
+          "state": "California",
+          "postal_code": "94105",
+          "country": "United States"
+        }
+      }
+    ]
+  },
+  "engagementMetricsResponse": {
+    "emailer_campaign": {
+      "id": "5f5e3d4c3b2a1d000123456b",
+      "name": "JetVision Outreach Campaign"
+    },
+    "stats": {
+      "emails_sent": 250,
+      "emails_opened": 175,
+      "open_rate": 0.70,
+      "emails_clicked": 45,
+      "click_rate": 0.18,
+      "emails_replied": 12,
+      "reply_rate": 0.048,
+      "emails_bounced": 5,
+      "bounce_rate": 0.02,
+      "emails_unsubscribed": 2,
+      "unsubscribe_rate": 0.008,
+      "meetings_booked": 3
+    },
+    "date_range": {
+      "start_date": "2024-01-01",
+      "end_date": "2024-01-31"
+    }
+  }
+}
