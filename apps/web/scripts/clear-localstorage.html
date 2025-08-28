@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear LocalStorage</title>
+</head>
+<body>
+    <h1>LocalStorage Cleaner for JetVision</h1>
+    <p>Open this file in your browser at http://localhost:3003 domain to clear the stored draft</p>
+    <button onclick="clearStorage()">Clear Draft Message</button>
+    <div id="result"></div>
+    
+    <script>
+        function clearStorage() {
+            // Clear the draft message
+            localStorage.removeItem('draft-message');
+            
+            // Show all localStorage items
+            const items = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                items.push(`${key}: ${localStorage.getItem(key)}`);
+            }
+            
+            document.getElementById('result').innerHTML = `
+                <p style="color: green;">✅ Draft message cleared!</p>
+                <p>Current localStorage items:</p>
+                <pre>${items.length > 0 ? items.join('\n') : 'No items in localStorage'}</pre>
+            `;
+        }
+        
+        // Auto-clear on load
+        window.onload = function() {
+            const draft = localStorage.getItem('draft-message');
+            if (draft) {
+                document.getElementById('result').innerHTML = `
+                    <p>Found draft: "${draft}"</p>
+                    <p>Click button to clear it.</p>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = '<p>No draft message found.</p>';
+            }
+        };
+    </script>
+</body>
+</html>
