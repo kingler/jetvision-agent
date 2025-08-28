@@ -82,7 +82,7 @@ export const Sidebar = () => {
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
                 {/* JetVision Branding */}
-                <Flex 
+                <Flex
                     className={cn(
                         "px-2 py-3 border-b border-border/50 mb-2",
                         isSidebarOpen ? "flex" : "hidden"
@@ -90,17 +90,15 @@ export const Sidebar = () => {
                     items="center"
                     gap="xs"
                 >
-                    <IconPlane size={20} className="text-brand flex-shrink-0" />
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground">JetVision</span>
-                        <span className="text-xs text-muted-foreground">Agent Portal</span>
+                        <span className="text-sm font-semibold text-foreground">JetVision Agent</span>
                     </div>
                 </Flex>
-                
-                {/* When sidebar is collapsed, show just the icon */}
+
+                {/* When sidebar is collapsed, show abbreviated text */}
                 {!isSidebarOpen && (
                     <Flex className="px-2 py-3 mb-2" justify="center">
-                        <IconPlane size={20} className="text-brand" />
+                        <span className="text-xs font-semibold text-foreground">JV</span>
                     </Flex>
                 )}
                 

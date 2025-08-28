@@ -562,7 +562,7 @@ export class AvainodeClient {
 
         // Filter by max price if specified
         if (params.maxPrice) {
-            filtered = filtered.filter(a => a.hourlyRate <= params.maxPrice);
+            filtered = filtered.filter(a => a.hourlyRate <= params.maxPrice!);
         }
 
         return filtered;

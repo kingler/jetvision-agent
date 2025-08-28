@@ -27,6 +27,7 @@
     ],
     "dependencies": {
         "@alloc/quick-lru": "^5.2.0",
+        "@heroicons/react": "^2.2.0",
         "@mozilla/readability": "^0.6.0",
         "@supabase/supabase-js": "^2.56.0",
         "@typescript-eslint/eslint-plugin": "^8.25.0",

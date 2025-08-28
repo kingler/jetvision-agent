@@ -244,7 +244,7 @@ const initializeWorker = () => {
 
     try {
         // Skip SharedWorker initialization if import.meta.url is not available
-        if (!import.meta?.url) {
+        if (typeof import.meta === 'undefined' || !import.meta.url) {
             console.warn('SharedWorker initialization skipped: import.meta.url not available');
             return;
         }

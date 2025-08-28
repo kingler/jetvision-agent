@@ -27,31 +27,35 @@ export const IntroDialog = () => {
     const points = [
         {
             icon,
-            text: `**Lead Generation**: Search for high-value prospects by job title, industry, and company size`,
+            text: `**Apollo.io Integration**: Access 275M+ contacts and 73M+ companies for targeted lead generation`,
         },
         {
             icon,
-            text: `**Aircraft Search**: Find available jets based on trip requirements and passenger needs`,
+            text: `**Avinode Marketplace**: Search 7,000+ aircraft from 3,000+ operators worldwide in real-time`,
         },
         {
             icon,
-            text: `**Charter Quotes**: Generate instant pricing quotes for any route and aircraft type`,
+            text: `**Smart Lead Scoring**: AI-powered prospect qualification based on travel patterns and company metrics`,
         },
         {
             icon,
-            text: `**Email Campaigns**: Create automated email sequences for lead nurturing`,
+            text: `**Automated Campaigns**: Multi-touch email sequences with personalized messaging for aviation executives`,
         },
         {
             icon,
-            text: `**Contact Enrichment**: Enhance prospect data with Apollo.io intelligence`,
+            text: `**Instant Quoting**: Generate accurate charter quotes with real-time aircraft availability and pricing`,
         },
         {
             icon,
-            text: `**Booking Management**: Submit charter requests and manage existing bookings`,
+            text: `**Trip Management**: End-to-end booking workflow from initial inquiry to flight confirmation`,
         },
         {
             icon,
-            text: `**Operator Details**: Access comprehensive operator safety records and fleet information`,
+            text: `**Safety & Compliance**: Automated operator vetting with ARGUS, Wyvern, and IS-BAO certifications`,
+        },
+        {
+            icon,
+            text: `**Analytics Dashboard**: Track campaign performance, booking conversions, and revenue metrics`,
         },
     ];
 
@@ -96,14 +100,16 @@ export const IntroDialog = () => {
                             </p>
                         </div>
                         <p className="text-base font-semibold">
-                            Your AI-Powered Private Jet Charter Assistant
+                            AI-Powered Private Aviation Excellence
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <h3 className="text-sm font-semibold">Welcome to JetVision Agent</h3>
-                        <p className="text-muted-foreground text-sm mb-3">Streamline your private jet charter operations with AI-powered sales intelligence and aviation marketplace integration.</p>
-                        <h4 className="text-sm font-semibold mt-2">What I can help you with:</h4>
+                        <h3 className="text-sm font-semibold">Welcome, JetVision Stakeholder</h3>
+                        <p className="text-muted-foreground text-sm mb-3">
+                            Experience the future of private jet charter operations. JetVision Agent seamlessly combines Apollo.io's sales intelligence with Avinode's aviation marketplace to revolutionize how you manage executive travel and grow your charter business.
+                        </p>
+                        <h4 className="text-sm font-semibold mt-2">Platform Capabilities:</h4>
 
                         <div className="flex flex-col items-start gap-1.5">
                             {points.map((point, index) => (
@@ -128,6 +134,14 @@ export const IntroDialog = () => {
                                     </ReactMarkdown>
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground text-center">
+                                <span className="font-semibold">Trusted by Charter Operators Worldwide</span>
+                                <br />
+                                Powered by MCP Protocol • Enterprise-Ready • SOC2 Compliant
+                            </p>
                         </div>
                     </div>
                 </div>

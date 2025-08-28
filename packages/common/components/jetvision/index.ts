@@ -11,3 +11,5 @@ export { SearchResultsPanel } from './SearchResultsPanel';
 export type { SearchResult } from './SearchResultsPanel';
 export { JetVisionChat } from './JetVisionChat';
 export { JetVisionFooterButton } from './JetVisionFooterButton';
+export { ApolloDataDisplay } from './ApolloDataDisplay';
+export { AvinodeDataDisplay } from './AvinodeDataDisplay';

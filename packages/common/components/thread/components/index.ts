@@ -6,6 +6,6 @@ export * from './message-actions';
 export * from './question-prompt';
 export * from './source-grid';
 export * from './source-list';
+export * from './structured-data-display';
 export * from './tool-call';
-
 export * from './tool-result';

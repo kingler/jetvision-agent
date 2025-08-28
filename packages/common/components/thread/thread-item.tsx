@@ -9,6 +9,7 @@ import {
     SourceGrid,
     Steps,
 } from '@repo/common/components';
+import { StructuredDataDisplay } from './components/structured-data-display';
 import AgentLoadingStatus from '../agent-loading-status';
 import AgentThinkingStatus from '../agent-thinking-status';
 import { useAnimatedText } from '@repo/common/hooks';
@@ -133,6 +134,14 @@ export const ThreadItem = memo(
                                         }
                                         isLast={isLast}
                                     />
+                                    
+                                    {/* Display structured data if present */}
+                                    {(threadItem.answer as any)?.structured && (
+                                        <StructuredDataDisplay 
+                                            data={(threadItem.answer as any).structured}
+                                            metadata={threadItem.metadata}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>

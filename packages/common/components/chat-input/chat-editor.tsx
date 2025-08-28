@@ -22,12 +22,26 @@ const FallbackTextarea: FC<{
 }> = ({ sendMessage, placeholder, maxHeight, className, isGenerating }) => {
     const [value, setValue] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const setEditor = useChatStore(state => state.setEditor);
 
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.focus();
+            
+            // Create a mock editor object for compatibility
+            const mockEditor = {
+                getText: () => value,
+                commands: {
+                    clearContent: () => setValue(''),
+                    setContent: (content: string) => setValue(content),
+                    focus: () => textareaRef.current?.focus(),
+                },
+                isEmpty: () => !value.trim(),
+                isEditable: true,
+            };
+            setEditor(mockEditor as any);
         }
-    }, []);
+    }, [value, setEditor]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (isGenerating) return;
@@ -37,6 +51,10 @@ const FallbackTextarea: FC<{
             if (value.trim()) {
                 sendMessage?.(value);
                 setValue('');
+                // Clear localStorage draft
+                if (typeof window !== 'undefined') {
+                    window.localStorage.removeItem('draft-message');
+                }
             }
         }
     };
@@ -59,7 +77,7 @@ const FallbackTextarea: FC<{
                 placeholder={placeholder || 'Ask about executive travel, jet charter, or Apollo.io campaigns'}
                 disabled={isGenerating}
                 className={cn(
-                    'resize-none w-full min-h-[120px] p-3 text-base bg-transparent border-none outline-none focus:outline-none',
+                    'resize-none w-full min-h-[120px] p-3 text-sm bg-transparent border-none outline-none focus:outline-none',
                     'placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed',
                     'overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent',
                     className
@@ -83,21 +101,37 @@ export const ChatEditor: FC<TChatEditor> = ({
 }) => {
     const isGenerating = useChatStore(state => state.isGenerating);
     const [useFallback, setUseFallback] = useState(false);
+    const [loadingTimer, setLoadingTimer] = useState(true);
 
     // If TipTap takes too long to initialize, use fallback
     useEffect(() => {
-        if (!editor && !isInitialized) {
-            const fallbackTimer = setTimeout(() => {
+        // Show loading for a brief moment, then switch to fallback if needed
+        const loadingTimeout = setTimeout(() => {
+            setLoadingTimer(false);
+        }, 500); // Show loading for 0.5 second max
+
+        const fallbackTimer = setTimeout(() => {
+            if (!editor && !isInitialized) {
                 console.warn('TipTap editor initialization timeout, using fallback textarea');
                 setUseFallback(true);
-            }, 3000); // 3 second timeout
+            }
+        }, 1000); // 1 second timeout for fallback - reduced from 2
 
-            return () => clearTimeout(fallbackTimer);
-        }
+        return () => {
+            clearTimeout(loadingTimeout);
+            clearTimeout(fallbackTimer);
+        };
     }, [editor, isInitialized]);
 
-    // Use fallback if editor is null or not initialized after timeout
-    if (useFallback || (!editor && !isInitialized)) {
+    // Reset fallback if editor becomes available
+    useEffect(() => {
+        if (editor && isInitialized && useFallback) {
+            setUseFallback(false);
+        }
+    }, [editor, isInitialized, useFallback]);
+
+    // Use fallback if timeout exceeded or if editor fails
+    if (useFallback || (!loadingTimer && !editor && !isInitialized)) {
         return (
             <FallbackTextarea
                 sendMessage={sendMessage}
@@ -109,8 +143,8 @@ export const ChatEditor: FC<TChatEditor> = ({
         );
     }
 
-    // Loading state
-    if (!editor || !isInitialized) {
+    // Brief loading state (only show for 0.5 second)
+    if (loadingTimer && !editor && !isInitialized) {
         return (
             <Flex className="flex-1">
                 <div className={cn(
@@ -119,7 +153,7 @@ export const ChatEditor: FC<TChatEditor> = ({
                 )}>
                     <div className="flex items-center space-x-2">
                         <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                        <span>Initializing editor...</span>
+                        <span>Loading editor...</span>
                     </div>
                 </div>
             </Flex>
@@ -127,9 +161,15 @@ export const ChatEditor: FC<TChatEditor> = ({
     }
 
     const editorContainerClass = cn(
-        'no-scrollbar [&>*]:no-scrollbar wysiwyg min-h-[120px] w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none',
+        'no-scrollbar [&>*]:no-scrollbar wysiwyg min-h-[120px] w-full cursor-text overflow-y-auto p-3 text-sm outline-none focus:outline-none',
         '[&>*]:leading-6 [&>*]:outline-none [&>*]:break-words [&>*]:whitespace-pre-wrap',
         '[&_.is-editor-empty]:before:text-muted-foreground [&_.is-editor-empty]:before:float-left [&_.is-editor-empty]:before:content-[attr(data-placeholder)] [&_.is-editor-empty]:before:pointer-events-none [&_.is-editor-empty]:before:h-0',
+        // List styles
+        '[&_ul]:list-disc [&_ul]:list-outside [&_ul]:ml-4 [&_ul]:mb-2',
+        '[&_ol]:list-decimal [&_ol]:list-outside [&_ol]:ml-4 [&_ol]:mb-2',
+        '[&_li]:mb-1',
+        // Paragraph styles
+        '[&_p]:mb-2 [&_p:last-child]:mb-0',
         className
     );
 

@@ -139,10 +139,13 @@ export const Sidebar = () => {
                                 !isSidebarOpen && 'justify-center px-0'
                             )}
                         >
-                            <Logo className="text-brand size-5" />
-                            {isSidebarOpen && (
+                            {isSidebarOpen ? (
                                 <p className="font-clash text-foreground text-lg font-bold tracking-wide">
                                     JetVision Agent
+                                </p>
+                            ) : (
+                                <p className="font-clash text-foreground text-sm font-bold tracking-wide">
+                                    JV
                                 </p>
                             )}
                         </motion.div>

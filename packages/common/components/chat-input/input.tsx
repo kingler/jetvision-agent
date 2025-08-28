@@ -93,23 +93,31 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const imageAttachment = useChatStore(state => state.imageAttachment);
     const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
     const stopGeneration = useChatStore(state => state.stopGeneration);
-    const hasTextInput = !!editor?.getText();
+    const hasTextInput = !!editor?.getText()?.trim();
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
     const sendMessage = async (customPrompt?: string, parameters?: Record<string, any>) => {
+        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode);
+        
         if (
             !isSignedIn &&
             !!ChatModeConfig[chatMode as keyof typeof ChatModeConfig]?.isAuthRequired
         ) {
+            console.log('[SendMessage] Redirecting to sign-in');
             push('/sign-in');
             return;
         }
 
-        if (!editor?.getText()) {
+        const editorText = editor?.getText();
+        console.log('[SendMessage] Editor text:', editorText, 'Custom prompt:', customPrompt);
+        
+        if (!editorText && !customPrompt) {
+            console.log('[SendMessage] No text to send - aborting');
             return;
         }
         
+        console.log('[SendMessage] Setting isGenerating to true');
         // Show immediate loading feedback
         setIsGenerating(true);
         
@@ -128,7 +136,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
         }
 
         // Get the message text
-        const messageText = customPrompt || editor.getText();
+        const messageText = customPrompt || editorText;
         
         // Create optimistic thread item for immediate visual feedback
         const optimisticThreadItem = {
@@ -147,7 +155,9 @@ export const ChatInput = forwardRef<ChatInputRef, {
         
         // Clear input immediately for better UX
         window.localStorage.removeItem('draft-message');
-        editor.commands.clearContent();
+        if (editor && editor.commands) {
+            editor.commands.clearContent();
+        }
         clearImageAttachment();
         
         // Smooth scroll to bottom after a brief delay to allow DOM update
@@ -168,33 +178,17 @@ export const ChatInput = forwardRef<ChatInputRef, {
             }
         }
         
-        // Create structured JSON payload for n8n webhook
-        const jsonPayload = {
-            prompt: messageText,
-            message: messageText,
+        // Log the message being sent for debugging
+        console.log('Sending message to n8n:', messageText, {
             threadId: threadId,
             threadItemId: optimisticItemId,
-            context: {
-                source: 'jetvision-agent',
-                timestamp: new Date().toISOString(),
-                useWebSearch: useWebSearch,
-                hasImageAttachment: !!imageAttachment?.base64,
-                parameters: promptParams || {},
-            },
-            intent: detectIntent(messageText),
-            expectedOutput: {
-                format: 'structured',
-                includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
-                includeRecommendations: true
-            }
-        };
+            useWebSearch: useWebSearch,
+            hasImageAttachment: !!imageAttachment?.base64
+        });
         
-        // Log the structured payload for debugging
-        console.log('Sending structured JSON to n8n:', jsonPayload);
-        
-        // Create FormData with the structured JSON
+        // Create FormData with the plain text query
         const formData = new FormData();
-        formData.append('query', JSON.stringify(jsonPayload));
+        formData.append('query', messageText); // Pass plain text, not JSON
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 

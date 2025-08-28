@@ -344,6 +344,7 @@ export const SendStopButton = ({
                             variant={hasTextInput ? 'default' : 'secondary'}
                             disabled={!hasTextInput || isGenerating}
                             onClick={() => {
+                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
                                 sendMessage();
                             }}
                         >

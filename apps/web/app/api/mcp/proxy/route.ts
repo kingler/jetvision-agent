@@ -1,57 +1,71 @@
-// pages/api/mcp-proxy/[server]/sse.ts
+// MCP Proxy Route - Handles communication with MCP servers
 import { Redis } from '@upstash/redis';
 import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import fetch from 'node-fetch';
 import { Readable } from 'stream';
 import { ReadableStream } from 'stream/web';
+import { getMCPServerUrl, MCPServerType } from '@/lib/mcp-config';
 
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL,
-  token: process.env.KV_REST_API_TOKEN,
-})
-
-
-// // Configure your MCP servers
-// const MCP_SERVERS: Record<string, string> = {
-//   'hackernews': 'https://mcp.composio.dev/hackernews/rapping-bitter-psychiatrist-DjGelP',
-// };
+// Initialize Redis if credentials are available
+let redis: Redis | null = null;
+if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  redis = new Redis({
+    url: process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
+  });
+}
 
 // Store sessions globally for access across requests
 declare global {
-  var _mcpSessions: Record<string, string>;
+  var _mcpSessions: Record<string, { serverType: MCPServerType; serverUrl: string }>;
 }
 
 global._mcpSessions = global._mcpSessions || {};
 
 export async function GET(request: NextRequest) {
-  const serverName = "hackernews";
+  const serverParam = request.nextUrl.searchParams.get('server');
+  const serverType = request.nextUrl.searchParams.get('serverType') as MCPServerType;
   
-  // Check if this is a message endpoint request with a sessionId
-  const server = request.nextUrl.searchParams.get('server');
-  if (!server) {
-    console.log(`GET request with server ${server} - should be a POST request`);
-    return NextResponse.json({ error: 'Messages should be sent using POST method' }, { status: 405 });
+  // Determine the server URL
+  let serverUrl: string | null = null;
+  let resolvedServerType: MCPServerType | null = null;
+  
+  if (serverType) {
+    serverUrl = getMCPServerUrl(serverType);
+    resolvedServerType = serverType;
+  } else if (serverParam) {
+    // Check if serverParam is a known server type
+    if (serverParam in ['apollo-io', 'avainode', 'hackernews']) {
+      serverUrl = getMCPServerUrl(serverParam as MCPServerType);
+      resolvedServerType = serverParam as MCPServerType;
+    } else {
+      // Assume it's a direct URL
+      serverUrl = serverParam;
+      resolvedServerType = 'hackernews'; // Default fallback
+    }
   }
   
-  // if (!serverName || !MCP_SERVERS[serverName]) {
-  //   return NextResponse.json({ error: `MCP server '${serverName}' not found` }, { status: 404 });
-  // }
+  if (!serverUrl) {
+    return NextResponse.json({ error: 'MCP server not found or disabled' }, { status: 404 });
+  }
 
   // Generate a new session ID for this connection
   const newSessionId = randomUUID();
   
   // Store the session for later reference
-  global._mcpSessions[newSessionId] = serverName;
-  console.log(`Created session ${newSessionId} for server ${serverName}`);
+  global._mcpSessions[newSessionId] = { 
+    serverType: resolvedServerType!, 
+    serverUrl 
+  };
+  console.log(`Created session ${newSessionId} for server ${resolvedServerType} at ${serverUrl}`);
   
   try {
-    const targetUrl = `${server}`;
-    const response = await fetch(targetUrl, {
+    const response = await fetch(serverUrl, {
       method: 'GET',
       headers: {
         ...Object.fromEntries(request.headers),
-        host: new URL(server).host,
+        host: new URL(serverUrl).host,
       },
     });
 
@@ -63,17 +77,17 @@ export async function GET(request: NextRequest) {
     const nodeReadable = response.body as unknown as Readable;
     
     // Create web ReadableStream from Node.js Readable
-    const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-  
         // Handle data from the node stream
         nodeReadable.on('data', async (chunk) => {
           const chunkString = chunk.toString('utf-8');
           const sessionId = chunkString.match(/sessionId=([^&]+)/)?.[1];
 
-          console.log(`Setting session ${sessionId} for server ${serverName}`);
-          await redis.set(`mcp:session:${sessionId}`, server);
+          if (sessionId && redis) {
+            console.log(`Setting session ${sessionId} for server ${resolvedServerType}`);
+            await redis.set(`mcp:session:${sessionId}`, serverUrl);
+          }
           controller.enqueue(chunk);
         });
         
@@ -107,6 +121,7 @@ export async function GET(request: NextRequest) {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
+        'X-MCP-Server': resolvedServerType!,
       },
     });
   } catch (error) {
@@ -117,48 +132,53 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-        console.log("request", request);
-        
-  const server = request.nextUrl.searchParams.get('server');
+  console.log("MCP Proxy POST request received");
   
-  if (!server) {
-    console.error('POST request - Missing server parameter');
+  const serverParam = request.nextUrl.searchParams.get('server');
+  const serverType = request.nextUrl.searchParams.get('serverType') as MCPServerType;
+  const sessionId = request.nextUrl.searchParams.get('sessionId');
+  
+  // Determine the server URL
+  let serverUrl: string | null = null;
+  
+  if (sessionId && global._mcpSessions[sessionId]) {
+    // Use session-stored server info
+    serverUrl = global._mcpSessions[sessionId].serverUrl;
+    console.log(`Using session ${sessionId} server: ${serverUrl}`);
+  } else if (serverType) {
+    serverUrl = getMCPServerUrl(serverType);
+    console.log(`Using serverType ${serverType}: ${serverUrl}`);
+  } else if (serverParam) {
+    // Check if serverParam is a known server type
+    if (serverParam in ['apollo-io', 'avainode', 'hackernews']) {
+      serverUrl = getMCPServerUrl(serverParam as MCPServerType);
+    } else {
+      // Assume it's a direct URL
+      serverUrl = serverParam;
+    }
+    console.log(`Using server param: ${serverUrl}`);
+  }
+  
+  if (!serverUrl) {
+    console.error('POST request - No server URL found');
     return NextResponse.json(
       {
         jsonrpc: "2.0",
-        error: { code: -32602, message: "Missing server parameter" },
+        error: { code: -32602, message: "Missing or invalid server parameter" },
         id: null
       }, 
       { status: 400 }
     );
   }
   
-  // Get the server name from the stored session
-  const serverName = 'hackernews'
-
-  console.log("serverName", serverName);
-  
-//   if (!serverName || !MCP_SERVERS[serverName]) {
-//     console.error(`POST request - Invalid session ${sessionId} or server ${serverName}`);
-//     return NextResponse.json(
-//       {
-//         jsonrpc: "2.0",
-//         error: { code: -32602, message: "Invalid session" },
-//         id: null
-//       }, 
-//       { status: 404 }
-//     );
-//   }
-
-  const targetUrl = `${server}`;
-  console.log(`Forwarding JSONRPC POST to: ${targetUrl}`);
+  console.log(`Forwarding JSONRPC POST to: ${serverUrl}`);
   
   try {
     let jsonRpcRequest;
     try {
       const body = await request.text();
       jsonRpcRequest = JSON.parse(body);
-      console.log(`JSONRPC Request:`, jsonRpcRequest);
+      console.log(`JSONRPC Request method: ${jsonRpcRequest.method}`);
       
       // Validate basic JSONRPC structure
       if (!jsonRpcRequest.jsonrpc || jsonRpcRequest.jsonrpc !== "2.0" || !jsonRpcRequest.method) {
@@ -176,21 +196,26 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const response = await fetch(targetUrl, {
+    const response = await fetch(serverUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        host: new URL(server).host,
+        host: new URL(serverUrl).host,
       },
       body: JSON.stringify(jsonRpcRequest),
     });
 
     const responseText = await response.text();
-    console.log(`JSONRPC response status: ${response.status}, body: ${responseText}`);
+    console.log(`JSONRPC response status: ${response.status}`);
     
     let jsonResponse;
     try {
       jsonResponse = JSON.parse(responseText);
+      
+      // Log successful tool calls
+      if (jsonResponse.result && jsonRpcRequest.method === 'tools/call') {
+        console.log(`Tool ${jsonRpcRequest.params?.name} executed successfully`);
+      }
     } catch (err) {
       console.error("Error parsing JSONRPC response:", err);
       jsonResponse = {
@@ -212,7 +237,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         jsonrpc: "2.0",
-        error: { code: -32603, message: "Internal error" },
+        error: { code: -32603, message: `Internal error: ${error}` },
         id: null
       }, 
       { status: 500 }
