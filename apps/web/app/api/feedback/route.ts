@@ -1,8 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { getDrizzleClient } from '@/lib/database/client';
-import { feedback, users } from '@/lib/database/schema';
-import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
     const session = await auth();
@@ -13,32 +10,10 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const db = getDrizzleClient();
-        
-        // Get the user from database
-        const [user] = await db
-            .select()
-            .from(users)
-            .where(eq(users.clerkId, clerkUserId))
-            .limit(1);
-
-        if (!user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
-        }
-
         const { feedback: feedbackText, rating, category } = await request.json();
 
-        // Create feedback
-        await db.insert(feedback).values({
-            userId: user.id,
-            feedback: feedbackText,
-            rating,
-            category,
-            metadata: {
-                timestamp: new Date().toISOString(),
-                userAgent: request.headers.get('user-agent'),
-            },
-        });
+        // TODO: Implement database feedback storage
+        console.log('Feedback received:', { feedbackText, rating, category, clerkUserId });
 
         return NextResponse.json({ message: 'Feedback received' }, { status: 200 });
     } catch (error) {

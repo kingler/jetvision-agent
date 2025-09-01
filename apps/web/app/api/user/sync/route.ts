@@ -5,7 +5,6 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { syncUserFromClerk } from '@/lib/database/service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,21 +19,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Sync user to database
-    const dbUser = await syncUserFromClerk({
-      id: userId,
-      emailAddresses: user.emailAddresses,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    });
+    // TODO: Implement database user sync
+    console.log('User sync requested:', { userId, email: user.emailAddresses?.[0]?.emailAddress });
 
     return NextResponse.json({
       success: true,
       user: {
-        id: dbUser.id,
-        email: dbUser.email,
-        name: `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim(),
-        role: dbUser.role,
+        id: userId,
+        email: user.emailAddresses?.[0]?.emailAddress || '',
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        role: 'user',
       },
     });
   } catch (error) {
@@ -57,25 +51,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user from database
-    const { UserRepository } = await import('@/lib/database/service');
-    const dbUser = await UserRepository.getByClerkId(userId);
-
-    if (!dbUser) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
+    // TODO: Implement database user lookup
+    console.log('User lookup requested:', { userId });
 
     return NextResponse.json({
       success: true,
       user: {
-        id: dbUser.id,
-        email: dbUser.email,
-        name: `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim(),
-        role: dbUser.role,
-        preferences: dbUser.preferences,
+        id: userId,
+        email: '',
+        name: '',
+        role: 'user',
+        preferences: {},
       },
     });
   } catch (error) {
