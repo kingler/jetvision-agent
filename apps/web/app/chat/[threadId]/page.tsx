@@ -1,7 +1,6 @@
 'use client'
 
-import { RootLayout } from '@repo/common/components'
-import { JetVisionChat } from '@repo/common/components/jetvision'
+import { RootLayout, Thread, ChatInput } from '@repo/common/components'
 
 interface ChatPageProps {
   params: {
@@ -12,10 +11,16 @@ interface ChatPageProps {
 export default function ChatPage({ params }: ChatPageProps) {
   return (
     <RootLayout>
-      <div className="flex h-full w-full" data-testid="chat-container">
-        <JetVisionChat 
-          className="flex-1"
-          sessionId={`thread-${params.threadId}`}
+      <div className="flex h-full w-full flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-4xl">
+            <Thread />
+          </div>
+        </div>
+        <ChatInput 
+          showGreeting={false}
+          showBottomBar={false}
+          isFollowUp={true}
         />
       </div>
     </RootLayout>
