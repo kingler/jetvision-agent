@@ -1,6 +1,13 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { transformN8nResponse, extractResponseFromExecutionData } from '../../../lib/n8n-response-transformer';
+import { 
+  retryWithBackoff, 
+  EnhancedCircuitBreaker, 
+  generateUserFriendlyError, 
+  categorizeError,
+  ErrorCategory 
+} from '../../../lib/retry-utils';
 
 // Configuration with environment variables
 const N8N_CONFIG = {
@@ -13,50 +20,12 @@ const N8N_CONFIG = {
   maxPollingTime: 60000, // 60 seconds max wait
 };
 
-// Circuit breaker implementation
-class CircuitBreaker {
-  private failures: number = 0;
-  private lastFailureTime: number = 0;
-  private readonly threshold: number = 5;
-  private readonly resetTimeout: number = 60000; // 1 minute
-
-  isOpen(): boolean {
-    if (this.failures >= this.threshold) {
-      const now = Date.now();
-      if (now - this.lastFailureTime > this.resetTimeout) {
-        this.reset();
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  recordSuccess(): void {
-    this.failures = 0;
-  }
-
-  recordFailure(): void {
-    this.failures++;
-    this.lastFailureTime = Date.now();
-  }
-
-  reset(): void {
-    this.failures = 0;
-    this.lastFailureTime = 0;
-  }
-
-  getState() {
-    return {
-      failures: this.failures,
-      isOpen: this.isOpen(),
-      threshold: this.threshold,
-      lastFailureTime: this.lastFailureTime,
-    };
-  }
-}
-
-const circuitBreaker = new CircuitBreaker();
+// Enhanced circuit breaker instance
+const circuitBreaker = new EnhancedCircuitBreaker(
+  5,      // failure threshold
+  60000,  // reset timeout (1 minute)
+  3       // half-open max requests
+);
 
 // Health check endpoint
 export async function GET(request: NextRequest) {
@@ -68,6 +37,7 @@ export async function GET(request: NextRequest) {
       webhook: {
         url: N8N_CONFIG.webhookUrl,
         circuitBreaker: circuitBreaker.getState(),
+        isHealthy: circuitBreaker.getState().state === 'CLOSED',
       },
       configuration: {
         hasApiKey: !!N8N_CONFIG.apiKey,
@@ -96,10 +66,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Check circuit breaker
-  if (circuitBreaker.isOpen()) {
+  // Check circuit breaker state
+  try {
+    // Test circuit breaker with a dummy operation first
+    await circuitBreaker.execute(async () => Promise.resolve('test'));
+  } catch (error) {
+    const friendlyError = generateUserFriendlyError(
+      error instanceof Error ? error : new Error(String(error)),
+      'N8N Service'
+    );
     return NextResponse.json(
-      { error: 'Service temporarily unavailable due to multiple failures' },
+      { 
+        error: friendlyError,
+        category: 'SERVICE_UNAVAILABLE',
+        retryAfter: 60 // seconds
+      },
       { status: 503 }
     );
   }
@@ -155,19 +136,60 @@ export async function POST(request: NextRequest) {
             ...options,
           };
 
-          // Send to N8N webhook
-          console.log('🚀 Sending to n8n webhook:', N8N_CONFIG.webhookUrl);
+          // Send to N8N webhook with retry logic and circuit breaker
+          console.log('🚀 Sending to n8n webhook with retry:', N8N_CONFIG.webhookUrl);
           
-          const response = await fetch(N8N_CONFIG.webhookUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(N8N_CONFIG.apiKey && { 'Authorization': `Bearer ${N8N_CONFIG.apiKey}` }),
-            },
-            body: JSON.stringify(webhookPayload),
-            signal: AbortSignal.timeout(N8N_CONFIG.timeout),
-          });
+          const webhookResult = await retryWithBackoff(
+            async () => {
+              return await circuitBreaker.execute(async () => {
+                const response = await fetch(N8N_CONFIG.webhookUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    ...(N8N_CONFIG.apiKey && { 'Authorization': `Bearer ${N8N_CONFIG.apiKey}` }),
+                  },
+                  body: JSON.stringify(webhookPayload),
+                  signal: AbortSignal.timeout(N8N_CONFIG.timeout),
+                });
 
+                if (!response.ok) {
+                  throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
+                }
+
+                return response;
+              });
+            },
+            {
+              maxRetries: N8N_CONFIG.maxRetries,
+              baseDelay: 1000,
+              maxDelay: 10000,
+              backoffFactor: 2,
+              jitter: true,
+              retryCondition: (error: Error, attempt: number) => {
+                const category = categorizeError(error);
+                // Retry on server errors and network issues, but not client errors
+                return [
+                  ErrorCategory.SERVER_ERROR,
+                  ErrorCategory.NETWORK,
+                  ErrorCategory.TIMEOUT,
+                  ErrorCategory.SERVICE_UNAVAILABLE
+                ].includes(category);
+              }
+            }
+          );
+
+          if (!webhookResult.success) {
+            console.error('N8N webhook failed after retries:', {
+              error: webhookResult.error?.message,
+              attempts: webhookResult.attempts,
+              totalTime: webhookResult.totalTime
+            });
+            throw webhookResult.error || new Error('Unknown webhook error');
+          }
+
+          const response = webhookResult.data;
+          console.log(`N8N webhook succeeded after ${webhookResult.attempts} attempts (${webhookResult.totalTime}ms)`);
+          
           if (!response.ok) {
             throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
           }
@@ -208,8 +230,10 @@ export async function POST(request: NextRequest) {
               timestamp: new Date().toISOString(),
             });
 
-            sendEvent('done', { timestamp: new Date().toISOString() });
-            circuitBreaker.recordSuccess();
+            sendEvent('done', { 
+              timestamp: new Date().toISOString(),
+              status: 'success'
+            });
           } else if (webhookData.executionId) {
             // Long-running execution - poll for result
             const result = await pollForExecution(webhookData.executionId, sendEvent);
@@ -227,8 +251,10 @@ export async function POST(request: NextRequest) {
               });
             }
 
-            sendEvent('done', { timestamp: new Date().toISOString() });
-            circuitBreaker.recordSuccess();
+            sendEvent('done', { 
+              timestamp: new Date().toISOString(),
+              status: 'success' 
+            });
           } else {
             // Fallback response
             sendEvent('answer', {
@@ -243,41 +269,103 @@ export async function POST(request: NextRequest) {
               timestamp: new Date().toISOString(),
             });
 
-            sendEvent('done', { timestamp: new Date().toISOString() });
-            circuitBreaker.recordSuccess();
+            sendEvent('done', { 
+              timestamp: new Date().toISOString(),
+              status: 'success' 
+            });
           }
 
         } catch (error) {
           console.error('N8N webhook error:', error);
-          circuitBreaker.recordFailure();
+          
+          const errorInstance = error instanceof Error ? error : new Error(String(error));
+          const errorCategory = categorizeError(errorInstance);
+          const friendlyMessage = generateUserFriendlyError(errorInstance, 'JetVision Agent');
+          
+          // Enhanced error logging
+          console.error('N8N Error Details:', {
+            category: errorCategory,
+            message: errorInstance.message,
+            stack: errorInstance.stack,
+            timestamp: new Date().toISOString(),
+            circuitBreakerState: circuitBreaker.getState()
+          });
 
-          // Send error response
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          const fallbackResponse = `I'm experiencing connectivity issues with our business intelligence system. This might be due to:\n\n• Network connectivity problems\n• High system load\n• Temporary service maintenance\n\nPlease try your request again in a moment. If the issue persists, the system will fall back to standard responses.`;
+          // Create context-aware fallback response based on error category
+          let fallbackResponse = friendlyMessage;
+          let recoveryActions: string[] = [];
+          
+          switch (errorCategory) {
+            case ErrorCategory.NETWORK:
+              recoveryActions = [
+                'Check your internet connection',
+                'Try refreshing the page',
+                'Contact support if the issue persists'
+              ];
+              break;
+            case ErrorCategory.TIMEOUT:
+              recoveryActions = [
+                'Try again in a few moments',
+                'The system may be under high load',
+                'Consider breaking down complex requests'
+              ];
+              break;
+            case ErrorCategory.SERVER_ERROR:
+              recoveryActions = [
+                'Our team has been automatically notified',
+                'Try again in 2-3 minutes',
+                'Use the contact form if urgent'
+              ];
+              break;
+            case ErrorCategory.SERVICE_UNAVAILABLE:
+              recoveryActions = [
+                'Service is temporarily down for maintenance',
+                'Normal service will resume shortly',
+                'Check our status page for updates'
+              ];
+              break;
+            default:
+              recoveryActions = [
+                'Try rephrasing your request',
+                'Check that your input is valid',
+                'Contact support with error details'
+              ];
+          }
+
+          const enhancedFallback = `${fallbackResponse}\n\n**What you can do:**\n${recoveryActions.map(action => `• ${action}`).join('\n')}`;
 
           sendEvent('answer', {
             id: threadItemId || `error-${Date.now()}`,
             threadId,
             answer: {
-              text: fallbackResponse,
+              text: enhancedFallback,
               structured: null,
             },
             sources: [],
             metadata: { 
-              error: errorMessage,
-              source: 'fallback',
+              error: errorInstance.message,
+              errorCategory,
+              source: 'error_fallback',
               timestamp: new Date().toISOString(),
+              circuitBreakerState: circuitBreaker.getState().state,
+              recoverable: [ErrorCategory.NETWORK, ErrorCategory.TIMEOUT, ErrorCategory.SERVER_ERROR].includes(errorCategory)
             },
             timestamp: new Date().toISOString(),
           });
 
           sendEvent('error', { 
-            message: 'Service temporarily unavailable', 
-            details: errorMessage,
+            message: friendlyMessage,
+            category: errorCategory,
+            details: errorInstance.message,
+            recoverable: [ErrorCategory.NETWORK, ErrorCategory.TIMEOUT, ErrorCategory.SERVER_ERROR].includes(errorCategory),
             timestamp: new Date().toISOString(),
           });
 
-          sendEvent('done', { timestamp: new Date().toISOString() });
+          sendEvent('done', { 
+            timestamp: new Date().toISOString(),
+            status: 'error',
+            error: errorCategory 
+          });
         } finally {
           controller.close();
         }
