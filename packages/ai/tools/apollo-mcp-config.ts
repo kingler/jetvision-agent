@@ -9,7 +9,7 @@ export const apolloMCPConfig: MCPServersConfig = {
     proxyEndpoint: process.env.MCP_PROXY_ENDPOINT || '/api/mcp/proxy',
     mcpServers: {
         'apollo-io': process.env.APOLLO_MCP_SERVER_URL || 'http://localhost:3001/apollo',
-        'avinode': process.env.AVINODE_MCP_SERVER_URL || 'http://localhost:3002/avinode',
+        'avinode': process.env.AVAINODE_MCP_SERVER_URL || 'http://localhost:3002/avinode',
     }
 };
 

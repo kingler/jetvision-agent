@@ -10,7 +10,9 @@
         "./components/jetvision": "./components/jetvision/index.ts",
         "./components/dashboard": "./components/dashboard/index.ts",
         "./utils": "./utils/index.ts",
-        "./utils/scroll-utils": "./utils/scroll-utils.ts"
+        "./utils/scroll-utils": "./utils/scroll-utils.ts",
+        "./src/circuit-breaker": "./src/circuit-breaker.ts",
+        "./src/n8n-client": "./src/n8n-client.ts"
     },
     "scripts": {
         "lint": "eslint . --max-warnings 0",
@@ -27,8 +29,14 @@
         "@repo/typescript-config": "*",
         "@types/react": "^18.2.45",
         "@types/react-dom": "^18.2.18",
+        "@testing-library/jest-dom": "^6.1.4",
+        "@testing-library/react": "^14.1.2",
+        "@testing-library/user-event": "^14.5.1",
+        "@types/jest": "^29.5.8",
         "autoprefixer": "^10.4.21",
         "eslint": "^8.56.0",
+        "jest": "^29.7.0",
+        "jest-environment-jsdom": "^29.7.0",
         "postcss": "^8.5.3",
         "postcss-cli": "^11.0.1",
         "tailwindcss": "^3.4.1",

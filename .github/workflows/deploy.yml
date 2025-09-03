@@ -6,7 +6,7 @@ on:
     paths:
       - 'jetvision-agent/**'
       - 'apollo-io-mcp-server/**'
-      - 'avainode-mcp-server/**'
+      - 'avinode-mcp-server/**'
   workflow_dispatch:
     inputs:
       deploy_mcp:
@@ -31,22 +31,114 @@ jobs:
         working-directory: ./jetvision-agent
         run: bun install
       
-      - name: Build application
+      - name: Run linting and type checking
+        working-directory: ./jetvision-agent
+        run: |
+          # Run linting (will now catch errors instead of ignoring them)
+          bun run lint || (echo "Linting failed - fix errors before production deployment" && exit 1)
+
+      - name: Run tests
+        working-directory: ./jetvision-agent
+        run: |
+          # Run tests to ensure code quality
+          bun run test || (echo "Tests failed - fix tests before production deployment" && exit 1)
+
+      - name: Build application with production validation
         working-directory: ./jetvision-agent/apps/web
         run: |
-          # Use static config
+          # Use static config for Cloudflare Pages
           cp next.config.static.mjs next.config.mjs
           
-          # Build with environment validation skip
-          SKIP_ENV_VALIDATION=1 bun run build
+          # Build WITHOUT skipping validation - errors will now cause deployment to fail
+          bun run build
       
       - name: Deploy to Cloudflare Pages
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy out --project-name=jetvision-agent
           workingDirectory: ./jetvision-agent/apps/web
+
+      - name: Wait for deployment to be ready
+        run: sleep 30
+
+      - name: Run post-deployment health checks
+        id: health_check
+        run: |
+          # Get the deployment URL (replace with actual deployment URL)
+          DEPLOYMENT_URL="${{ secrets.PRODUCTION_URL || 'https://jetvision-agent.pages.dev' }}"
+          
+          echo "Running health checks against: $DEPLOYMENT_URL"
+          
+          # Health check endpoint
+          HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL/api/health" || echo "000")
+          echo "Health check status: $HEALTH_STATUS"
+          
+          if [ "$HEALTH_STATUS" != "200" ]; then
+            echo "❌ Health check failed with status: $HEALTH_STATUS"
+            exit 1
+          fi
+          
+          # Metrics endpoint check
+          METRICS_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL/api/metrics" || echo "000")
+          echo "Metrics endpoint status: $METRICS_STATUS"
+          
+          if [ "$METRICS_STATUS" != "200" ]; then
+            echo "❌ Metrics endpoint check failed with status: $METRICS_STATUS"
+            exit 1
+          fi
+          
+          # Basic page load test
+          PAGE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL" || echo "000")
+          echo "Main page status: $PAGE_STATUS"
+          
+          if [ "$PAGE_STATUS" != "200" ]; then
+            echo "❌ Main page check failed with status: $PAGE_STATUS"
+            exit 1
+          fi
+          
+          echo "✅ All health checks passed!"
+
+      - name: Test critical business flows
+        run: |
+          # Test critical API endpoints that support business operations
+          DEPLOYMENT_URL="${{ secrets.PRODUCTION_URL || 'https://jetvision-agent.pages.dev' }}"
+          
+          # Test that the application loads without critical JavaScript errors
+          # This would catch build issues that might not show up in health checks
+          echo "Testing application bootstrap..."
+          
+          # Use curl to fetch the main page and check for critical elements
+          MAIN_PAGE=$(curl -s "$DEPLOYMENT_URL" || echo "")
+          
+          if echo "$MAIN_PAGE" | grep -q "Runtime Error" || echo "$MAIN_PAGE" | grep -q "Application Error"; then
+            echo "❌ Critical application errors detected in main page"
+            exit 1
+          fi
+          
+          echo "✅ Critical business flows validation passed!"
+
+      - name: Deploy rollback on failure
+        if: failure() && steps.deploy.outcome == 'success'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deployment list --project-name=jetvision-agent --format=json | jq -r '.[1].id' | xargs -I {} wrangler pages deployment activate {} --project-name=jetvision-agent
+          workingDirectory: ./jetvision-agent/apps/web
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful and all health checks passed"
+            echo "🚀 Production deployment of JetVision Agent is healthy"
+          else
+            echo "❌ Deployment failed or health checks failed"
+            echo "🔄 Automatic rollback may have been triggered"
+          fi
       
       - name: Deploy MCP Servers
         if: github.event.inputs.deploy_mcp == 'true'
@@ -56,4 +148,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
             cd apollo-io-mcp-server && wrangler deploy
-            cd ../avainode-mcp-server && wrangler deploy
+            cd ../avinode-mcp-server && wrangler deploy

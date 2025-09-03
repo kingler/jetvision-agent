@@ -25,7 +25,7 @@ async function main() {
       metadata: {
         type: 'user_feedback',
         rating: 5,
-        features_used: ['chat', 'apollo-integration', 'avainode-search']
+        features_used: ['chat', 'apollo-integration', 'avinode-search']
       }
     }
   });

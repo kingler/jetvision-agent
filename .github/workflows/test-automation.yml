@@ -39,8 +39,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm ci
         
-      - name: Install dependencies - Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Install dependencies - Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm ci
         
       - name: Install dependencies - JetVision Agent
@@ -51,8 +51,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm run lint
         
-      - name: Lint Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Lint Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm run lint
         
       - name: Lint JetVision Agent
@@ -63,8 +63,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm run format:check
         
-      - name: Format Check Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Format Check Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm run format:check
         
       - name: Format Check JetVision Agent
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        component: [apollo-mcp-server, avainode-mcp-server, jetvision-agent]
+        component: [apollo-mcp-server, avinode-mcp-server, jetvision-agent]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -99,9 +99,9 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm ci
         
-      - name: Install dependencies - Avainode MCP Server
-        if: matrix.component == 'avainode-mcp-server'
-        working-directory: ./avainode-mcp-server
+      - name: Install dependencies - Avinode MCP Server
+        if: matrix.component == 'avinode-mcp-server'
+        working-directory: ./avinode-mcp-server
         run: npm ci
         
       - name: Install dependencies - JetVision Agent
@@ -114,9 +114,9 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm run test -- --coverage --coverageReporters=lcov --testPathIgnorePatterns=integration,e2e
         
-      - name: Run Unit Tests - Avainode MCP Server
-        if: matrix.component == 'avainode-mcp-server'
-        working-directory: ./avainode-mcp-server
+      - name: Run Unit Tests - Avinode MCP Server
+        if: matrix.component == 'avinode-mcp-server'
+        working-directory: ./avinode-mcp-server
         run: npm run test -- --coverage --coverageReporters=lcov --testPathIgnorePatterns=integration,e2e
         
       - name: Run Unit Tests - JetVision Agent
@@ -132,13 +132,13 @@ jobs:
           flags: apollo-mcp-server
           name: apollo-mcp-server-coverage
           
-      - name: Upload Coverage - Avainode MCP Server
-        if: matrix.component == 'avainode-mcp-server'
+      - name: Upload Coverage - Avinode MCP Server
+        if: matrix.component == 'avinode-mcp-server'
         uses: codecov/codecov-action@v3
         with:
-          file: ./avainode-mcp-server/coverage/lcov.info
-          flags: avainode-mcp-server
-          name: avainode-mcp-server-coverage
+          file: ./avinode-mcp-server/coverage/lcov.info
+          flags: avinode-mcp-server
+          name: avinode-mcp-server-coverage
           
       - name: Upload Coverage - JetVision Agent
         if: matrix.component == 'jetvision-agent'
@@ -181,14 +181,14 @@ jobs:
       - name: Install dependencies - All components
         run: |
           cd apollo-io-mcp-server && npm ci &
-          cd avainode-mcp-server && npm ci &
+          cd avinode-mcp-server && npm ci &
           cd jetvision-agent && bun install --frozen-lockfile &
           wait
           
       - name: Build MCP Servers
         run: |
           cd apollo-io-mcp-server && npm run build &
-          cd avainode-mcp-server && npm run build &
+          cd avinode-mcp-server && npm run build &
           wait
           
       - name: Start Apollo MCP Server in background
@@ -198,11 +198,11 @@ jobs:
           echo $! > apollo-server.pid
           sleep 5
           
-      - name: Start Avainode MCP Server in background
-        working-directory: ./avainode-mcp-server
+      - name: Start Avinode MCP Server in background
+        working-directory: ./avinode-mcp-server
         run: |
           PORT=8124 npm start &
-          echo $! > avainode-server.pid
+          echo $! > avinode-server.pid
           sleep 5
           
       - name: Wait for MCP servers to be ready
@@ -214,8 +214,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm run test -- --testPathPattern=integration --verbose
         
-      - name: Run Integration Tests - Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Run Integration Tests - Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm run test -- --testPathPattern=integration --verbose
         
       - name: Build JetVision Agent
@@ -242,7 +242,7 @@ jobs:
         if: always()
         run: |
           [ -f apollo-io-mcp-server/apollo-server.pid ] && kill $(cat apollo-io-mcp-server/apollo-server.pid) || true
-          [ -f avainode-mcp-server/avainode-server.pid ] && kill $(cat avainode-mcp-server/avainode-server.pid) || true
+          [ -f avinode-mcp-server/avinode-server.pid ] && kill $(cat avinode-mcp-server/avinode-server.pid) || true
           [ -f jetvision-agent/apps/web/webapp.pid ] && kill $(cat jetvision-agent/apps/web/webapp.pid) || true
 
   # End-to-End Tests
@@ -268,13 +268,13 @@ jobs:
         run: |
           # Install dependencies
           cd apollo-io-mcp-server && npm ci && npm run build &
-          cd avainode-mcp-server && npm ci && npm run build &
+          cd avinode-mcp-server && npm ci && npm run build &
           cd jetvision-agent && bun install --frozen-lockfile &
           wait
           
           # Start services
           cd apollo-io-mcp-server && npm start &
-          cd avainode-mcp-server && PORT=8124 npm start &
+          cd avinode-mcp-server && PORT=8124 npm start &
           cd jetvision-agent && bun run build && bun start &
           
           # Wait for services to be ready
@@ -284,8 +284,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm run test -- --testPathPattern=e2e --verbose --detectOpenHandles
         
-      - name: Run E2E Tests - Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Run E2E Tests - Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm run test -- --testPathPattern=e2e --verbose --detectOpenHandles
 
   # Performance Tests
@@ -306,7 +306,7 @@ jobs:
       - name: Install and start services
         run: |
           cd apollo-io-mcp-server && npm ci && npm run build && npm start &
-          cd avainode-mcp-server && npm ci && npm run build && PORT=8124 npm start &
+          cd avinode-mcp-server && npm ci && npm run build && PORT=8124 npm start &
           sleep 10
           
       - name: Run Performance Tests - Apollo MCP Server
@@ -314,7 +314,7 @@ jobs:
           cd __tests__/performance
           node mcp-load-test.js http://localhost:8123 --concurrency=20 --iterations=100
           
-      - name: Run Performance Tests - Avainode MCP Server
+      - name: Run Performance Tests - Avinode MCP Server
         run: |
           cd __tests__/performance
           node mcp-load-test.js http://localhost:8124 --concurrency=20 --iterations=100
@@ -351,8 +351,8 @@ jobs:
         working-directory: ./apollo-io-mcp-server
         run: npm audit --audit-level=moderate
         
-      - name: Run npm audit - Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Run npm audit - Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: npm audit --audit-level=moderate
 
   # Deployment Tests
@@ -381,8 +381,8 @@ jobs:
           npm ci
           npm run build
           
-      - name: Test Build - Avainode MCP Server
-        working-directory: ./avainode-mcp-server
+      - name: Test Build - Avinode MCP Server
+        working-directory: ./avinode-mcp-server
         run: |
           npm ci
           npm run build
@@ -406,7 +406,7 @@ jobs:
             
             const packages = [
               './apollo-io-mcp-server/package.json',
-              './avainode-mcp-server/package.json', 
+              './avinode-mcp-server/package.json', 
               './jetvision-agent/package.json'
             ];
             

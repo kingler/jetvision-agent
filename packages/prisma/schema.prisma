@@ -1,20 +1,517 @@
 
-  // This is your Prisma schema file,
-  // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// JetVision Agent - Comprehensive Database Schema
+// Private Aviation AI Platform with Apollo.io & Avinode Integration
 
-  generator client {
-    provider = "prisma-client-js"
-  }
+generator client {
+  provider = "prisma-client-js"
+}
 
-  datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-  }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-model Feedback {
-  id String @id @default(uuid())
-  userId String
-  feedback String
-  metadata Json?
+// ===========================
+// USER MANAGEMENT
+// ===========================
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  role      UserRole @default(USER)
+  
+  // Company relationship
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  
+  // Professional details
+  jobTitle  String?
+  phone     String?
+  timezone  String   @default("UTC")
+  
+  // Preferences and settings
+  preferences Json    @default("{}")
+  metadata    Json    @default("{}")
+  
+  // Timestamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+  deletedAt    DateTime? // Soft delete support
+  
+  // Relationships
+  conversations   Conversation[]
+  bookings        Booking[]
+  campaignTargets CampaignTarget[]
+  assistantRoles  ExecutiveAssistant[]
+  
+  @@map("users")
+}
+
+model Company {
+  id     String @id @default(uuid())
+  name   String
+  domain String @unique
+  
+  // Business details
+  industry    String?
+  size        CompanySize?
+  description String?
+  website     String?
+  
+  // Apollo.io integration
+  apolloAccountId String? @unique
+  apolloSyncedAt  DateTime?
+  
+  // Contact information
+  address     String?
+  city        String?
+  state       String?
+  country     String  @default("US")
+  postalCode  String?
+  
+  // Metadata
+  metadata  Json @default("{}")
   createdAt DateTime @default(now())
-} 
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relationships
+  users User[]
+  leads Lead[]
+  
+  @@map("companies")
+}
+
+model ExecutiveAssistant {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Executive details
+  executiveName     String
+  executiveEmail    String
+  executiveTitle    String?
+  executiveCompany  String?
+  
+  // Assistant preferences
+  communicationPrefs Json    @default("{}")
+  delegatedActions   String[] // What actions assistant can perform
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, executiveEmail])
+  @@map("executive_assistants")
+}
+
+// ===========================
+// APOLLO.IO LEAD MANAGEMENT
+// ===========================
+
+model Lead {
+  id              String @id @default(uuid())
+  apolloContactId String @unique
+  
+  // Contact information
+  email       String
+  firstName   String?
+  lastName    String?
+  jobTitle    String?
+  phone       String?
+  linkedinUrl String?
+  
+  // Company relationship
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  // Lead status and scoring
+  status           LeadStatus @default(NEW)
+  score            Int?       @default(0) // 0-100 lead score
+  lastContactedAt  DateTime?
+  nextFollowUpAt   DateTime?
+  
+  // Apollo.io specific data
+  apolloData Json @default("{}")
+  metadata   Json @default("{}")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relationships
+  campaignTargets CampaignTarget[]
+  
+  @@map("leads")
+}
+
+model Campaign {
+  id     String @id @default(uuid())
+  name   String
+  type   CampaignType
+  status CampaignStatus @default(DRAFT)
+  
+  // Campaign details
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  targetAudience Json     @default("{}")
+  
+  // Email campaign specifics
+  emailSubject  String?
+  emailTemplate String?
+  
+  // Performance metrics
+  totalSent      Int @default(0)
+  totalOpened    Int @default(0)
+  totalClicked   Int @default(0)
+  totalReplied   Int @default(0)
+  totalConverted Int @default(0)
+  
+  // Metadata
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relationships
+  targets CampaignTarget[]
+  
+  @@map("campaigns")
+}
+
+model CampaignTarget {
+  id         String @id @default(uuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  leadId String?
+  lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Email specific data
+  emailAddress String
+  status       TargetStatus @default(PENDING)
+  
+  // Tracking
+  sentAt     DateTime?
+  openedAt   DateTime?
+  clickedAt  DateTime?
+  repliedAt  DateTime?
+  bouncedAt  DateTime?
+  
+  // Response tracking
+  responseCount Int     @default(0)
+  lastResponse  String?
+  
+  // Metadata
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([campaignId, emailAddress])
+  @@map("campaign_targets")
+}
+
+// ===========================
+// AVINODE AIRCRAFT & BOOKING
+// ===========================
+
+model Aircraft {
+  id        String @id @default(uuid())
+  avinodeId String @unique
+  
+  // Basic aircraft information
+  registration  String         @unique // N-number or tail number
+  manufacturer  String
+  model         String
+  year          Int?
+  category      AircraftCategory
+  
+  // Performance specifications
+  maxPassengers Int?
+  range         Int? // Nautical miles
+  speed         Int? // Knots
+  hourlyRate    Int? // USD per hour
+  
+  // Location and availability
+  location     String            @default("UNKNOWN") // Airport code
+  availability AircraftAvailability @default(AVAILABLE)
+  
+  // Operator information
+  operatorName    String?
+  operatorContact String?
+  
+  // Detailed specifications
+  specifications Json @default("{}")
+  
+  // Metadata and sync
+  metadata      Json     @default("{}")
+  avinodeSyncAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+  
+  // Relationships
+  bookings Booking[]
+  
+  @@map("aircraft")
+}
+
+model Booking {
+  id              String @id @default(uuid())
+  avinodeBookingId String @unique
+  
+  // Aircraft relationship
+  aircraftId String
+  aircraft   Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
+  
+  // User relationship (optional - can be booked by non-users)
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Flight details
+  departure     String   // Airport code
+  destination   String   // Airport code
+  departureTime DateTime
+  returnTime    DateTime?
+  passengers    Int
+  
+  // Booking status and pricing
+  status      BookingStatus
+  totalCost   Int?   // USD cents
+  flightHours Float?
+  
+  // Contact information
+  requestedBy     String // Email or name
+  contactPhone    String?
+  specialRequests String?
+  
+  // Metadata and tracking
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  @@map("bookings")
+}
+
+// ===========================
+// CONVERSATION & AI SYSTEM
+// ===========================
+
+model Conversation {
+  id     String @id @default(uuid())
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Conversation details
+  title  String?
+  status ConversationStatus @default(ACTIVE)
+  
+  // AI and workflow context
+  agentType    String? // Which AI agent is handling
+  workflowId   String? // N8N workflow ID
+  context      Json    @default("{}")
+  
+  // Metadata
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  
+  // Relationships
+  messages Message[]
+  
+  @@map("conversations")
+}
+
+model Message {
+  id             String @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  // Message content
+  content String
+  role    MessageRole
+  
+  // AI specific data
+  model         String? // AI model used (gpt-4, claude, etc)
+  tokens        Int?    // Token count
+  responseTime  Int?    // Milliseconds
+  
+  // N8N workflow data
+  workflowRunId String?
+  nodeId        String?
+  
+  // Message metadata
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("messages")
+}
+
+model IntegrationLog {
+  id      String @id @default(uuid())
+  service IntegrationService
+  
+  // Operation details
+  operation   String // sync, fetch, create, update, delete
+  endpoint    String?
+  method      String?
+  
+  // Request/Response data
+  requestData  Json?
+  responseData Json?
+  
+  // Status tracking
+  status     LogStatus @default(PENDING)
+  errorCode  String?
+  errorMessage String?
+  
+  // Performance metrics
+  duration     Int? // Milliseconds
+  retryCount   Int  @default(0)
+  maxRetries   Int  @default(3)
+  
+  // Metadata
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("integration_logs")
+}
+
+// Keep legacy feedback model for backward compatibility
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  feedback  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  
+  @@map("feedback")
+}
+
+// ===========================
+// ENUMS
+// ===========================
+
+enum UserRole {
+  USER
+  ADMIN
+  PREMIUM
+  EXECUTIVE_ASSISTANT
+}
+
+enum CompanySize {
+  STARTUP      // 1-10 employees
+  SMALL        // 11-50 employees
+  MEDIUM       // 51-200 employees
+  LARGE        // 201-1000 employees
+  ENTERPRISE   // 1000+ employees
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  CLOSED_WON
+  CLOSED_LOST
+  UNRESPONSIVE
+}
+
+enum CampaignType {
+  EMAIL_SEQUENCE
+  LINKEDIN_OUTREACH
+  PHONE_CAMPAIGN
+  MIXED_TOUCH
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum TargetStatus {
+  PENDING
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  REPLIED
+  BOUNCED
+  UNSUBSCRIBED
+  OPTED_OUT
+}
+
+enum AircraftCategory {
+  LIGHT
+  MIDSIZE
+  SUPER_MIDSIZE
+  HEAVY
+  ULTRA_LONG_RANGE
+  TURBOPROP
+  HELICOPTER
+}
+
+enum AircraftAvailability {
+  AVAILABLE
+  BOOKED
+  MAINTENANCE
+  UNAVAILABLE
+}
+
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+  FUNCTION
+}
+
+enum IntegrationService {
+  APOLLO_IO
+  AVINODE
+  N8N_WORKFLOW
+  OPENAI
+  ANTHROPIC
+  SUPABASE
+}
+
+enum LogStatus {
+  PENDING
+  SUCCESS
+  ERROR
+  RETRY
+  FAILED
+}

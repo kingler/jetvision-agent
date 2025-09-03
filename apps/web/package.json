@@ -16,7 +16,13 @@
         "test:quick": "jest --maxWorkers=1 --silent --passWithNoTests",
         "test:send-button": "node scripts/test-send-button-integration.js",
         "test:send-button:verbose": "node scripts/test-send-button-integration.js --verbose",
-        "test:send-button:interactive": "node scripts/test-send-button-integration.js --interactive"
+        "test:send-button:interactive": "node scripts/test-send-button-integration.js --interactive",
+        "test:e2e": "playwright test",
+        "test:e2e:headed": "playwright test --headed",
+        "test:e2e:ui": "playwright test --ui",
+        "test:e2e:debug": "playwright test --debug",
+        "test:e2e:report": "playwright show-report",
+        "test:e2e:install": "playwright install"
     },
     "dependencies": {
         "@alloc/quick-lru": "^5.2.0",
@@ -86,6 +92,7 @@
         "duck-duck-scrape": "^2.2.5",
         "embla-carousel-autoplay": "^8.2.1",
         "embla-carousel-react": "^8.2.1",
+        "eventsource-parser": "^3.0.6",
         "fast-xml-parser": "^4.5.1",
         "formik": "^2.4.6",
         "framer-motion": "^11.1.9",

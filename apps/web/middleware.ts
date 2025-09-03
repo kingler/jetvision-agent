@@ -9,6 +9,7 @@ const isProtectedRoute = createRouteMatcher([
 const isPublicApiRoute = createRouteMatcher([
     '/api/n8n-webhook',
     '/api/test', // For testing
+    '/api/messages/remaining', // Credit info endpoint
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

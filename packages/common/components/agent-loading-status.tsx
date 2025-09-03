@@ -8,7 +8,7 @@ const statusMessages = [
     "🔍 Analyzing your request...",
     "🤖 Connecting to JetVision Agent...",
     "📊 Accessing Apollo.io database...",
-    "✈️ Checking Avainode for aircraft availability...",
+    "✈️ Checking Avinode for aircraft availability...",
     "📧 Preparing outreach campaigns...",
     "🎯 Identifying high-value prospects...",
     "📈 Analyzing market data...",

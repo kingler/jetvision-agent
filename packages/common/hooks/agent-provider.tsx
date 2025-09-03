@@ -1,3 +1,5 @@
+'use client';
+
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';

@@ -69,7 +69,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 │   ├── apps/web/            # Web application
 │   └── packages/            # Shared packages and utilities
 ├── apollo-io-mcp-server/    # Apollo.io MCP integration server
-├── avainode-mcp-server/     # Avinode MCP integration server
+├── avinode-mcp-server/     # Avinode MCP integration server
 └── llmchat/                 # Advanced chat interface components
 ```
 
@@ -171,8 +171,8 @@ yarn dev
 **JetVision Agent** - Transforming private aviation through intelligent automation and exceptional service delivery. Where luxury meets technology, and every journey becomes an effortless, first-class experience.
 
 *"Whether flying for business or leisure, trust JetVision to elevate your journey with precision, style, and peace of mind."*
-│   │   ├── avainode-tools.ts  # Avainode tool handlers
-│   │   └── avainode-api-client.ts # API client
+│   │   ├── avinode-tools.ts  # Avinode tool handlers
+│   │   └── avinode-api-client.ts # API client
 │   ├── tests/
 │   │   ├── unit/              # Unit tests
 │   │   ├── integration/       # Integration tests
@@ -215,7 +215,7 @@ const result = await apolloClient.callTool('search-leads', {
 
 Detailed API documentation for each server:
 - [Apollo.io MCP Server Documentation](./apollo-io-mcp-server/README.md)
-- [Avainode MCP Server Documentation](./avainode-mcp-server/README.md)
+- [Avinode MCP Server Documentation](./avinode-mcp-server/README.md)
 
 ## Testing
 
@@ -250,8 +250,8 @@ Dockerfiles and docker-compose configuration for containerized deployment.
 - `NODE_ENV`: Environment (development/production)
 - `LOG_LEVEL`: Logging level (info/debug/error)
 
-**Avainode Server:**
-- `AVAINODE_API_KEY`: Avainode API key
+**Avinode Server:**
+- `AVAINODE_API_KEY`: Avinode API key
 - `PORT`: Server port (default: 8124)
 - `NODE_ENV`: Environment (development/production)
 - `LOG_LEVEL`: Logging level (info/debug/error)

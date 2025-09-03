@@ -13,7 +13,7 @@ interface ThinkingStep {
 const thinkingSteps: ThinkingStep[] = [
     { id: 'read', text: 'Reading request context', status: 'pending' },
     { id: 'apollo', text: 'Searching Apollo.io for executive contacts', status: 'pending' },
-    { id: 'avainode', text: 'Checking Avainode for aircraft availability', status: 'pending' },
+    { id: 'avinode', text: 'Checking Avinode for aircraft availability', status: 'pending' },
     { id: 'analyze', text: 'Analyzing fleet utilization metrics', status: 'pending' },
     { id: 'market', text: 'Evaluating market opportunities', status: 'pending' },
     { id: 'campaign', text: 'Preparing outreach campaigns', status: 'pending' },
@@ -162,7 +162,7 @@ export default function AgentThinkingStatus({ isThinking, startTime }: AgentThin
                     className="mt-4 text-xs text-gray-500 leading-relaxed"
                 >
                     I'm analyzing your request and coordinating with JetVision's systems to provide the most comprehensive response. 
-                    This includes real-time data from Apollo.io for lead generation and Avainode for aircraft availability.
+                    This includes real-time data from Apollo.io for lead generation and Avinode for aircraft availability.
                 </motion.div>
             )}
         </div>

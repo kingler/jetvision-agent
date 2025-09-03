@@ -39,8 +39,8 @@ repos:
           - '@typescript-eslint/eslint-plugin@6.19.0'
           - '@typescript-eslint/parser@6.19.0'
       - id: eslint
-        name: ESLint Avainode MCP Server
-        files: ^avainode-mcp-server/.*\.(js|jsx|ts|tsx)$
+        name: ESLint Avinode MCP Server
+        files: ^avinode-mcp-server/.*\.(js|jsx|ts|tsx)$
         args: [--fix, --ext, .js,.jsx,.ts,.tsx]
         additional_dependencies:
           - eslint@8.56.0
@@ -62,8 +62,8 @@ repos:
             .*build/.*
           )$
       - id: prettier
-        name: Prettier Avainode MCP Server
-        files: ^avainode-mcp-server/.*\.(js|jsx|ts|tsx|json|yaml|yml|md)$
+        name: Prettier Avinode MCP Server
+        files: ^avinode-mcp-server/.*\.(js|jsx|ts|tsx|json|yaml|yml|md)$
         exclude: |
           (?x)^(
             .*\.lock$|
@@ -92,11 +92,11 @@ repos:
         language: system
         files: ^apollo-io-mcp-server/.*\.tsx?$
         pass_filenames: false
-      - id: typescript-avainode
-        name: TypeScript Check Avainode MCP Server
-        entry: bash -c 'cd avainode-mcp-server && npm run type-check'
+      - id: typescript-avinode
+        name: TypeScript Check Avinode MCP Server
+        entry: bash -c 'cd avinode-mcp-server && npm run type-check'
         language: system
-        files: ^avainode-mcp-server/.*\.tsx?$
+        files: ^avinode-mcp-server/.*\.tsx?$
         pass_filenames: false
 
   # Test execution
@@ -108,11 +108,11 @@ repos:
         language: system
         files: ^apollo-io-mcp-server/(src|tests)/.*\.(js|ts)$
         pass_filenames: false
-      - id: unit-tests-avainode
-        name: Unit Tests Avainode MCP Server
-        entry: bash -c 'cd avainode-mcp-server && npm run test:unit:quick'
+      - id: unit-tests-avinode
+        name: Unit Tests Avinode MCP Server
+        entry: bash -c 'cd avinode-mcp-server && npm run test:unit:quick'
         language: system
-        files: ^avainode-mcp-server/(src|tests)/.*\.(js|ts)$
+        files: ^avinode-mcp-server/(src|tests)/.*\.(js|ts)$
         pass_filenames: false
       - id: unit-tests-webapp
         name: Unit Tests JetVision Web App
@@ -146,11 +146,11 @@ repos:
         language: system
         files: ^apollo-io-mcp-server/package(-lock)?\.json$
         pass_filenames: false
-      - id: audit-avainode
-        name: NPM Audit Avainode MCP Server
-        entry: bash -c 'cd avainode-mcp-server && npm audit --audit-level=moderate'
+      - id: audit-avinode
+        name: NPM Audit Avinode MCP Server
+        entry: bash -c 'cd avinode-mcp-server && npm audit --audit-level=moderate'
         language: system
-        files: ^avainode-mcp-server/package(-lock)?\.json$
+        files: ^avinode-mcp-server/package(-lock)?\.json$
         pass_filenames: false
 
   # API Schema validation
@@ -160,7 +160,7 @@ repos:
         name: Validate MCP Tool Schemas
         entry: bash -c 'node scripts/validate-mcp-schemas.js'
         language: system
-        files: ^(apollo-io-mcp-server|avainode-mcp-server)/src/.*tools.*\.(js|ts)$
+        files: ^(apollo-io-mcp-server|avinode-mcp-server)/src/.*tools.*\.(js|ts)$
         pass_filenames: false
 
   # Performance regression check (only on staged files)
@@ -170,7 +170,7 @@ repos:
         name: Performance Regression Check
         entry: bash -c 'scripts/check-performance-regression.sh'
         language: system
-        files: ^(apollo-io-mcp-server|avainode-mcp-server)/src/.*\.(js|ts)$
+        files: ^(apollo-io-mcp-server|avinode-mcp-server)/src/.*\.(js|ts)$
         pass_filenames: false
         stages: [manual] # Only run when explicitly requested
 
@@ -181,7 +181,7 @@ repos:
         name: Update API Documentation
         entry: bash -c 'scripts/update-api-docs.sh'
         language: system
-        files: ^(apollo-io-mcp-server|avainode-mcp-server)/src/.*tools.*\.(js|ts)$
+        files: ^(apollo-io-mcp-server|avinode-mcp-server)/src/.*tools.*\.(js|ts)$
         pass_filenames: false
 
 # Configuration
