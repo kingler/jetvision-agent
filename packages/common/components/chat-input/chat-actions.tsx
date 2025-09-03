@@ -299,14 +299,12 @@ export const ChatModeOptions = ({
 
 export const SendStopButton = ({
     isGenerating,
-    isSending = false,
     isChatPage,
     stopGeneration,
     hasTextInput,
     sendMessage,
 }: {
     isGenerating: boolean;
-    isSending?: boolean;
     isChatPage: boolean;
     stopGeneration: () => void;
     hasTextInput: boolean;
@@ -342,28 +340,24 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
-                            tooltip={isSending ? "Sending..." : "Send Message"}
+                            tooltip="Send Message"
                             variant={hasTextInput ? 'default' : 'secondary'}
-                            disabled={!hasTextInput || isGenerating || isSending}
+                            disabled={!hasTextInput || isGenerating}
                             onClick={() => {
-                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating, 'isSending:', isSending);
+                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
                                 if (!hasTextInput) {
                                     console.error('[SendButton] No text input detected!');
                                     return;
                                 }
-                                if (isGenerating || isSending) {
-                                    console.error('[SendButton] Already processing!');
+                                if (isGenerating) {
+                                    console.error('[SendButton] Already generating!');
                                     return;
                                 }
                                 console.log('[SendButton] Calling sendMessage()...');
                                 sendMessage();
                             }}
                         >
-                            {isSending ? (
-                                <DotSpinner />
-                            ) : (
-                                <IconArrowUp size={16} strokeWidth={2} />
-                            )}
+                            <IconArrowUp size={16} strokeWidth={2} />
                         </Button>
                     </motion.div>
                 )}

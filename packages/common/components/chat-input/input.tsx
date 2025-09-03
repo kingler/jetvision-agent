@@ -351,7 +351,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                         <Flex gap="md" items="center">
                                             <SendStopButton
                                                 isGenerating={isGenerating}
-                                                isSending={isSending}
                                                 isChatPage={isChatPage}
                                                 stopGeneration={stopGeneration}
                                                 hasTextInput={hasTextInput}
