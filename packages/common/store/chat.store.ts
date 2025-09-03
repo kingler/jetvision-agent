@@ -127,6 +127,7 @@ type Actions = {
     getThreadItems: (threadId: string) => Promise<ThreadItem[]>;
     loadThreadItems: (threadId: string) => Promise<void>;
     setCurrentThreadItem: (threadItem: ThreadItem) => void;
+    rollbackOptimisticUpdate: (threadItemId: string) => Promise<void>;
     clearAllThreads: () => void;
     setCurrentSources: (sources: string[]) => void;
     setUseWebSearch: (useWebSearch: boolean) => void;
@@ -616,6 +617,28 @@ export const useChatStore = create(
             set(state => {
                 state.currentThreadItem = threadItem;
             }),
+        
+        rollbackOptimisticUpdate: async threadItemId => {
+            console.log('[rollbackOptimisticUpdate] Rolling back item:', threadItemId);
+            try {
+                // Remove from database if it exists
+                await db.threadItems.delete(threadItemId);
+                
+                // Remove from store state
+                set(state => {
+                    state.threadItems = state.threadItems.filter(item => item.id !== threadItemId);
+                    
+                    // Clear current thread item if it matches
+                    if (state.currentThreadItem?.id === threadItemId) {
+                        state.currentThreadItem = null;
+                    }
+                });
+                
+                console.log('[rollbackOptimisticUpdate] Successfully rolled back item:', threadItemId);
+            } catch (error) {
+                console.error('[rollbackOptimisticUpdate] Failed to rollback:', error);
+            }
+        },
 
         setEditor: editor =>
             set(state => {
@@ -731,17 +754,39 @@ export const useChatStore = create(
         createThreadItem: async threadItem => {
             const threadId = get().currentThreadId;
             if (!threadId) return;
+            
+            console.log('[createThreadItem] Creating item:', threadItem.id, 'for thread:', threadId);
+            
             try {
-                db.threadItems.put(threadItem);
-                set(state => {
-                    if (state.threadItems.find(t => t.id === threadItem.id)) {
+                // Check for existing item with same ID to prevent duplicates
+                const existingItem = get().threadItems.find(t => t.id === threadItem.id);
+                
+                if (existingItem) {
+                    console.log('[createThreadItem] Item already exists, updating:', existingItem.id);
+                    // Item exists, merge the data (preserving optimistic updates)
+                    const mergedItem = {
+                        ...existingItem,
+                        ...threadItem,
+                        threadId, // Ensure threadId is correct
+                        // Preserve optimistic status if real status isn't final
+                        status: threadItem.status === 'PENDING' ? existingItem.status || 'PENDING' : threadItem.status,
+                    };
+                    
+                    await db.threadItems.put(mergedItem);
+                    set(state => {
                         state.threadItems = state.threadItems.map(t =>
-                            t.id === threadItem.id ? threadItem : t
+                            t.id === threadItem.id ? mergedItem : t
                         );
-                    } else {
-                        state.threadItems.push({ ...threadItem, threadId });
-                    }
-                });
+                    });
+                } else {
+                    console.log('[createThreadItem] Creating new item:', threadItem.id);
+                    // New item, add to store
+                    const newItem = { ...threadItem, threadId };
+                    await db.threadItems.put(newItem);
+                    set(state => {
+                        state.threadItems.push(newItem);
+                    });
+                }
 
                 // Notify other tabs
                 debouncedNotify('thread-item-update', {

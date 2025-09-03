@@ -122,7 +122,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
     
     // Create debounced and deduplicated sendMessage function
     const sendMessageCore = useCallback(async (customPrompt?: string, parameters?: Record<string, any>) => {
-        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode);
+        const performanceStart = performance.now();
+        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode, 'timestamp:', new Date().toISOString());
         
         // Prevent multiple concurrent sends
         if (isSending) {
@@ -247,17 +248,27 @@ export const ChatInput = forwardRef<ChatInputRef, {
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
         try {
+            const submitStart = performance.now();
+            console.log('[SendMessage] Submitting to handleSubmit - elapsed:', (submitStart - performanceStart).toFixed(2) + 'ms');
+            
             await handleSubmit({
                 formData,
                 newThreadId: threadId,
+                existingThreadItemId: optimisticItemId, // Pass the same ID to prevent duplicates
                 messages: threadItems.sort(
                     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                 ),
                 useWebSearch,
                 useN8n: true, // Force n8n webhook usage
             });
+            
+            const totalTime = performance.now() - performanceStart;
+            console.log('[SendMessage] Successfully completed - total time:', totalTime.toFixed(2) + 'ms');
+            
         } catch (error) {
-            console.error('[SendMessage] Error during submit:', error);
+            const totalTime = performance.now() - performanceStart;
+            console.error('[SendMessage] Error after', totalTime.toFixed(2) + 'ms:', error);
+            
             // Reset loading states on error
             batchStateUpdates([
                 () => setIsGenerating(false),
