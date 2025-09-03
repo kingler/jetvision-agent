@@ -1,10 +1,10 @@
 # JetVision Agent E2E Testing Suite
 
-Comprehensive end-to-end testing suite for the JetVision Agent platform using Playwright. This test suite validates the complete user journey from authentication to aviation-specific workflows, ensuring 98% production readiness.
+Comprehensive end-to-end testing suite for the JetVision Agent platform using Playwright. This test suite validates the complete user journey from frontend interactions through N8N webhooks to business intelligence processing, ensuring production-ready reliability and performance.
 
 ## Overview
 
-The JetVision Agent E2E test suite is designed to test the critical business workflows of a private aviation platform that integrates with Apollo.io for lead generation and Avinode for aircraft management. The tests ensure that the 95% of user interactions that route through N8N workflows function correctly, with proper fallback mechanisms in place.
+The JetVision Agent E2E test suite provides complete coverage of the N8N workflow integration, validating webhook communication, session management, conversation flows, UI interactions, and performance characteristics. The tests are designed around the specific prompt categories and business requirements outlined in `prompts.md`, covering Jet Charter Operations, Apollo Campaign Management, Travel Planning, Lead Generation, and Analytics & Insights.
 
 ## Test Architecture
 
@@ -24,14 +24,21 @@ e2e/
 │   ├── aviation-queries.ts  # Apollo.io and Avinode query scenarios
 │   ├── user-profiles.ts     # User roles and permissions
 │   └── n8n-responses.ts     # Expected N8N workflow responses
-├── tests/                  # Test specifications
-│   ├── chat-interface.spec.ts      # Chat UI and TipTap functionality
-│   ├── n8n-workflows.spec.ts       # N8N integration testing
-│   ├── apollo-integration.spec.ts  # Apollo.io workflow tests
-│   ├── avinode-integration.spec.ts # Avinode workflow tests
-│   ├── error-handling.spec.ts      # Fallback and error scenarios
-│   ├── authentication.spec.ts      # Clerk authentication flows
-│   └── performance.spec.ts         # Performance and reliability
+├── tests/                           # Test specifications
+│   ├── webhook-communication.spec.ts   # N8N webhook POST/SSE testing
+│   ├── session-management.spec.ts      # Session creation, persistence, isolation
+│   ├── conversation-flow.spec.ts       # Prompt categories and system activation
+│   ├── chat-ui-integration.spec.ts     # Frontend chat interface testing
+│   ├── prompt-based-scenarios.spec.ts  # Specific prompts.md test cases
+│   ├── performance-timeout.spec.ts     # Performance benchmarks and timeout handling
+│   ├── n8n-integration.spec.ts        # Legacy N8N integration tests
+│   ├── apollo-integration.spec.ts     # Apollo.io workflow tests
+│   ├── avinode-integration.spec.ts    # Avinode workflow tests
+│   ├── error-handling.spec.ts         # Fallback and error scenarios
+│   ├── authentication.spec.ts         # Clerk authentication flows
+│   └── n8n-workflows.spec.ts          # Legacy N8N workflow tests
+├── setup/                          # Test environment management
+│   └── test-environment.ts            # Comprehensive test environment manager
 ├── utils/                  # Test utilities and helpers
 │   ├── auth-helpers.ts     # Authentication test utilities
 │   ├── n8n-helpers.ts      # N8N mocking and validation
@@ -41,16 +48,54 @@ e2e/
 └── README.md               # This file
 ```
 
-## Test Coverage
+## Comprehensive Test Coverage
 
-### 1. Chat Interface Functionality (`chat-interface.spec.ts`)
-- **Basic Chat Input**: Text input, send buttons, keyboard shortcuts
-- **Rich Text Editing**: TipTap integration, formatting, lists
-- **Message History**: Threading, scrolling, persistence
-- **Aviation Prompt Cards**: Industry-specific suggestions
-- **Image Attachment**: Upload and drag-and-drop
-- **Code Block Rendering**: Syntax highlighting, copy functionality
-- **Performance**: Rapid messaging, long chat sessions
+### 1. Webhook Communication Tests (`webhook-communication.spec.ts`) 
+- **POST Request Structure**: JSON payload format, headers, authentication
+- **SSE Streaming**: Real-time Server-Sent Events response handling
+- **Error Scenarios**: Malformed requests, network failures, timeouts
+- **Performance**: Response time measurements, concurrent request handling
+- **Retry Logic**: Exponential backoff, circuit breaker patterns
+- **Streaming Interruption**: Connection recovery and partial response handling
+
+### 2. Session Management Tests (`session-management.spec.ts`)
+- **Session Creation**: Unique identifiers (sessionId, threadId, clientId)
+- **Persistence**: Cross-request context maintenance and storage
+- **Isolation**: Multi-tab, multi-user, and cross-browser session separation
+- **Chat Memory**: Postgres-backed conversation history and context retention
+- **Analytics**: Session duration, activity metrics, cleanup procedures
+- **Concurrency**: Rapid message submission without interference
+
+### 3. Conversation Flow Tests (`conversation-flow.spec.ts`)
+- **Prompt Categories**: Jet Charter (jet-1 to jet-4), Apollo Campaign (apollo-1 to apollo-4)
+- **System Prompts**: Context-aware activation and category switching
+- **Travel Planning**: Multi-city (travel-1), weather routing (travel-2), industry patterns (travel-3)
+- **Lead Generation**: PE assistants (lead-1), job changes (lead-2), decision makers (lead-3)
+- **Analytics**: Conversion trends (analytics-1), ROI analysis (analytics-2)
+- **Context Retention**: Multi-turn conversations with memory persistence
+
+### 4. Chat UI Integration Tests (`chat-ui-integration.spec.ts`)
+- **Message Submission**: Input validation, form handling, rapid submission
+- **Real-time Streaming**: Progressive response display and UI state management  
+- **Loading States**: Progress indicators, button states, user feedback
+- **Error Recovery**: User-friendly messages, retry mechanisms, state restoration
+- **Responsive Design**: Mobile viewport, accessibility compliance
+- **Performance**: Memory usage, scroll behavior, large conversation histories
+
+### 5. Prompt-Based Scenarios Tests (`prompt-based-scenarios.spec.ts`)
+- **Specific Test Queries**: All 20 prompts from prompts.md with expected parameters
+- **Parameter Extraction**: Aircraft types, locations, dates, passenger counts
+- **Session Memory**: Context retention across multi-turn aviation conversations
+- **Business Logic**: Industry-specific response validation and format checking
+- **Follow-up Questions**: Maintaining context for "show me pricing", "book it" scenarios
+
+### 6. Performance & Timeout Tests (`performance-timeout.spec.ts`)
+- **Response Time Benchmarks**: < 5s target, < 2s ideal response times
+- **Timeout Scenarios**: Webhook, network, and processing timeout handling
+- **Load Testing**: Concurrent users, memory usage under load
+- **Streaming Performance**: First byte time, chunk processing latency
+- **Error Recovery**: Network failure recovery time and user experience
+- **Resource Management**: Memory leaks, database connection cleanup
 
 ### 2. N8N Workflow Integration (`n8n-workflows.spec.ts`)
 - **Webhook Connectivity**: Authentication, user context passing
