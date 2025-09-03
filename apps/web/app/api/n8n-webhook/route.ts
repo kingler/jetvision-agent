@@ -175,11 +175,23 @@ export async function POST(request: NextRequest) {
           const contentType = response.headers.get('content-type');
           let webhookData;
 
-          if (contentType?.includes('application/json')) {
-            webhookData = await response.json();
-          } else {
-            const textResponse = await response.text();
-            webhookData = { response: textResponse };
+          try {
+            if (contentType?.includes('application/json')) {
+              const jsonText = await response.text();
+              if (!jsonText.trim()) {
+                console.warn('Empty JSON response from N8N webhook');
+                webhookData = { response: 'Empty response received' };
+              } else {
+                webhookData = JSON.parse(jsonText);
+              }
+            } else {
+              const textResponse = await response.text();
+              webhookData = { response: textResponse || 'Empty text response' };
+            }
+          } catch (parseError) {
+            console.error('Failed to parse N8N response:', parseError);
+            const rawText = await response.text();
+            webhookData = { response: rawText || 'Failed to parse response', parseError: true };
           }
 
           // Check if we got an immediate response or need to poll

@@ -116,7 +116,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
     const sendMessage = async (customPrompt?: string, parameters?: Record<string, any>) => {
-        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode);
+        const performanceStart = performance.now();
+        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode, 'timestamp:', new Date().toISOString());
         
         // Get the current text from the editor
         const currentText = editor?.getText()?.trim();
@@ -227,15 +228,34 @@ export const ChatInput = forwardRef<ChatInputRef, {
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
-        handleSubmit({
-            formData,
-            newThreadId: threadId,
-            messages: threadItems.sort(
-                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            ),
-            useWebSearch,
-            useN8n: true, // Force n8n webhook usage
-        });
+        try {
+            const submitStart = performance.now();
+            console.log('[SendMessage] Submitting to handleSubmit - elapsed:', (submitStart - performanceStart).toFixed(2) + 'ms');
+            
+            await handleSubmit({
+                formData,
+                newThreadId: threadId,
+                existingThreadItemId: optimisticItemId, // Pass the same ID to prevent duplicates
+                messages: threadItems.sort(
+                    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                ),
+                useWebSearch,
+                useN8n: true, // Force n8n webhook usage
+            });
+            
+            const totalTime = performance.now() - performanceStart;
+            console.log('[SendMessage] Successfully completed - total time:', totalTime.toFixed(2) + 'ms');
+            
+        } catch (error) {
+            const totalTime = performance.now() - performanceStart;
+            console.error('[SendMessage] Error after', totalTime.toFixed(2) + 'ms:', error);
+            
+            // Reset generating state on error
+            setIsGenerating(false);
+            
+            // Show user-friendly error message
+            // TODO: Add toast notification or error display
+        }
     };
 
     const renderChatInput = () => (
