@@ -299,12 +299,14 @@ export const ChatModeOptions = ({
 
 export const SendStopButton = ({
     isGenerating,
+    isSending = false,
     isChatPage,
     stopGeneration,
     hasTextInput,
     sendMessage,
 }: {
     isGenerating: boolean;
+    isSending?: boolean;
     isChatPage: boolean;
     stopGeneration: () => void;
     hasTextInput: boolean;
@@ -340,24 +342,28 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
-                            tooltip="Send Message"
+                            tooltip={isSending ? "Sending..." : "Send Message"}
                             variant={hasTextInput ? 'default' : 'secondary'}
-                            disabled={!hasTextInput || isGenerating}
+                            disabled={!hasTextInput || isGenerating || isSending}
                             onClick={() => {
-                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
+                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating, 'isSending:', isSending);
                                 if (!hasTextInput) {
                                     console.error('[SendButton] No text input detected!');
                                     return;
                                 }
-                                if (isGenerating) {
-                                    console.error('[SendButton] Already generating!');
+                                if (isGenerating || isSending) {
+                                    console.error('[SendButton] Already processing!');
                                     return;
                                 }
                                 console.log('[SendButton] Calling sendMessage()...');
                                 sendMessage();
                             }}
                         >
-                            <IconArrowUp size={16} strokeWidth={2} />
+                            {isSending ? (
+                                <DotSpinner />
+                            ) : (
+                                <IconArrowUp size={16} strokeWidth={2} />
+                            )}
                         </Button>
                     </motion.div>
                 )}

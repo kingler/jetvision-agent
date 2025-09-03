@@ -9,13 +9,14 @@ import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
 import { useChatEditor } from '../../hooks/use-editor';
 import { useChatStore } from '../../store';
 import { detectIntent } from '../../utils/intent-detection';
+import { debounce, deduplicate, batchStateUpdates } from '../../utils/debounce';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
@@ -115,8 +116,19 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
-    const sendMessage = async (customPrompt?: string, parameters?: Record<string, any>) => {
+    
+    // Add loading state for send button
+    const [isSending, setIsSending] = useState(false);
+    
+    // Create debounced and deduplicated sendMessage function
+    const sendMessageCore = useCallback(async (customPrompt?: string, parameters?: Record<string, any>) => {
         console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode);
+        
+        // Prevent multiple concurrent sends
+        if (isSending) {
+            console.log('[SendMessage] Already sending, ignoring request');
+            return;
+        }
         
         // Get the current text from the editor
         const currentText = editor?.getText()?.trim();
@@ -137,8 +149,11 @@ export const ChatInput = forwardRef<ChatInputRef, {
         }
         
         console.log('[SendMessage] Setting isGenerating to true');
-        // Show immediate loading feedback
-        setIsGenerating(true);
+        // Show immediate loading feedback with batched state updates
+        batchStateUpdates([
+            () => setIsGenerating(true),
+            () => setIsSending(true)
+        ]);
         
         // Create optimistic UI update for immediate feedback
         const optimisticItemId = uuidv4();
@@ -172,12 +187,16 @@ export const ChatInput = forwardRef<ChatInputRef, {
         
         createThreadItem(optimisticThreadItem);
         
-        // Clear input immediately for better UX
-        window.localStorage.removeItem('draft-message');
-        if (editor && editor.commands) {
-            editor.commands.clearContent();
-        }
-        clearImageAttachment();
+        // Clear input immediately for better UX - batch these operations
+        batchStateUpdates([
+            () => {
+                window.localStorage.removeItem('draft-message');
+                if (editor && editor.commands) {
+                    editor.commands.clearContent();
+                }
+                clearImageAttachment();
+            }
+        ]);
         
         // Smooth scroll to bottom after a brief delay to allow DOM update
         setTimeout(() => {
@@ -227,16 +246,41 @@ export const ChatInput = forwardRef<ChatInputRef, {
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
-        handleSubmit({
-            formData,
-            newThreadId: threadId,
-            messages: threadItems.sort(
-                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            ),
-            useWebSearch,
-            useN8n: true, // Force n8n webhook usage
-        });
-    };
+        try {
+            await handleSubmit({
+                formData,
+                newThreadId: threadId,
+                messages: threadItems.sort(
+                    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                ),
+                useWebSearch,
+                useN8n: true, // Force n8n webhook usage
+            });
+        } catch (error) {
+            console.error('[SendMessage] Error during submit:', error);
+            // Reset loading states on error
+            batchStateUpdates([
+                () => setIsGenerating(false),
+                () => setIsSending(false)
+            ]);
+        } finally {
+            setIsSending(false);
+        }
+    }, [isSignedIn, chatMode, editor, currentThreadId, getThreadItems, handleSubmit, useWebSearch, imageAttachment, createThread, createThreadItem, clearImageAttachment, setIsGenerating, isSending]);
+
+    // Create debounced and deduplicated version of sendMessage
+    const sendMessage = useMemo(() => {
+        const debouncedSend = debounce(sendMessageCore, 300);
+        // Wrap in async function for deduplicate utility
+        const asyncWrapper = async (customPrompt?: string, parameters?: Record<string, any>) => {
+            return await debouncedSend(customPrompt, parameters);
+        };
+        return deduplicate(
+            asyncWrapper,
+            (customPrompt, parameters) => `${customPrompt || editor?.getText()?.trim() || ''}-${JSON.stringify(parameters || {})}`,
+            1000
+        );
+    }, [sendMessageCore, editor]);
 
     const renderChatInput = () => (
         <AnimatePresence>
@@ -307,6 +351,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                         <Flex gap="md" items="center">
                                             <SendStopButton
                                                 isGenerating={isGenerating}
+                                                isSending={isSending}
                                                 isChatPage={isChatPage}
                                                 stopGeneration={stopGeneration}
                                                 hasTextInput={hasTextInput}
