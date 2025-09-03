@@ -120,7 +120,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-repo/jetvision-agent.git
+git clone https://github.com/kingler/jetvision-agent.git
 cd jetvision-agent
 ```
 
@@ -280,5 +280,144 @@ For issues, questions, or contributions, please contact the JetVision developmen
 ISC
 
 ---
+
+## Deployment
+
+### Deploy to Cloudflare Pages
+
+```bash
+# Build and deploy
+./UPDATE_DEPLOY.sh
+
+# Quick deploy (skip rebuild)
+./QUICK_DEPLOY.sh
+
+# Deploy with MCP servers
+./UPDATE_DEPLOY.sh --mcp
+```
+
+### Environment Variables
+
+Required environment variables:
+
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# n8n Integration
+NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-instance/webhook/jetvision-agent
+NEXT_PUBLIC_N8N_API_KEY=your-api-key
+
+# MCP Servers
+APOLLO_API_KEY=your-apollo-key
+AVAINODE_API_KEY=your-avainode-key
+```
+
+## Common Use Cases
+
+### Search for Available Jets
+```
+"I need a jet from New York to Miami next Tuesday for 8 passengers"
+```
+
+### Get Price Quotes
+```
+"What's the cost for a light jet from LAX to Las Vegas?"
+```
+
+### Compare Aircraft
+```
+"Show me the differences between a Citation X and a Gulfstream G550"
+```
+
+### Plan Multi-Leg Trips
+```
+"Plan a trip: NYC → London → Dubai → NYC with 2-day stops"
+```
+
+## API Integration
+
+### n8n Webhook
+The application integrates with n8n for workflow automation:
+
+```javascript
+POST /api/n8n-webhook
+{
+  "action": "search_aircraft",
+  "parameters": {
+    "from": "KTEB",
+    "to": "KMIA",
+    "date": "2025-01-30",
+    "passengers": 8
+  }
+}
+```
+
+### MCP Server Endpoints
+
+**Apollo.io MCP**:
+```
+https://apollo-mcp.designthru.ai/search
+https://apollo-mcp.designthru.ai/operators
+```
+
+**Avainode MCP**:
+```
+https://avainode-mcp.designthru.ai/availability
+https://avainode-mcp.designthru.ai/quotes
+```
+
+## Development Workflow
+
+### Making Changes
+
+1. **Standard Update**:
+```bash
+./UPDATE_DEPLOY.sh
+```
+
+2. **Quick Deploy** (for minor changes):
+```bash
+./QUICK_DEPLOY.sh
+```
+
+3. **Force Rebuild**:
+```bash
+./UPDATE_DEPLOY.sh --force
+```
+
+### Monitoring
+
+```bash
+# View deployment logs
+wrangler pages deployment tail
+
+# Check deployment status
+wrangler pages deployment list --project-name=jetvision-agent
+
+# View MCP server logs
+wrangler tail
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## Support
+
+- **Documentation**: [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md)
+- **Issues**: [GitHub Issues](https://github.com/kingler/jetvision-agent/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/kingler/jetvision-agent/discussions)
+
+## Acknowledgments
+
+Built on top of the excellent [LLMChat.co](https://llmchat.co) platform by Trendy Design.
+
+---
+
+**Live Demo**: https://jetvision-agent.pages.dev
+
+**Status**: 🟢 Active Development
 
 Built with TypeScript, MCP SDK, and Express.js following TDD best practices.
