@@ -132,11 +132,17 @@ export async function POST(request: NextRequest) {
         };
 
         try {
-          // Send initial status
+          // Send initial status with workflow step information
           sendEvent('status', { 
             message: 'Processing request...', 
-            status: 'processing',
-            timestamp: new Date().toISOString()
+            status: 'connecting',
+            timestamp: new Date().toISOString(),
+            statusData: {
+              status: 'connecting',
+              currentStep: 'webhook',
+              progress: 10,
+              message: 'Initializing JetVision workflow connection...'
+            }
           });
 
           // Prepare request payload
@@ -294,12 +300,34 @@ async function pollForExecution(executionId: string, sendEvent: (event: string, 
 
   while (Date.now() - startTime < maxWaitTime) {
     try {
+      const progress = Math.min((Date.now() - startTime) / maxWaitTime * 100, 90);
+      let currentStep = 'agent';
+      let stepMessage = 'JetVision Agent is processing your request...';
+
+      // Determine current step based on progress and time
+      if (progress > 60) {
+        currentStep = 'response';
+        stepMessage = 'Generating your comprehensive response...';
+      } else if (progress > 40) {
+        currentStep = 'knowledge';
+        stepMessage = 'Searching knowledge base and integrating data...';
+      } else if (progress > 20) {
+        currentStep = 'apollo';
+        stepMessage = 'Querying Apollo.io and Avinode systems...';
+      }
+
       sendEvent('status', { 
         message: 'Retrieving execution results...', 
-        status: 'polling',
+        status: 'executing',
         executionId,
         elapsed: Date.now() - startTime,
         timestamp: new Date().toISOString(),
+        statusData: {
+          status: 'executing',
+          currentStep,
+          progress: Math.round(progress),
+          message: stepMessage
+        }
       });
 
       const response = await fetch(`${N8N_CONFIG.apiUrl}/executions/${executionId}`, {
