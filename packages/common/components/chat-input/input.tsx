@@ -15,6 +15,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
 import { useChatEditor } from '../../hooks/use-editor';
 import { useChatStore } from '../../store';
+import { detectIntent } from '../../utils/intent-detection';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
@@ -109,31 +110,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
     const stopGeneration = useChatStore(state => state.stopGeneration);
     
-    // Track editor text in state for reactivity
-    const [editorContent, setEditorContent] = useState('');
-    
-    useEffect(() => {
-        if (editor) {
-            console.log('[ChatInput Debug] Editor initialized, text:', editor.getText());
-            // Set initial content
-            setEditorContent(editor.getText());
-            
-            // Listen to editor updates
-            const updateHandler = () => {
-                const text = editor.getText();
-                console.log('[ChatInput Debug] Editor text updated:', text);
-                setEditorContent(text);
-            };
-            
-            editor.on('update', updateHandler);
-            
-            return () => {
-                editor.off('update', updateHandler);
-            };
-        }
-    }, [editor]);
-    
-    const hasTextInput = !!editorContent.trim();
+    const hasTextInput = !!editor?.getText();
     
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
@@ -220,17 +197,33 @@ export const ChatInput = forwardRef<ChatInputRef, {
             }
         }
         
-        // Log the message being sent for debugging
-        console.log('Sending message to n8n:', messageText, {
+        // Create structured JSON payload for n8n webhook
+        const jsonPayload = {
+            prompt: messageText,
+            message: messageText,
             threadId: threadId,
             threadItemId: optimisticItemId,
-            useWebSearch: useWebSearch,
-            hasImageAttachment: !!imageAttachment?.base64
-        });
+            context: {
+                source: 'jetvision-agent',
+                timestamp: new Date().toISOString(),
+                useWebSearch: useWebSearch,
+                hasImageAttachment: !!imageAttachment?.base64,
+                parameters: promptParams || {},
+            },
+            intent: detectIntent(messageText),
+            expectedOutput: {
+                format: 'structured',
+                includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
+                includeRecommendations: true
+            }
+        };
         
-        // Create FormData with the plain text query
+        // Log the structured payload for debugging
+        console.log('Sending structured JSON to n8n:', jsonPayload);
+        
+        // Create FormData with the structured JSON
         const formData = new FormData();
-        formData.append('query', messageText); // Pass plain text, not JSON
+        formData.append('query', JSON.stringify(jsonPayload));
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
@@ -421,22 +414,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
 
 ChatInput.displayName = 'ChatInput';
 
-// Intent detection helper function
-const detectIntent = (message: string): string => {
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('aircraft') || lowerMessage.includes('fleet') || lowerMessage.includes('avinode') || lowerMessage.includes('charter')) {
-        return 'fleet_operations';
-    } else if (lowerMessage.includes('lead') || lowerMessage.includes('prospect') || lowerMessage.includes('apollo') || lowerMessage.includes('campaign')) {
-        return 'lead_generation';
-    } else if (lowerMessage.includes('travel') || lowerMessage.includes('itinerary') || lowerMessage.includes('ground') || lowerMessage.includes('weather')) {
-        return 'travel_coordination';
-    } else if (lowerMessage.includes('conversion') || lowerMessage.includes('roi') || lowerMessage.includes('metric') || lowerMessage.includes('analytic')) {
-        return 'analytics';
-    }
-    
-    return 'general';
-};
 
 type AnimatedTitlesProps = {
     titles?: string[];
