@@ -13,6 +13,15 @@ import { AircraftRepository } from './repositories/aircraft.repository';
 // Export all repository classes
 export { UserRepository, CompanyRepository, LeadRepository, AircraftRepository };
 
+// Import database client functions for internal use
+import { 
+  getDrizzleClient, 
+  getSupabaseServiceClient, 
+  getSupabaseAnonClient,
+  createSupabaseBrowserClient,
+  checkDatabaseConnection 
+} from './client';
+
 // Export database clients
 export { 
   getDrizzleClient, 
@@ -36,10 +45,18 @@ export class DatabaseService {
   static readonly leads = LeadRepository;
   static readonly aircraft = AircraftRepository;
 
-  // Database clients
-  static readonly drizzle = getDrizzleClient();
-  static readonly supabaseService = getSupabaseServiceClient();
-  static readonly supabaseAnon = getSupabaseAnonClient();
+  // Database client getters (lazy initialization)
+  static get drizzle() {
+    return getDrizzleClient();
+  }
+  
+  static get supabaseService() {
+    return getSupabaseServiceClient();
+  }
+  
+  static get supabaseAnon() {
+    return getSupabaseAnonClient();
+  }
 
   /**
    * Health check for database connectivity
