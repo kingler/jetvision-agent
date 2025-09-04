@@ -1,4 +1,4 @@
-import { N8NWorkflowTester } from '@repo/common/components/n8n-workflow-tester';
+import { N8NWorkflowTester } from '@repo/common/components';
 
 export default function N8NTestPage() {
   return (
