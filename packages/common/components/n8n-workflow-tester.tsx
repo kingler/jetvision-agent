@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn, Flex } from '@repo/ui';
 import { v4 as uuidv4 } from 'uuid';
+import { useServiceControlStore } from '../store/service-control.store';
+import { ServiceStatusIndicator } from './service-control/ServiceStatusIndicator';
 
 interface N8NResponse {
   status: string;
@@ -28,6 +30,9 @@ export const N8NWorkflowTester: React.FC = () => {
   const [response, setResponse] = useState<N8NResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Service control integration
+  const { isServiceAvailable, services } = useServiceControlStore();
 
   // Available N8N Tools for JetVision Agent
   const availableN8NTools = {
@@ -109,6 +114,58 @@ export const N8NWorkflowTester: React.FC = () => {
         "parameters": ["query", "category", "limit"]
       }
     ]
+  };
+
+  // Filter tools based on service availability
+  const filteredN8NTools = useMemo(() => {
+    const filtered: typeof availableN8NTools = {};
+    
+    if (isServiceAvailable('apollo')) {
+      filtered.apollo_tools = availableN8NTools.apollo_tools;
+    }
+    
+    if (isServiceAvailable('avinode')) {
+      filtered.avinode_tools = availableN8NTools.avinode_tools;
+    }
+    
+    // N8N and Gmail tools are always available (they don't depend on external services)
+    filtered.gmail_tools = availableN8NTools.gmail_tools;
+    filtered.knowledge_base_tools = availableN8NTools.knowledge_base_tools;
+    
+    return filtered;
+  }, [isServiceAvailable]);
+
+  // Filter Apollo prompt cards based on service availability
+  const filteredApolloCards = useMemo(() => {
+    return isServiceAvailable('apollo') ? apolloPromptCards : [];
+  }, [isServiceAvailable]);
+
+  // Filter tools from prompt cards based on service availability
+  const filterPromptCardTools = (promptCard: any) => {
+    const availableTools = promptCard.suggested_tools?.filter((tool: string) => {
+      // Apollo tools require apollo service
+      if (availableN8NTools.apollo_tools?.some((t: any) => t.name === tool)) {
+        return isServiceAvailable('apollo');
+      }
+      // Avinode tools require avinode service
+      if (availableN8NTools.avinode_tools?.some((t: any) => t.name === tool)) {
+        return isServiceAvailable('avinode');
+      }
+      // Other tools are always available
+      return true;
+    }) || [];
+    
+    return {
+      ...promptCard,
+      suggested_tools: availableTools,
+      tool_sequence: promptCard.tool_sequence?.filter((step: string) => {
+        // Filter out steps that mention unavailable tools
+        const stepLower = step.toLowerCase();
+        if (!isServiceAvailable('apollo') && stepLower.includes('apollo')) return false;
+        if (!isServiceAvailable('avinode') && stepLower.includes('avinode')) return false;
+        return true;
+      }) || []
+    };
   };
 
   // Apollo Lead Generation Prompt Cards
@@ -226,7 +283,7 @@ export const N8NWorkflowTester: React.FC = () => {
           suggested_tools: promptCard.suggested_tools,
           tool_sequence: promptCard.tool_sequence
         },
-        available_tools: availableN8NTools,
+        available_tools: filteredN8NTools,
         execution_strategy: {
           primary_tools: promptCard.suggested_tools,
           execution_order: promptCard.tool_sequence,
@@ -254,7 +311,7 @@ export const N8NWorkflowTester: React.FC = () => {
           suggested_tools: promptCard.suggested_tools,
           tool_sequence: promptCard.tool_sequence
         },
-        available_tools: availableN8NTools,
+        available_tools: filteredN8NTools,
         execution_strategy: {
           primary_tools: promptCard.suggested_tools,
           execution_order: promptCard.tool_sequence,
@@ -339,7 +396,44 @@ export const N8NWorkflowTester: React.FC = () => {
     }
   };
 
-  const renderPromptCard = (promptCard: any, category: 'apollo' | 'outreach') => (
+  // Render service unavailable message
+  const renderServiceUnavailable = (serviceName: string, serviceId: string) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-center py-12 px-6"
+    >
+      <div className="max-w-md mx-auto">
+        <div className="mb-4">
+          <ServiceStatusIndicator status={services[serviceId]?.status || 'disabled'} size="lg" />
+        </div>
+        <h3 className="text-lg font-medium text-muted-foreground mb-2">
+          {serviceName} Service Unavailable
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          The {serviceName} service is currently disabled. Enable it in the Service Control settings to access these workflows and prompts.
+        </p>
+        <div className="bg-muted/50 rounded-lg p-4 mb-4">
+          <p className="text-xs text-muted-foreground">
+            <strong>Service Status:</strong> {services[serviceId]?.status || 'disabled'}
+          </p>
+          {services[serviceId]?.errorMessage && (
+            <p className="text-xs text-red-500 mt-1">
+              <strong>Error:</strong> {services[serviceId].errorMessage}
+            </p>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Go to Settings → Service Control to manage service availability
+        </p>
+      </div>
+    </motion.div>
+  );
+
+  const renderPromptCard = (promptCard: any, category: 'apollo' | 'outreach') => {
+    const filteredCard = filterPromptCardTools(promptCard);
+    
+    return (
     <motion.div
       key={promptCard.id}
       whileHover={{ scale: 1.02 }}
@@ -349,24 +443,24 @@ export const N8NWorkflowTester: React.FC = () => {
       <div className="p-6 rounded-xl border border-border bg-background hover:bg-secondary/30 transition-all duration-200">
         <div className="flex items-start gap-4 mb-4">
           <div className="text-2xl">
-            {promptCard.icon === 'IconRocket' ? '🚀' : 
-             promptCard.icon === 'IconTarget' ? '🎯' : 
-             promptCard.icon === 'IconMail' ? '✉️' : '⚡'}
+            {filteredCard.icon === 'IconRocket' ? '🚀' : 
+             filteredCard.icon === 'IconTarget' ? '🎯' : 
+             filteredCard.icon === 'IconMail' ? '✉️' : '⚡'}
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <h3 className="text-lg font-semibold text-foreground">
-                {promptCard.title}
+                {filteredCard.title}
               </h3>
               <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                {promptCard.category}
+                {filteredCard.category}
               </span>
             </div>
             <p className="text-sm text-muted-foreground mb-3">
-              {promptCard.description}
+              {filteredCard.description}
             </p>
             <p className="text-sm text-foreground font-medium mb-3">
-              "{promptCard.prompt}"
+              "{filteredCard.prompt}"
             </p>
           </div>
         </div>
@@ -374,22 +468,28 @@ export const N8NWorkflowTester: React.FC = () => {
         {/* Suggested Tools Section */}
         <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
           <h4 className="text-xs font-medium text-blue-800 dark:text-blue-200 uppercase tracking-wide mb-2">
-            🛠️ Suggested N8N Tools
+            🛠️ Available N8N Tools
           </h4>
           <div className="flex flex-wrap gap-1 mb-3">
-            {promptCard.suggested_tools?.map((tool: string, index: number) => (
+            {filteredCard.suggested_tools?.map((tool: string, index: number) => (
               <span key={index} className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
                 {tool}
               </span>
             ))}
+            {filteredCard.suggested_tools?.length === 0 && (
+              <span className="text-xs text-red-500">No available tools - required services are disabled</span>
+            )}
           </div>
           <div className="text-xs text-blue-700 dark:text-blue-300">
             <strong>Execution Sequence:</strong>
             <ul className="mt-1 list-disc list-inside">
-              {promptCard.tool_sequence?.map((step: string, index: number) => (
+              {filteredCard.tool_sequence?.map((step: string, index: number) => (
                 <li key={index} className="ml-2">{step}</li>
               ))}
             </ul>
+            {filteredCard.tool_sequence?.length === 0 && (
+              <p className="text-red-500 mt-1">No available steps - required services are disabled</p>
+            )}
           </div>
         </div>
         
@@ -398,25 +498,32 @@ export const N8NWorkflowTester: React.FC = () => {
             📋 Prompt Card Structure
           </h4>
           <pre className="text-xs bg-background rounded p-3 overflow-x-auto max-h-40">
-            {JSON.stringify(promptCard, null, 2)}
+            {JSON.stringify(filteredCard, null, 2)}
           </pre>
         </div>
 
         <button
           onClick={() => {
             const payload = category === 'apollo' 
-              ? createLeadGenerationPayload(promptCard)
-              : createOutreachSequencePayload(promptCard);
+              ? createLeadGenerationPayload(filteredCard)
+              : createOutreachSequencePayload(filteredCard);
             sendWorkflowRequest(payload);
           }}
-          disabled={loading}
+          disabled={loading || filteredCard.suggested_tools?.length === 0}
           className={cn(
             "w-full px-4 py-2 rounded-lg font-medium transition-colors",
-            "bg-primary hover:bg-primary/90 text-primary-foreground",
+            filteredCard.suggested_tools?.length === 0 
+              ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90 text-primary-foreground",
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
         >
-          {loading ? 'Testing Workflow...' : 'Test N8N Workflow'}
+          {loading 
+            ? 'Testing Workflow...' 
+            : filteredCard.suggested_tools?.length === 0
+              ? 'No Available Tools'
+              : 'Test N8N Workflow'
+          }
         </button>
       </div>
     </motion.div>
@@ -435,20 +542,33 @@ export const N8NWorkflowTester: React.FC = () => {
 
       <div className="space-y-8 mb-8">
         <div>
-          <h2 className="text-xl font-semibold text-foreground mb-4">
-            Apollo.io Lead Generation Prompts
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {apolloPromptCards.map(promptCard => 
-              renderPromptCard(promptCard, 'apollo')
-            )}
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-semibold text-foreground">
+              Apollo.io Lead Generation Prompts
+            </h2>
+            <ServiceStatusIndicator status={services.apollo?.status || 'disabled'} showLabel size="sm" />
           </div>
+          {filteredApolloCards.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredApolloCards.map(promptCard => 
+                renderPromptCard(promptCard, 'apollo')
+              )}
+            </div>
+          ) : (
+            <div className="border border-dashed border-muted rounded-xl">
+              {renderServiceUnavailable('Apollo.io', 'apollo')}
+            </div>
+          )}
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-foreground mb-4">
-            Outreach Sequence Prompts
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-semibold text-foreground">
+              Outreach Sequence Prompts
+            </h2>
+            <ServiceStatusIndicator status="enabled" showLabel size="sm" />
+            <span className="text-xs text-muted-foreground">(Always Available)</span>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {outreachPromptCards.map(promptCard => 
               renderPromptCard(promptCard, 'outreach')
@@ -569,7 +689,7 @@ export const N8NWorkflowTester: React.FC = () => {
             🔧 Available N8N Tools for JetVision Agent
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            {Object.entries(availableN8NTools).map(([category, tools]) => (
+            {Object.entries(filteredN8NTools).map(([category, tools]) => (
               <div key={category} className="bg-background rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-foreground mb-2 capitalize">
                   {category.replace('_', ' ')}
