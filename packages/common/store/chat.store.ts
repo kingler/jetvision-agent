@@ -44,7 +44,7 @@ const loadInitialData = async () => {
               model: jetvisionModel.id,
               useWebSearch: false,
               showSuggestions: true,
-              chatMode: ChatMode.GEMINI_2_FLASH,
+              chatMode: ChatMode.GPT_4o_Mini,
           };
     
     // Always use JetVision Agent model

@@ -17,9 +17,12 @@ import { useChatEditor } from '../../hooks/use-editor';
 import { useChatStore } from '../../store';
 import { detectIntent } from '../../utils/intent-detection';
 import { debounce, deduplicate, batchStateUpdates } from '../../utils/debounce';
+import { routeMessage, type RoutingDecision } from '../../utils/agent-router';
+import { isAviationMessage } from '../../utils/aviation-classifier';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
+import { PromptCardsButton, PromptCard } from '../prompt-cards';
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
 
@@ -117,8 +120,23 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
     
+    // Handle prompt selection from prompt cards
+    const handlePromptSelect = useCallback((prompt: PromptCard) => {
+        if (editor && editor.commands) {
+            editor.commands.setContent(prompt.prompt);
+            editor.commands.focus('end');
+        }
+    }, [editor]);
+    
     // Add loading state for send button
     const [isSending, setIsSending] = useState(false);
+    
+    // Edit functionality state
+    const [isEditingLast, setIsEditingLast] = useState(false);
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+    
+    // Routing decision state
+    const [lastRoutingDecision, setLastRoutingDecision] = useState<RoutingDecision | null>(null);
     
     // Create debounced and deduplicated sendMessage function
     const sendMessageCore = useCallback(async (customPrompt?: string, parameters?: Record<string, any>) => {
@@ -170,8 +188,33 @@ export const ChatInput = forwardRef<ChatInputRef, {
             threadId = optimisticId;
         }
 
-        // Get the message text
-        const messageText = customPrompt || currentText;
+        // Get the message text - ensure it's never undefined
+        const messageText = customPrompt || currentText || '';
+        
+        // Get previous messages for context
+        const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
+        const previousMessages = threadItems
+            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            .slice(-5) // Last 5 messages
+            .map(item => ({
+                role: 'user',
+                content: item.query
+            }));
+
+        // Route the message using the routing system
+        const routingDecision = routeMessage(messageText, chatMode, {
+            threadId: threadId,
+            previousMessages
+        });
+        
+        setLastRoutingDecision(routingDecision);
+        
+        console.log('[SendMessage] Routing decision:', {
+            strategy: routingDecision.routingStrategy,
+            useOpenAI: routingDecision.useOpenAI,
+            useN8N: routingDecision.useN8N,
+            reasoning: routingDecision.reasoning
+        });
         
         // Create optimistic thread item for immediate visual feedback
         const optimisticThreadItem = {
@@ -217,26 +260,46 @@ export const ChatInput = forwardRef<ChatInputRef, {
             }
         }
         
-        // Create structured JSON payload for n8n webhook
-        const jsonPayload = {
-            prompt: messageText,
-            message: messageText,
-            threadId: threadId,
-            threadItemId: optimisticItemId,
-            context: {
-                source: 'jetvision-agent',
-                timestamp: new Date().toISOString(),
-                useWebSearch: useWebSearch,
-                hasImageAttachment: !!imageAttachment?.base64,
-                parameters: promptParams || {},
-            },
-            intent: detectIntent(messageText),
-            expectedOutput: {
-                format: 'structured',
-                includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
-                includeRecommendations: true
+        // Create structured JSON payload based on routing decision
+        const jsonPayload = routingDecision.useN8N 
+            ? routingDecision.instructions.n8nPayload || {
+                prompt: messageText,
+                message: messageText,
+                threadId: threadId,
+                threadItemId: optimisticItemId,
+                context: {
+                    source: 'openai-frontend-agent',
+                    timestamp: new Date().toISOString(),
+                    useWebSearch: useWebSearch,
+                    hasImageAttachment: !!imageAttachment?.base64,
+                    parameters: promptParams || {},
+                    chatMode: chatMode,
+                },
+                routing: {
+                    strategy: routingDecision.routingStrategy,
+                    reasoning: routingDecision.reasoning,
+                    aviationClassification: routingDecision.aviationContext?.classification
+                },
+                intent: detectIntent(messageText),
+                expectedOutput: {
+                    format: 'structured',
+                    includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
+                    includeRecommendations: true
+                }
             }
-        };
+            : {
+                prompt: routingDecision.instructions.openaiPrompt || messageText,
+                message: messageText,
+                threadId: threadId,
+                threadItemId: optimisticItemId,
+                context: {
+                    source: 'openai-direct',
+                    timestamp: new Date().toISOString(),
+                    useWebSearch: useWebSearch,
+                    chatMode: chatMode,
+                    routing: routingDecision
+                }
+            };
         
         // Log the structured payload for debugging
         console.log('Sending structured JSON to n8n:', jsonPayload);
@@ -245,7 +308,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
         const formData = new FormData();
         formData.append('query', JSON.stringify(jsonPayload));
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
-        const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
         try {
             const submitStart = performance.now();
@@ -255,11 +317,21 @@ export const ChatInput = forwardRef<ChatInputRef, {
                 formData,
                 newThreadId: threadId,
                 existingThreadItemId: optimisticItemId, // Pass the same ID to prevent duplicates
-                messages: threadItems.sort(
-                    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                ),
+                messages: previousMessages.map((msg, index) => ({
+                    id: `msg-${index}`,
+                    threadId: threadId,
+                    query: msg.content,
+                    status: 'COMPLETED' as const,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    mode: chatMode as any,
+                    answer: undefined,
+                    sources: []
+                })),
                 useWebSearch,
-                useN8n: true, // Force n8n webhook usage
+                useN8n: routingDecision.useN8N, // Use routing decision
+                routingStrategy: routingDecision.routingStrategy,
+                aviationContext: routingDecision.aviationContext,
             });
             
             const totalTime = performance.now() - performanceStart;
@@ -292,6 +364,37 @@ export const ChatInput = forwardRef<ChatInputRef, {
             1000
         );
     }, [sendMessageCore, editor]);
+
+    // Edit functionality
+    const handleEditLastMessage = useCallback(() => {
+        if (!currentThreadId) return;
+        
+        // Get the last user message from the thread
+        const threadItems = getThreadItems(currentThreadId.toString());
+        const lastUserMessage = threadItems
+            .filter(item => item.query) // Only user messages
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+            
+        if (lastUserMessage && editor) {
+            setIsEditingLast(true);
+            setEditingMessageId(lastUserMessage.id);
+            
+            // Populate editor with the last message
+            editor.commands.setContent(lastUserMessage.query);
+            editor.commands.focus('end');
+        }
+    }, [currentThreadId, getThreadItems, editor]);
+
+    const canEditLast = useCallback(() => {
+        if (!currentThreadId || isGenerating) return false;
+        
+        const threadItems = getThreadItems(currentThreadId.toString());
+        const lastUserMessage = threadItems
+            .filter(item => item.query)
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+            
+        return !!lastUserMessage;
+    }, [currentThreadId, getThreadItems, isGenerating]);
 
     const renderChatInput = () => (
         <AnimatePresence>
@@ -344,9 +447,10 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                             <GeneratingStatus />
                                         ) : (
                                             <Flex gap="xs" items="center" className="shrink-0">
-                                                {/* Model selection removed - using n8n LangChain Agent */}
-                                                {/* <ChatModeButton /> */}
+                                                {/* OpenAI Frontend Agent Selection */}
+                                                <ChatModeButton />
                                                 {/* <AttachmentButton /> */}
+                                                <PromptCardsButton onSelectPrompt={handlePromptSelect} />
                                                 <WebSearchButton />
                                                 {/* <ToolsMenu /> */}
                                                 <ImageUpload
@@ -366,6 +470,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                                 stopGeneration={stopGeneration}
                                                 hasTextInput={hasTextInput}
                                                 sendMessage={sendMessage}
+                                                editLastMessage={handleEditLastMessage}
+                                                canEditLast={canEditLast()}
                                             />
                                         </Flex>
                                     </Flex>
