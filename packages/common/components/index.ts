@@ -39,4 +39,4 @@ export * from './text-shimmer';
 export * from './thread';
 export * from './tools-menu';
 export * from './prompt-cards';
-export { N8NWorkflowTester } from './n8n-workflow-tester';
+// export { N8NWorkflowTester } from './n8n-workflow-tester'; // Temporarily disabled for Vercel build
