@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useServiceControlStore } from '../../store/service-control.store';
 import { ServiceToggle } from './ServiceToggle';
 import { ServiceStatusIndicator } from './ServiceStatusIndicator';
+import { ServiceHealthCheck } from './ServiceHealthCheck';
 
 interface ServiceControlPanelProps {
     className?: string;
@@ -191,6 +192,26 @@ export const ServiceControlPanel = ({
                     </div>
                 )}
             </div>
+
+            {/* Health Monitoring Section */}
+            {showHealthChecks && (
+                <div className="space-y-4">
+                    <h3 className="font-medium">Service Health Monitoring</h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {Object.keys(services)
+                            .filter(serviceId => serviceId !== 'n8n') // N8N is always healthy
+                            .map(serviceId => (
+                            <ServiceHealthCheck
+                                key={serviceId}
+                                serviceId={serviceId}
+                                autoRefresh={true}
+                                refreshInterval={5 * 60 * 1000} // 5 minutes
+                                showDetails={true}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Service Dependencies Section */}
             <div className="bg-muted/30 rounded-lg p-4">
