@@ -3,6 +3,15 @@
  * Parses the prompts.md file and structures data for UI consumption
  */
 
+import React from 'react';
+import {
+  IconPlane,
+  IconMail,
+  IconMap,
+  IconTarget,
+  IconChartBar
+} from '@tabler/icons-react';
+
 export interface PromptCard {
   id: string;
   category: string;
@@ -18,16 +27,16 @@ export interface PromptCategory {
   slug: string;
   count: number;
   prompts: PromptCard[];
-  icon: string;
+  icon: React.ElementType;
   color: string;
 }
 
 const CATEGORY_ICONS = {
-  'Jet Charter Operations': '✈️',
-  'Apollo Campaign Management': '📧', 
-  'Travel Planning & Coordination': '🗺️',
-  'Lead Generation & Targeting': '🎯',
-  'Analytics & Insights': '📊'
+  'Jet Charter Operations': IconPlane,
+  'Apollo Campaign Management': IconMail, 
+  'Travel Planning & Coordination': IconMap,
+  'Lead Generation & Targeting': IconTarget,
+  'Analytics & Insights': IconChartBar
 };
 
 const CATEGORY_COLORS = {
@@ -66,7 +75,7 @@ export function parsePromptsMarkdown(content: string): PromptCategory[] {
         slug,
         count: 0,
         prompts: [],
-        icon: CATEGORY_ICONS[categoryName as keyof typeof CATEGORY_ICONS] || '📝',
+        icon: CATEGORY_ICONS[categoryName as keyof typeof CATEGORY_ICONS] || IconChartBar,
         color: CATEGORY_COLORS[categoryName as keyof typeof CATEGORY_COLORS] || 'bg-gray-50 text-gray-700 border-gray-200'
       };
     }
@@ -150,7 +159,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
     name: 'Jet Charter Operations',
     slug: 'jet-charter',
     count: 4,
-    icon: '✈️',
+    icon: IconPlane,
     color: 'bg-blue-50 text-blue-700 border-blue-200',
     prompts: [
       {
@@ -191,7 +200,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
     name: 'Apollo Campaign Management',
     slug: 'apollo-campaigns',
     count: 4,
-    icon: '📧',
+    icon: IconMail,
     color: 'bg-purple-50 text-purple-700 border-purple-200',
     prompts: [
       {
@@ -232,7 +241,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
     name: 'Lead Generation & Targeting', 
     slug: 'lead-generation',
     count: 4,
-    icon: '🎯',
+    icon: IconTarget,
     color: 'bg-orange-50 text-orange-700 border-orange-200',
     prompts: [
       {
@@ -273,7 +282,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
     name: 'Analytics & Insights',
     slug: 'analytics',
     count: 4, 
-    icon: '📊',
+    icon: IconChartBar,
     color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     prompts: [
       {
