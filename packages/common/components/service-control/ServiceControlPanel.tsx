@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@repo/ui';
-import { IconSettings, IconRefresh, IconPower, IconPowerOff } from '@tabler/icons-react';
+import { IconSettings, IconRefresh, IconPower, IconX } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useServiceControlStore } from '../../store/service-control.store';
@@ -135,7 +135,7 @@ export const ServiceControlPanel = ({
                             onClick={handleDisableAll}
                             disabled={isPerformingBulkAction || enabledServicesCount === 0}
                         >
-                            <IconPowerOff size={16} className="mr-2" />
+                            <IconX size={16} className="mr-2" />
                             Disable All Services
                         </Button>
                         
