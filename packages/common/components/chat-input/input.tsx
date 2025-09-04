@@ -389,6 +389,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
         if (!currentThreadId || isGenerating) return false;
         
         const threadItems = getThreadItems(currentThreadId.toString());
+        if (!Array.isArray(threadItems)) return false;
+        
         const lastUserMessage = threadItems
             .filter(item => item.query)
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
