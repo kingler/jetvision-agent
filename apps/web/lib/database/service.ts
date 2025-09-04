@@ -4,11 +4,14 @@
  * Provides unified access to all repositories and database clients
  */
 
+// Import all repository classes
+import { UserRepository } from './repositories/user.repository';
+import { CompanyRepository } from './repositories/company.repository';
+import { LeadRepository } from './repositories/lead.repository';
+import { AircraftRepository } from './repositories/aircraft.repository';
+
 // Export all repository classes
-export { UserRepository } from './repositories/user.repository';
-export { CompanyRepository } from './repositories/company.repository';
-export { LeadRepository } from './repositories/lead.repository';
-export { AircraftRepository } from './repositories/aircraft.repository';
+export { UserRepository, CompanyRepository, LeadRepository, AircraftRepository };
 
 // Export database clients
 export { 
