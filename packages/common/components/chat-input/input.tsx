@@ -22,7 +22,7 @@ import { isAviationMessage } from '../../utils/aviation-classifier';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
-import { PromptCardsButton, PromptCard } from '../prompt-cards';
+// import { PromptCardsButton, PromptCard } from '../prompt-cards'; // Temporarily disabled for build
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
 
@@ -121,12 +121,12 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const chatMode = useChatStore(state => state.chatMode);
     
     // Handle prompt selection from prompt cards
-    const handlePromptSelect = useCallback((prompt: PromptCard) => {
-        if (editor && editor.commands) {
-            editor.commands.setContent(prompt.prompt);
-            editor.commands.focus('end');
-        }
-    }, [editor]);
+    // const handlePromptSelect = useCallback((prompt: PromptCard) => {
+    //     if (editor && editor.commands) {
+    //         editor.commands.setContent(prompt.prompt);
+    //         editor.commands.focus('end');
+    //     }
+    // }, [editor]);
     
     // Add loading state for send button
     const [isSending, setIsSending] = useState(false);
@@ -452,7 +452,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                                 {/* OpenAI Frontend Agent Selection */}
                                                 <ChatModeButton />
                                                 {/* <AttachmentButton /> */}
-                                                <PromptCardsButton onSelectPrompt={handlePromptSelect} />
+                                                {/* <PromptCardsButton onSelectPrompt={handlePromptSelect} /> */}
                                                 <WebSearchButton />
                                                 {/* <ToolsMenu /> */}
                                                 <ImageUpload
