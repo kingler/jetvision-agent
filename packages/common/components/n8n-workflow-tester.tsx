@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn, Flex } from '@repo/ui';
+import { cn } from '@repo/ui';
 import { v4 as uuidv4 } from 'uuid';
 import { useServiceControlStore } from '../store/service-control.store';
 import { ServiceStatusIndicator } from './service-control/ServiceStatusIndicator';
@@ -527,7 +527,8 @@ export const N8NWorkflowTester: React.FC = () => {
         </button>
       </div>
     </motion.div>
-  );
+    );
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
