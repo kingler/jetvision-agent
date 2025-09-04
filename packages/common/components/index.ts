@@ -29,6 +29,7 @@ export * from './motion-skeleton';
 export * from './popover-confirm';
 export * from './recent-threads';
 export * from './search-results';
+export * from './service-control';
 export * from './settings-modal';
 export * from './side-bar';
 export * from './sign-in';
