@@ -67,14 +67,14 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                 </label>
                 <div className="flex space-x-4">
                     <Button
-                        variant={data.tripType === 'one-way' ? 'default' : 'outline'}
+                        variant={data.tripType === 'one-way' ? 'default' : 'outlined'}
                         onClick={() => handleTripTypeChange('one-way')}
                         className="flex-1"
                     >
                         One Way
                     </Button>
                     <Button
-                        variant={data.tripType === 'round-trip' ? 'default' : 'outline'}
+                        variant={data.tripType === 'round-trip' ? 'default' : 'outlined'}
                         onClick={() => handleTripTypeChange('round-trip')}
                         className="flex-1"
                     >

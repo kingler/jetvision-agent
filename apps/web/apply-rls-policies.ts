@@ -64,13 +64,16 @@ async function applyRLSPolicies() {
       process.stdout.write(`[${i + 1}/${statements.length}] ${description}...`);
 
       try {
-        const { error } = await supabase.rpc('exec_sql', {
-          sql: statement
-        }).catch(async () => {
+        let result;
+        try {
+          result = await supabase.rpc('exec_sql', {
+            sql: statement
+          });
+        } catch (rpcError) {
           // If exec_sql doesn't exist, try direct execution
-          const { error } = await supabase.from('_sql').select(statement);
-          return { error };
-        });
+          result = await supabase.from('_sql').select(statement);
+        }
+        const { error } = result;
 
         if (error) {
           // Try alternative method

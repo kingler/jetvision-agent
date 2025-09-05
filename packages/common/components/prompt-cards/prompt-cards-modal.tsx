@@ -2,40 +2,100 @@
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn, Flex } from '@repo/ui';
+import { cn } from '@repo/ui';
 import { STATIC_PROMPTS_DATA, PromptCard, PromptCategory } from '../../utils/prompts-parser';
+import { IconSearch, IconX, IconEdit, IconCheck, IconArrowRight } from '@tabler/icons-react';
+import { useAppStore } from '../../store/app.store';
 
 interface PromptCardsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPrompt: (prompt: PromptCard) => void;
+  onInsertPrompt?: (prompt: string, fullPrompt: string) => void;
 }
 
 export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
   isOpen,
   onClose,
-  onSelectPrompt
+  onSelectPrompt,
+  onInsertPrompt
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { isSidebarOpen } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [editingCards, setEditingCards] = useState<Set<string>>(new Set());
+  const [editedContent, setEditedContent] = useState<Record<string, string>>({});
 
-  const filteredCategories = STATIC_PROMPTS_DATA.filter(category => {
+  // Flatten all prompts for grid display with filtering
+  const allPrompts = STATIC_PROMPTS_DATA.flatMap(category => 
+    category.prompts.map(prompt => ({...prompt, categoryIcon: category.icon, categoryColor: category.color}))
+  );
+  
+  const filteredPrompts = allPrompts.filter(prompt => {
     if (!searchQuery) return true;
-    
-    const matchesCategory = category.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPrompt = category.prompts.some(prompt => 
+    return (
       prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prompt.description.toLowerCase().includes(searchQuery.toLowerCase())
+      prompt.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      prompt.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    
-    return matchesCategory || matchesPrompt;
   });
 
   const handleSelectPrompt = useCallback((prompt: PromptCard) => {
     onSelectPrompt(prompt);
     onClose();
   }, [onSelectPrompt, onClose]);
+  
+  const handleInsertPrompt = useCallback((prompt: PromptCard) => {
+    if (onInsertPrompt) {
+      onInsertPrompt(prompt.prompt, prompt.fullPrompt);
+      onClose();
+    }
+  }, [onInsertPrompt, onClose]);
+  
+  const toggleCardExpansion = useCallback((cardId: string) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+        // Also remove from editing state when collapsing
+        setEditingCards(prevEdit => {
+          const newEditSet = new Set(prevEdit);
+          newEditSet.delete(cardId);
+          return newEditSet;
+        });
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  }, []);
+  
+  const toggleCardEditing = useCallback((cardId: string, currentPrompt: string) => {
+    setEditingCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+        // Initialize edited content
+        setEditedContent(prevContent => ({
+          ...prevContent,
+          [cardId]: currentPrompt
+        }));
+      }
+      return newSet;
+    });
+  }, []);
+  
+  const saveCardEdit = useCallback((cardId: string) => {
+    // In a real app, this would save to backend
+    setEditingCards(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(cardId);
+      return newSet;
+    });
+  }, []);
 
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -51,7 +111,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 dark:bg-black/20"
         onClick={handleBackdropClick}
       >
         <motion.div
@@ -59,275 +119,252 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", duration: 0.3 }}
-          className="relative mx-4 w-full max-w-4xl max-h-[80vh] bg-background rounded-xl border border-border shadow-2xl overflow-hidden"
+          className={cn(
+            "relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden",
+            // Mobile-first responsive sizing with safe area support
+            "w-full h-full max-h-screen rounded-none", // Mobile: full-screen
+            "sm:w-[95vw] sm:max-w-2xl sm:max-h-[90vh] sm:rounded-xl sm:m-4", // Small screens: reduced size
+            "md:max-w-4xl", // Medium screens: larger modal
+            "lg:max-w-6xl", // Large screens: even larger
+            "xl:max-w-7xl", // Extra large: maximum size
+            // Sidebar-aware positioning (desktop only)
+            isSidebarOpen 
+              ? "md:ml-64" // Account for 240px sidebar
+              : "md:ml-16"  // Account for 50px collapsed sidebar
+          )}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-border bg-secondary/30">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-primary"
-                >
-                  <path d="M8 6h13" />
-                  <path d="M8 12h13" />
-                  <path d="M8 18h13" />
-                  <path d="M3 6h.01" />
-                  <path d="M3 12h.01" />
-                  <path d="M3 18h.01" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">
-                  Prompt Library
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Choose from our professional prompt collection
-                </p>
-              </div>
+          <div className="flex items-center justify-between p-4 sm:p-6 pt-mobile-safe-top border-b border-gray-200 dark:border-gray-800">
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Prompt Library
+              </h2>
+              <p className="text-mobile-sm sm:text-sm text-gray-500 dark:text-gray-500">
+                Choose from {allPrompts.length} professional prompts
+              </p>
             </div>
             
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-secondary transition-colors"
+              className="flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors touch-manipulation"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-muted-foreground"
-              >
-                <path d="M18 6L6 18" />
-                <path d="M6 6l12 12" />
-              </svg>
+              <IconX size={20} className="text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
           {/* Search Bar */}
-          <div className="p-4 border-b border-border">
+          <div className="p-4 sm:p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="relative">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
+              <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
               <input
                 type="text"
                 placeholder="Search prompts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-secondary/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-colors"
+                className="w-full pl-10 pr-4 py-3 sm:py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-colors text-gray-900 dark:text-gray-100 text-base sm:text-sm touch-manipulation"
               />
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex h-[500px]">
-            {/* Categories Sidebar */}
-            <div className="w-72 border-r border-border bg-secondary/20 overflow-y-auto">
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">
-                  Categories
-                </h3>
-                <div className="space-y-2">
-                  {filteredCategories.map((category) => (
-                    <button
-                      key={category.slug}
-                      onClick={() => setSelectedCategory(
-                        selectedCategory === category.slug ? null : category.slug
-                      )}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200",
-                        selectedCategory === category.slug
-                          ? "bg-primary/10 border border-primary/20 text-primary"
-                          : "hover:bg-secondary/50 text-foreground"
-                      )}
-                    >
-                      <span className="text-xl">{category.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm leading-none mb-1">
-                          {category.name}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {category.count} prompts
-                        </div>
-                      </div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className={cn(
-                          "transition-transform duration-200",
-                          selectedCategory === category.slug ? "rotate-90" : ""
-                        )}
-                      >
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </button>
-                  ))}
+          {/* Content - Grid Layout */}
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-200px)] sm:max-h-[calc(90vh-140px)] pb-mobile-safe-bottom">
+            {filteredPrompts.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="text-center">
+                  <IconSearch size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+                  <h3 className="text-mobile-lg sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    No prompts found
+                  </h3>
+                  <p className="text-mobile-sm sm:text-sm text-gray-500 dark:text-gray-400">
+                    Try adjusting your search terms
+                  </p>
                 </div>
               </div>
-            </div>
-
-            {/* Prompts Grid */}
-            <div className="flex-1 overflow-y-auto">
-              {selectedCategory ? (
-                <div className="p-6">
-                  {(() => {
-                    const category = filteredCategories.find(c => c.slug === selectedCategory);
-                    if (!category) return null;
-                    
-                    return (
-                      <>
-                        <div className="flex items-center gap-3 mb-6">
-                          <span className="text-2xl">{category.icon}</span>
-                          <div>
-                            <h3 className="text-lg font-semibold text-foreground">
-                              {category.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {category.prompts.length} professional prompts
-                            </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+                {filteredPrompts.map((prompt) => {
+                  const isExpanded = expandedCards.has(prompt.id);
+                  const isEditing = editingCards.has(prompt.id);
+                  
+                  return (
+                    <motion.div
+                      key={prompt.id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={cn(
+                        "group relative rounded-lg transition-all",
+                        "bg-white dark:bg-gray-900",
+                        "border border-gray-200 dark:border-gray-800",
+                        "shadow-md hover:shadow-lg",
+                        "hover:border-gray-300 dark:hover:border-gray-700",
+                        isExpanded && "sm:col-span-full lg:col-span-2 2xl:col-span-2"
+                      )}
+                    >
+                      <div className="p-4 sm:p-4">
+                        {/* Card Header */}
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start gap-3 flex-1">
+                            <prompt.categoryIcon size={20} className="text-gray-600 dark:text-gray-400 mt-0.5" />
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-mobile-base sm:text-base text-gray-900 dark:text-gray-100 line-clamp-1 mb-1">
+                                {prompt.title}
+                              </h4>
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-mobile-xs sm:text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                {prompt.category}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-1 ml-2">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleCardExpansion(prompt.id); }}
+                              className="opacity-0 group-hover:opacity-100 sm:opacity-100 p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all touch-manipulation"
+                            >
+                              <IconEdit size={14} className="text-gray-500 dark:text-gray-400" />
+                            </button>
+                            {onInsertPrompt && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
+                                className="opacity-0 group-hover:opacity-100 sm:opacity-100 p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all touch-manipulation"
+                                title="Insert prompt"
+                              >
+                                <IconArrowRight size={14} className="text-gray-500 dark:text-gray-400" />
+                              </button>
+                            )}
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-4">
-                          {category.prompts
-                            .filter(prompt => 
-                              !searchQuery || 
-                              prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              prompt.description.toLowerCase().includes(searchQuery.toLowerCase())
-                            )
-                            .map((prompt) => (
+                        {/* Basic Content */}
+                        <p className="text-mobile-sm sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                          {prompt.description}
+                        </p>
+                        
+                        {/* Prompt Preview */}
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-3">
+                          <p className="text-mobile-sm sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+                            "{prompt.prompt}"
+                          </p>
+                        </div>
+                        
+                        {/* Expanded Content */}
+                        <AnimatePresence>
+                          {isExpanded && (
                             <motion.div
-                              key={prompt.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className="group cursor-pointer"
-                              onClick={() => handleSelectPrompt(prompt)}
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="mt-4 overflow-hidden"
                             >
-                              <div className="p-4 rounded-lg border border-border bg-background hover:bg-secondary/30 hover:border-primary/30 transition-all duration-200">
-                                <div className="flex items-start justify-between mb-3">
-                                  <div className="flex-1">
-                                    <h4 className="font-medium text-foreground mb-1 group-hover:text-primary transition-colors">
-                                      {prompt.title}
-                                    </h4>
-                                    <div className={cn(
-                                      "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border",
-                                      category.color
-                                    )}>
-                                      {prompt.category}
-                                    </div>
+                              {/* Full Prompt Section */}
+                              <div className="mb-4">
+                                <label className="block text-mobile-sm sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                  Full Prompt:
+                                </label>
+                                {isEditing ? (
+                                  <textarea
+                                    value={editedContent[prompt.id] || prompt.fullPrompt}
+                                    onChange={(e) => setEditedContent(prev => ({
+                                      ...prev,
+                                      [prompt.id]: e.target.value
+                                    }))}
+                                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm min-h-[120px] resize-y focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                    placeholder="Enter full prompt..."
+                                  />
+                                ) : (
+                                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                    <p className="text-mobile-sm sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                      {prompt.fullPrompt}
+                                    </p>
                                   </div>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="text-muted-foreground group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
-                                  >
-                                    <path d="M7 17L17 7" />
-                                    <path d="M7 7h10v10" />
-                                  </svg>
-                                </div>
-                                
-                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                                  {prompt.description}
-                                </p>
-                                
-                                <div className="bg-secondary/50 rounded-md p-3 border-l-2 border-primary/20">
-                                  <p className="text-sm text-foreground font-medium">
-                                    "{prompt.prompt}"
-                                  </p>
-                                </div>
+                                )}
+                              </div>
+                              
+                              {/* Action Buttons */}
+                              <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                {isEditing ? (
+                                  <>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); saveCardEdit(prompt.id); }}
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-green-600 hover:bg-green-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                    >
+                                      <IconCheck size={14} />
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); toggleCardEditing(prompt.id, prompt.fullPrompt); }}
+                                      className="px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); toggleCardEditing(prompt.id, prompt.fullPrompt); }}
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                    >
+                                      <IconEdit size={14} />
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleSelectPrompt(prompt); }}
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                    >
+                                      <IconArrowRight size={14} />
+                                      Use Prompt
+                                    </button>
+                                    {onInsertPrompt && (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-green-600 hover:bg-green-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                      >
+                                        <IconArrowRight size={14} />
+                                        Insert
+                                      </button>
+                                    )}
+                                  </>
+                                )}
                               </div>
                             </motion.div>
-                          ))}
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-full p-6">
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-secondary/50 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-muted-foreground"
-                      >
-                        <path d="M8 6h13" />
-                        <path d="M8 12h13" />
-                        <path d="M8 18h13" />
-                        <path d="M3 6h.01" />
-                        <path d="M3 12h.01" />
-                        <path d="M3 18h.01" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">
-                      Select a Category
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Choose a category from the sidebar to explore professional prompts
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
+                          )}
+                        </AnimatePresence>
+                        
+                        {/* Quick Actions for non-expanded cards */}
+                        {!isExpanded && (
+                          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleSelectPrompt(prompt); }}
+                              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                            >
+                              <IconArrowRight size={14} />
+                              Select
+                            </button>
+                            {onInsertPrompt && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
+                                className="px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+                                title="Insert into chat"
+                              >
+                                Insert
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border bg-secondary/10">
-            <p className="text-xs text-muted-foreground text-center">
-              {STATIC_PROMPTS_DATA.reduce((total, category) => total + category.count, 0)} professional prompts • 
-              Optimized for JetVision operations
+          <div className="p-4 pb-mobile-safe-bottom border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30">
+            <p className="text-mobile-xs sm:text-xs text-gray-500 dark:text-gray-400 text-center">
+              {allPrompts.length} professional prompts • Optimized for JetVision operations
             </p>
           </div>
         </motion.div>

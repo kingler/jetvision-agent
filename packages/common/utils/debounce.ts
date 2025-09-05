@@ -34,7 +34,7 @@ export const deduplicate = <T extends (...args: any[]) => Promise<any>>(
     const now = Date.now();
     
     // Clean up old timestamps
-    for (const [reqKey, timestamp] of requestTimestamps.entries()) {
+    for (const [reqKey, timestamp] of Array.from(requestTimestamps.entries())) {
       if (now - timestamp > timeWindow) {
         requestTimestamps.delete(reqKey);
         activeRequests.delete(reqKey);

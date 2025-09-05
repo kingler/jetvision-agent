@@ -29,6 +29,7 @@ export * from './motion-skeleton';
 export * from './popover-confirm';
 export * from './recent-threads';
 export * from './search-results';
+export * from './service-control';
 export * from './settings-modal';
 export * from './side-bar';
 export * from './sign-in';
@@ -37,4 +38,5 @@ export * from './table-of-messages';
 export * from './text-shimmer';
 export * from './thread';
 export * from './tools-menu';
-export * from './prompt-cards';
+// export * from './prompt-cards'; // Temporarily disabled for build
+// export { N8NWorkflowTester } from './n8n-workflow-tester'; // Temporarily disabled for Vercel build

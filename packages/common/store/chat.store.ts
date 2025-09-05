@@ -50,7 +50,7 @@ const loadInitialData = async () => {
     // Always use JetVision Agent model
     config.model = jetvisionModel.id;
     
-    const chatMode = config.chatMode || ChatMode.GEMINI_2_FLASH;
+    const chatMode = config.chatMode || ChatMode.GPT_4o;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
     const customInstructions = config.customInstructions || 'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.';
 
@@ -459,7 +459,7 @@ export const useChatStore = create(
         editor: undefined,
         context: '',
         threads: [],
-        chatMode: ChatMode.GEMINI_2_FLASH,
+        chatMode: ChatMode.GPT_4o,
         threadItems: [],
         useWebSearch: false,
         customInstructions: '',
@@ -877,7 +877,7 @@ export const useChatStore = create(
                         id: threadItem.id,
                         threadId,
                         query: threadItem.query || '',
-                        mode: threadItem.mode || ChatMode.GEMINI_2_FLASH,
+                        mode: threadItem.mode || ChatMode.GPT_4o,
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         ...threadItem,

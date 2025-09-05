@@ -273,7 +273,7 @@ export const ServiceHealthDashboard: React.FC<ServiceHealthDashboardProps> = ({
                 {systemHealth.overall}
               </Badge>
               <Button 
-                variant="outline" 
+                variant="outlined" 
                 size="sm" 
                 onClick={fetchSystemHealth}
                 disabled={loading}
@@ -384,7 +384,7 @@ export const ServiceHealthDashboard: React.FC<ServiceHealthDashboardProps> = ({
               {/* Action Buttons */}
               <div className="flex gap-2 pt-2">
                 <Button 
-                  variant="outline" 
+                  variant="outlined" 
                   size="sm" 
                   onClick={() => handleServiceAction(service.serviceName, 'reset')}
                   className="flex-1"

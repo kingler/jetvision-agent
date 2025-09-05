@@ -27,6 +27,7 @@ export interface N8NFallbackResponse {
   data?: any;
   message: string;
   queued_for_retry?: boolean;
+  processed_at: string;
 }
 
 export class N8NClient {
@@ -189,6 +190,7 @@ export class N8NClient {
           fallback_used: true,
           message: `Payload queued for retry: ${payload.type}`,
           queued_for_retry: true,
+          processed_at: new Date().toISOString(),
         };
     }
   }
@@ -220,6 +222,7 @@ export class N8NClient {
         message: 'Lead queued for processing when N8N service recovers',
         data: { queued_at: new Date().toISOString() },
         queued_for_retry: true,
+        processed_at: new Date().toISOString(),
       };
     } catch (error) {
       Sentry.captureException(error, {
@@ -251,6 +254,7 @@ export class N8NClient {
       fallback_used: true,
       message: 'Email response will be processed when N8N service recovers',
       queued_for_retry: true,
+      processed_at: new Date().toISOString(),
     };
   }
 
@@ -260,7 +264,8 @@ export class N8NClient {
   private async handleBookingRequestFallback(payload: N8NWebhookPayload): Promise<N8NFallbackResponse> {
     // Booking requests are critical - might need immediate attention
     
-    Sentry.captureMessage('Booking request fallback activated - manual intervention may be required', 'warning', {
+    Sentry.captureMessage('Booking request fallback activated - manual intervention may be required', {
+      level: 'warning',
       tags: {
         business_critical: true,
         fallback: 'booking_request',
@@ -280,6 +285,7 @@ export class N8NClient {
         queued_at: new Date().toISOString(),
       },
       queued_for_retry: true,
+      processed_at: new Date().toISOString(),
     };
   }
 
@@ -294,6 +300,7 @@ export class N8NClient {
       fallback_used: true,
       message: 'Data sync queued for when N8N service recovers',
       queued_for_retry: true,
+      processed_at: new Date().toISOString(),
     };
   }
 

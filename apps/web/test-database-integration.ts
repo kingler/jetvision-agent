@@ -15,6 +15,7 @@ dotenv.config({ path: '.env.local' });
 
 async function runTests() {
   console.log('🧪 Starting database integration tests...\n');
+  // Use static methods from DatabaseService
 
   try {
     // Test 1: Database Connection
@@ -42,38 +43,21 @@ async function runTests() {
     });
     console.log('✅ User preferences updated\n');
 
-    // Test 3: Conversation Operations
+    // Test 3: Conversation Operations (TODO: Implement conversation repository)
     console.log('3️⃣ Testing conversation operations...');
     console.log('⚠️ Conversation operations not implemented yet\n');
-    // const conversation = await createConversation(testUser.id, 'Test Conversation');
-    console.log('✅ Conversation created:', conversation.id);
-
-    // TODO: Implement conversation operations
-    // const userMessage = await addMessage(conversation.id, 'user', 'Hello, this is a test message!');
-    // const assistantMessage = await addMessage(conversation.id, 'assistant', 'Hello! This is a response from the assistant.');
-    // const messages = await DatabaseService.conversations.getMessages(conversation.id);
 
     // Test 4: Apollo Operations (TODO: Implement Apollo repository)
     console.log('4️⃣ Testing Apollo operations...');
     console.log('⚠️ Apollo operations not implemented yet\n');
-    // TODO: Implement Apollo operations
-    // const lead = await saveApolloLead(testUser.id, {...});
-    // const campaign = await saveApolloCampaign(testUser.id, {...});
-    // await DatabaseService.apollo.addLeadsToCampaign(campaign.id, [lead.id]);
 
     // Test 5: Search Operations (TODO: Implement search functionality)
     console.log('5️⃣ Testing search operations...');
     console.log('⚠️ Search operations not implemented yet\n');
-    // TODO: Implement search functionality
-    // const searchResults = await DatabaseService.conversations.search(testUser.id, 'test');
-    // const leadSearchResults = await DatabaseService.apollo.searchLeads(testUser.id, 'john');
 
     // Test 6: Statistics (TODO: Implement statistics functionality)
     console.log('6️⃣ Testing statistics...');
     console.log('⚠️ Statistics not implemented yet');
-    // TODO: Implement statistics functionality
-    // const convStats = await DatabaseService.conversations.getStats(testUser.id);
-    // const apolloStats = await DatabaseService.apollo.getCampaignStats(testUser.id);
 
     console.log('\n🎉 All tests passed successfully!');
 

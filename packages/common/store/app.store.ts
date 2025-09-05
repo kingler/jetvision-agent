@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 export const SETTING_TABS = {
     API_KEYS: 'api-keys',
     MCP_TOOLS: 'mcp-tools',
+    SERVICE_CONTROL: 'service-control',
     CREDITS: 'credits',
     PERSONALIZATION: 'personalization',
 } as const;

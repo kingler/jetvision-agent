@@ -22,7 +22,7 @@ import { isAviationMessage } from '../../utils/aviation-classifier';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
-import { PromptCardsButton, PromptCard } from '../prompt-cards';
+// import { PromptCardsButton, PromptCard } from '../prompt-cards'; // Temporarily disabled for build
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
 
@@ -121,12 +121,12 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const chatMode = useChatStore(state => state.chatMode);
     
     // Handle prompt selection from prompt cards
-    const handlePromptSelect = useCallback((prompt: PromptCard) => {
-        if (editor && editor.commands) {
-            editor.commands.setContent(prompt.prompt);
-            editor.commands.focus('end');
-        }
-    }, [editor]);
+    // const handlePromptSelect = useCallback((prompt: PromptCard) => {
+    //     if (editor && editor.commands) {
+    //         editor.commands.setContent(prompt.prompt);
+    //         editor.commands.focus('end');
+    //     }
+    // }, [editor]);
     
     // Add loading state for send button
     const [isSending, setIsSending] = useState(false);
@@ -330,8 +330,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
                 })),
                 useWebSearch,
                 useN8n: routingDecision.useN8N, // Use routing decision
-                routingStrategy: routingDecision.routingStrategy,
-                aviationContext: routingDecision.aviationContext,
             });
             
             const totalTime = performance.now() - performanceStart;
@@ -366,11 +364,11 @@ export const ChatInput = forwardRef<ChatInputRef, {
     }, [sendMessageCore, editor]);
 
     // Edit functionality
-    const handleEditLastMessage = useCallback(() => {
+    const handleEditLastMessage = useCallback(async () => {
         if (!currentThreadId) return;
         
         // Get the last user message from the thread
-        const threadItems = getThreadItems(currentThreadId.toString());
+        const threadItems = await getThreadItems(currentThreadId.toString());
         const lastUserMessage = threadItems
             .filter(item => item.query) // Only user messages
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -389,6 +387,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
         if (!currentThreadId || isGenerating) return false;
         
         const threadItems = getThreadItems(currentThreadId.toString());
+        if (!Array.isArray(threadItems)) return false;
+        
         const lastUserMessage = threadItems
             .filter(item => item.query)
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -450,7 +450,7 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                                 {/* OpenAI Frontend Agent Selection */}
                                                 <ChatModeButton />
                                                 {/* <AttachmentButton /> */}
-                                                <PromptCardsButton onSelectPrompt={handlePromptSelect} />
+                                                {/* <PromptCardsButton onSelectPrompt={handlePromptSelect} /> */}
                                                 <WebSearchButton />
                                                 {/* <ToolsMenu /> */}
                                                 <ImageUpload

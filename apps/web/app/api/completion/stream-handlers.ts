@@ -1,4 +1,4 @@
-import { runWorkflow } from '@repo/ai/workflow';
+import { runWorkflow } from '@repo/ai/workflow/flow';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { logger } from '@repo/shared/logger';
 import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
