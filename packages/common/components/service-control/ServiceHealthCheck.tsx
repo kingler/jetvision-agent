@@ -167,7 +167,7 @@ export const ServiceHealthCheck = ({
         
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="outlined"
             size="sm"
             onClick={handleHealthCheck}
             disabled={isChecking || !isServiceAvailable(serviceId)}
@@ -178,7 +178,7 @@ export const ServiceHealthCheck = ({
           
           {autoRefresh && (
             <Button
-              variant={autoRefreshActive ? 'default' : 'outline'}
+              variant={autoRefreshActive ? 'default' : 'outlined'}
               size="sm"
               onClick={toggleAutoRefresh}
               disabled={!isServiceAvailable(serviceId)}

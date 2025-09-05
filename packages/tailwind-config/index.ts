@@ -102,6 +102,9 @@ const config: any = {
                 'mobile-safe-bottom': 'env(safe-area-inset-bottom)',
                 'mobile-safe-left': 'env(safe-area-inset-left)',
                 'mobile-safe-right': 'env(safe-area-inset-right)',
+                // Modal-specific spacing
+                'modal-offset-sidebar-open': '240px', // Full sidebar width
+                'modal-offset-sidebar-closed': '50px', // Collapsed sidebar width
             },
             fontWeight: {
                 normal: '350',
@@ -186,6 +189,8 @@ const config: any = {
             boxShadow: {
                 'subtle-xs': 'var(--shadow-subtle-xs)',
                 'subtle-sm': 'var(--shadow-subtle-sm)',
+                'modal-mobile': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                'modal-desktop': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
             },
         },
     },

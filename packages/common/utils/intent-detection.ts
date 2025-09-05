@@ -145,5 +145,5 @@ function extractEntities(message: string): string[] {
     entities.push(...companyMatch.map(company => `company:${company}`));
   }
   
-  return [...new Set(entities)]; // Remove duplicates
+  return Array.from(new Set(entities)); // Remove duplicates
 }

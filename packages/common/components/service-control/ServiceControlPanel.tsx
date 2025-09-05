@@ -141,7 +141,7 @@ export const ServiceControlPanel = ({
                         
                         {showHealthChecks && (
                             <Button
-                                variant="outline"
+                                variant="outlined"
                                 size="sm"
                                 onClick={handleHealthCheckAll}
                                 disabled={isPerformingBulkAction || enabledServicesCount === 0}

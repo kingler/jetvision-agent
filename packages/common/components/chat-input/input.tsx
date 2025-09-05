@@ -330,8 +330,6 @@ export const ChatInput = forwardRef<ChatInputRef, {
                 })),
                 useWebSearch,
                 useN8n: routingDecision.useN8N, // Use routing decision
-                routingStrategy: routingDecision.routingStrategy,
-                aviationContext: routingDecision.aviationContext,
             });
             
             const totalTime = performance.now() - performanceStart;
@@ -366,11 +364,11 @@ export const ChatInput = forwardRef<ChatInputRef, {
     }, [sendMessageCore, editor]);
 
     // Edit functionality
-    const handleEditLastMessage = useCallback(() => {
+    const handleEditLastMessage = useCallback(async () => {
         if (!currentThreadId) return;
         
         // Get the last user message from the thread
-        const threadItems = getThreadItems(currentThreadId.toString());
+        const threadItems = await getThreadItems(currentThreadId.toString());
         const lastUserMessage = threadItems
             .filter(item => item.query) // Only user messages
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];

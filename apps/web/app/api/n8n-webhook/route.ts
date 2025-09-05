@@ -58,11 +58,12 @@ export async function GET(request: NextRequest) {
 
 // Main webhook handler
 export async function POST(request: NextRequest) {
-  // Check authentication
+  // Check authentication (bypass in development/keyless mode)
   const session = await auth();
   const clerkUserId = session?.userId;
-
-  if (!clerkUserId) {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  if (!clerkUserId && !isDevelopment) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -222,15 +223,16 @@ export async function POST(request: NextRequest) {
             const transformed = transformN8nResponse(webhookData, threadId, threadItemId);
             
             sendEvent('answer', {
-              id: transformed.id,
               threadId: transformed.threadId,
-              answer: transformed.answer,
-              sources: transformed.sources || [],
-              metadata: transformed.metadata,
-              timestamp: new Date().toISOString(),
+              threadItemId: transformed.id,
+              answer: {
+                text: transformed.answer.text,
+                structured: transformed.answer.structured
+              }
             });
 
             sendEvent('done', { 
+              type: 'done',
               timestamp: new Date().toISOString(),
               status: 'success'
             });
@@ -242,34 +244,33 @@ export async function POST(request: NextRequest) {
               const transformed = transformN8nResponse(result, threadId, threadItemId);
               
               sendEvent('answer', {
-                id: transformed.id,
                 threadId: transformed.threadId,
-                answer: transformed.answer,
-                sources: transformed.sources || [],
-                metadata: transformed.metadata,
-                timestamp: new Date().toISOString(),
+                threadItemId: transformed.id,
+                answer: {
+                  text: transformed.answer.text,
+                  structured: transformed.answer.structured
+                }
               });
             }
 
             sendEvent('done', { 
+              type: 'done',
               timestamp: new Date().toISOString(),
               status: 'success' 
             });
           } else {
             // Fallback response
             sendEvent('answer', {
-              id: threadItemId || `n8n-${Date.now()}`,
               threadId,
+              threadItemId: threadItemId || `n8n-${Date.now()}`,
               answer: {
                 text: webhookData.message || webhookData.response || 'Request processed successfully',
                 structured: null,
-              },
-              sources: [],
-              metadata: { source: 'n8n', executionId: webhookData.executionId },
-              timestamp: new Date().toISOString(),
+              }
             });
 
             sendEvent('done', { 
+              type: 'done',
               timestamp: new Date().toISOString(),
               status: 'success' 
             });
@@ -335,22 +336,12 @@ export async function POST(request: NextRequest) {
           const enhancedFallback = `${fallbackResponse}\n\n**What you can do:**\n${recoveryActions.map(action => `• ${action}`).join('\n')}`;
 
           sendEvent('answer', {
-            id: threadItemId || `error-${Date.now()}`,
             threadId,
+            threadItemId: threadItemId || `error-${Date.now()}`,
             answer: {
               text: enhancedFallback,
               structured: null,
-            },
-            sources: [],
-            metadata: { 
-              error: errorInstance.message,
-              errorCategory,
-              source: 'error_fallback',
-              timestamp: new Date().toISOString(),
-              circuitBreakerState: circuitBreaker.getState().state,
-              recoverable: [ErrorCategory.NETWORK, ErrorCategory.TIMEOUT, ErrorCategory.SERVER_ERROR].includes(errorCategory)
-            },
-            timestamp: new Date().toISOString(),
+            }
           });
 
           sendEvent('error', { 
@@ -362,6 +353,7 @@ export async function POST(request: NextRequest) {
           });
 
           sendEvent('done', { 
+            type: 'done',
             timestamp: new Date().toISOString(),
             status: 'error',
             error: errorCategory 

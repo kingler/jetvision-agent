@@ -108,7 +108,7 @@ const ApolloLeadsDisplay: React.FC<{ leads: ApolloLead[]; summary?: string }> = 
                     ))}
                     {leads.length > 5 && (
                         <div className="text-center pt-2">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outlined" size="sm">
                                 View {leads.length - 5} more leads
                             </Button>
                         </div>

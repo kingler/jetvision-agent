@@ -137,7 +137,7 @@ export const ServiceToggle = ({
 
                             <div className="flex justify-end gap-3">
                                 <Button
-                                    variant="outline"
+                                    variant="outlined"
                                     onClick={handleCancel}
                                 >
                                     <IconX size={16} className="mr-2" />

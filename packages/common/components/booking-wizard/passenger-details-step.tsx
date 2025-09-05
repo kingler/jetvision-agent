@@ -128,7 +128,7 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                             Additional Passengers ({(data.passengers || 1) - 1} more)
                         </h3>
                         <Button
-                            variant="outline"
+                            variant="outlined"
                             size="sm"
                             onClick={addPassenger}
                             className="flex items-center"

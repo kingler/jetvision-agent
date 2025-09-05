@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@repo/ui';
 import { STATIC_PROMPTS_DATA, PromptCard, PromptCategory } from '../../utils/prompts-parser';
 import { IconSearch, IconX, IconEdit, IconCheck, IconArrowRight } from '@tabler/icons-react';
+import { useAppStore } from '../../store/app.store';
 
 interface PromptCardsModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
   onSelectPrompt,
   onInsertPrompt
 }) => {
+  const { isSidebarOpen } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [editingCards, setEditingCards] = useState<Set<string>>(new Set());
@@ -104,12 +106,12 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <>
+    <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 dark:bg-black/20"
         onClick={handleBackdropClick}
       >
         <motion.div
@@ -117,30 +119,42 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", duration: 0.3 }}
-          className="relative mx-4 w-full max-w-7xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden"
+          className={cn(
+            "relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden",
+            // Mobile-first responsive sizing with safe area support
+            "w-full h-full max-h-screen rounded-none", // Mobile: full-screen
+            "sm:w-[95vw] sm:max-w-2xl sm:max-h-[90vh] sm:rounded-xl sm:m-4", // Small screens: reduced size
+            "md:max-w-4xl", // Medium screens: larger modal
+            "lg:max-w-6xl", // Large screens: even larger
+            "xl:max-w-7xl", // Extra large: maximum size
+            // Sidebar-aware positioning (desktop only)
+            isSidebarOpen 
+              ? "md:ml-64" // Account for 240px sidebar
+              : "md:ml-16"  // Account for 50px collapsed sidebar
+          )}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between p-4 sm:p-6 pt-mobile-safe-top border-b border-gray-200 dark:border-gray-800">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Prompt Library
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-500">
+              <p className="text-mobile-sm sm:text-sm text-gray-500 dark:text-gray-500">
                 Choose from {allPrompts.length} professional prompts
               </p>
             </div>
             
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors touch-manipulation"
             >
               <IconX size={20} className="text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
           {/* Search Bar */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="p-4 sm:p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="relative">
               <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
               <input
@@ -148,27 +162,27 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                 placeholder="Search prompts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-colors text-gray-900 dark:text-gray-100"
+                className="w-full pl-10 pr-4 py-3 sm:py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-colors text-gray-900 dark:text-gray-100 text-base sm:text-sm touch-manipulation"
               />
             </div>
           </div>
 
           {/* Content - Grid Layout */}
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-200px)] sm:max-h-[calc(90vh-140px)] pb-mobile-safe-bottom">
             {filteredPrompts.length === 0 ? (
               <div className="flex items-center justify-center py-16">
                 <div className="text-center">
                   <IconSearch size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  <h3 className="text-mobile-lg sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                     No prompts found
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p className="text-mobile-sm sm:text-sm text-gray-500 dark:text-gray-400">
                     Try adjusting your search terms
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredPrompts.map((prompt) => {
                   const isExpanded = expandedCards.has(prompt.id);
                   const isEditing = editingCards.has(prompt.id);
@@ -185,19 +199,19 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                         "border border-gray-200 dark:border-gray-800",
                         "shadow-md hover:shadow-lg",
                         "hover:border-gray-300 dark:hover:border-gray-700",
-                        isExpanded && "md:col-span-2 lg:col-span-2 xl:col-span-2"
+                        isExpanded && "sm:col-span-full lg:col-span-2 2xl:col-span-2"
                       )}
                     >
-                      <div className="p-4">
+                      <div className="p-4 sm:p-4">
                         {/* Card Header */}
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-start gap-3 flex-1">
                             <prompt.categoryIcon size={20} className="text-gray-600 dark:text-gray-400 mt-0.5" />
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1 mb-1">
+                              <h4 className="font-semibold text-mobile-base sm:text-base text-gray-900 dark:text-gray-100 line-clamp-1 mb-1">
                                 {prompt.title}
                               </h4>
-                              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-mobile-xs sm:text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                                 {prompt.category}
                               </span>
                             </div>
@@ -206,14 +220,14 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                           <div className="flex gap-1 ml-2">
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleCardExpansion(prompt.id); }}
-                              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                              className="opacity-0 group-hover:opacity-100 sm:opacity-100 p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all touch-manipulation"
                             >
                               <IconEdit size={14} className="text-gray-500 dark:text-gray-400" />
                             </button>
                             {onInsertPrompt && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
-                                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                                className="opacity-0 group-hover:opacity-100 sm:opacity-100 p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all touch-manipulation"
                                 title="Insert prompt"
                               >
                                 <IconArrowRight size={14} className="text-gray-500 dark:text-gray-400" />
@@ -223,13 +237,13 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                         </div>
                         
                         {/* Basic Content */}
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                        <p className="text-mobile-sm sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
                           {prompt.description}
                         </p>
                         
                         {/* Prompt Preview */}
                         <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-3">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+                          <p className="text-mobile-sm sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
                             "{prompt.prompt}"
                           </p>
                         </div>
@@ -246,7 +260,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                             >
                               {/* Full Prompt Section */}
                               <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label className="block text-mobile-sm sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                   Full Prompt:
                                 </label>
                                 {isEditing ? (
@@ -261,7 +275,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                                   />
                                 ) : (
                                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-                                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                    <p className="text-mobile-sm sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                                       {prompt.fullPrompt}
                                     </p>
                                   </div>
@@ -274,14 +288,14 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                                   <>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); saveCardEdit(prompt.id); }}
-                                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-green-600 hover:bg-green-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                     >
                                       <IconCheck size={14} />
                                       Save
                                     </button>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); toggleCardEditing(prompt.id, prompt.fullPrompt); }}
-                                      className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
+                                      className="px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                     >
                                       Cancel
                                     </button>
@@ -290,14 +304,14 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                                   <>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); toggleCardEditing(prompt.id, prompt.fullPrompt); }}
-                                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                     >
                                       <IconEdit size={14} />
                                       Edit
                                     </button>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleSelectPrompt(prompt); }}
-                                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                     >
                                       <IconArrowRight size={14} />
                                       Use Prompt
@@ -305,7 +319,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                                     {onInsertPrompt && (
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                        className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-green-600 hover:bg-green-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                       >
                                         <IconArrowRight size={14} />
                                         Insert
@@ -323,7 +337,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                           <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                             <button
                               onClick={(e) => { e.stopPropagation(); handleSelectPrompt(prompt); }}
-                              className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                             >
                               <IconArrowRight size={14} />
                               Select
@@ -331,7 +345,7 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
                             {onInsertPrompt && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleInsertPrompt(prompt); }}
-                                className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
+                                className="px-4 py-2.5 sm:px-3 sm:py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-base sm:text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
                                 title="Insert into chat"
                               >
                                 Insert
@@ -348,8 +362,8 @@ export const PromptCardsModal: React.FC<PromptCardsModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30">
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+          <div className="p-4 pb-mobile-safe-bottom border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30">
+            <p className="text-mobile-xs sm:text-xs text-gray-500 dark:text-gray-400 text-center">
               {allPrompts.length} professional prompts • Optimized for JetVision operations
             </p>
           </div>

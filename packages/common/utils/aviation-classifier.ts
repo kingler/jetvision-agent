@@ -167,8 +167,8 @@ export function classifyAviationMessage(message: string): {
   return {
     isAviation,
     confidence: Math.round(confidence * 100) / 100,
-    categories: [...new Set(matchedCategories)],
-    matchedTerms: [...new Set(matchedTerms)],
+    categories: Array.from(new Set(matchedCategories)),
+    matchedTerms: Array.from(new Set(matchedTerms)),
     reason
   };
 }

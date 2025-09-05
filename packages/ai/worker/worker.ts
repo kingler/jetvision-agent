@@ -83,7 +83,7 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
             });
 
             // Start the workflow with the appropriate task
-            const startTask = mode === ChatMode.Deep ? 'router' : 'router';
+            const startTask = 'router';
             const result = await activeWorkflow.start(startTask, {
                 question,
             });

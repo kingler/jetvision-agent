@@ -86,7 +86,7 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
                                 <div className="flex items-center gap-2">
                                     <h4 className="font-semibold text-sm">{jet.fullName || `${jet.manufacturer} ${jet.model}`}</h4>
                                     {jet.availability && (
-                                        <Badge variant="success" className="text-xs">
+                                        <Badge variant="secondary" className="text-xs">
                                             Available
                                         </Badge>
                                     )}
@@ -123,14 +123,14 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
                                     </div>
                                 )}
                             </div>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outlined" size="sm">
                                 Get Quote
                             </Button>
                         </div>
                     ))}
                     {aircraft.length > 4 && (
                         <div className="text-center pt-2">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outlined" size="sm">
                                 View {aircraft.length - 4} more aircraft
                             </Button>
                         </div>
@@ -200,7 +200,7 @@ const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
                     <Button className="flex-1" variant="default">
                         Proceed with Booking
                     </Button>
-                    <Button variant="outline">
+                    <Button variant="outlined">
                         Modify Quote
                     </Button>
                 </div>

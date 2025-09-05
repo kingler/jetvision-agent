@@ -64,17 +64,18 @@ export async function testSchemaExports(): Promise<{
   }
 }
 
+// Test runner function
+const runTests = async () => {
+  console.log('Testing database connection...');
+  const connectionTest = await testDatabaseConnection();
+  console.log(connectionTest);
+
+  console.log('\nTesting schema exports...');
+  const schemaTest = await testSchemaExports();
+  console.log(schemaTest);
+};
+
 // If run directly, execute tests
 if (require.main === module) {
-  async function runTests() {
-    console.log('Testing database connection...');
-    const connectionTest = await testDatabaseConnection();
-    console.log(connectionTest);
-
-    console.log('\nTesting schema exports...');
-    const schemaTest = await testSchemaExports();
-    console.log(schemaTest);
-  }
-
   runTests().catch(console.error);
 }
