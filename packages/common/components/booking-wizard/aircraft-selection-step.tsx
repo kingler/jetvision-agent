@@ -127,21 +127,21 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
             {/* Filter Options */}
             <div className="flex space-x-4">
                 <Button
-                    variant={filter === 'suitable' ? 'default' : 'outline'}
+                    variant={filter === 'suitable' ? 'default' : 'outlined'}
                     size="sm"
                     onClick={() => setFilter('suitable')}
                 >
                     Suitable for {data.passengers || 1} passenger{(data.passengers || 1) > 1 ? 's' : ''}
                 </Button>
                 <Button
-                    variant={filter === 'available' ? 'default' : 'outline'}
+                    variant={filter === 'available' ? 'default' : 'outlined'}
                     size="sm"
                     onClick={() => setFilter('available')}
                 >
                     Available Now
                 </Button>
                 <Button
-                    variant={filter === 'all' ? 'default' : 'outline'}
+                    variant={filter === 'all' ? 'default' : 'outlined'}
                     size="sm"
                     onClick={() => setFilter('all')}
                 >

@@ -221,7 +221,7 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
                 <div>
                     {currentStep > 0 && (
                         <Button
-                            variant="outline"
+                            variant="outlined"
                             onClick={prevStep}
                             className="flex items-center"
                         >

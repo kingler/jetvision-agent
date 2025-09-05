@@ -229,7 +229,7 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             try {
                 reasoning = await generateText({
                     prompt: getAnalysisPrompt(question, webPageContent),
-                    model: ModelEnum.Deepseek_R1,
+                    model: ModelEnum.GPT_4o,
                     messages,
                     onReasoning: chunk => {
                         reasoningBuffer.add(chunk);

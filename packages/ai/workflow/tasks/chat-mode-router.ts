@@ -6,7 +6,7 @@ import { handleError, sendEvents } from '../utils';
 export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'router',
     execute: async ({ events, context, redirectTo }) => {
-        const mode = context?.get('mode') || ChatMode.GEMINI_2_FLASH;
+        const mode = context?.get('mode') || ChatMode.GPT_4o;
         const { updateStatus } = sendEvents(events);
 
         const messageHistory = context?.get('messages') || [];
@@ -19,9 +19,9 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         updateStatus('PENDING');
 
-        if (mode === ChatMode.Deep) {
+        if (mode === ChatMode.GPT_4o) {
             redirectTo('refine-query');
-        } else if (mode === ChatMode.Pro) {
+        } else if (mode === ChatMode.GPT_4o_Mini) {
             redirectTo('pro-search');
         } else {
             redirectTo('completion');
