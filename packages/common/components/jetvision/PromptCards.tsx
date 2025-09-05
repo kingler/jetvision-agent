@@ -13,12 +13,15 @@ import {
     IconTrendingUp,
     IconMail,
     IconSearch,
+    IconUserSearch,
+    IconBuilding,
+    IconAddressBook,
 } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 interface PromptCard {
     id: string;
-    category: 'charter' | 'apollo' | 'travel' | 'leads' | 'analytics';
+    category: 'charter' | 'apollo' | 'travel' | 'leads' | 'analytics' | 'people_search';
     title: string;
     prompt: string;
     fullPrompt: string; // Enhanced full prompt for n8n agent
@@ -365,6 +368,120 @@ const promptCards: PromptCard[] = [
             delivery: ['email', 'slack', 'dashboard']
         }
     },
+
+    // People Search with Apollo.io (6 cards)
+    {
+        id: 'people-1',
+        category: 'people_search',
+        title: 'Executive Assistants - Tech',
+        prompt: 'Find executive assistants at technology companies in Silicon Valley',
+        fullPrompt: 'As a JetVision people search specialist, use Apollo.io to find executive assistants at technology companies in Silicon Valley. Search for professionals supporting C-suite executives at companies with 500+ employees. Target job titles: "Executive Assistant", "Executive Assistant to CEO", "Senior Executive Assistant", "Chief of Staff". Location: San Francisco Bay Area including San Francisco, Palo Alto, Mountain View, San Jose. Company criteria: Technology industry, 500+ employees, Series C+ or public companies. Enrich results with: Executive they support and their role, Company funding stage and valuation, Previous experience in tech or aviation, LinkedIn activity and engagement level, Contact information including verified email addresses. Provide 25 qualified prospects with scoring based on: Company growth trajectory, Executive travel frequency indicators, EA tenure and decision-making authority, Previous engagement with luxury services. Format results as structured contact list with personalized outreach recommendations.',
+        description: 'Target executive assistants at major tech companies',
+        icon: IconUserSearch,
+        parameters: {
+            person_titles: ['Executive Assistant', 'Executive Assistant to CEO', 'Senior Executive Assistant', 'Chief of Staff'],
+            person_locations: ['San Francisco Bay Area', 'Silicon Valley', 'Palo Alto', 'Mountain View'],
+            organization_num_employees_ranges: ['500,1000', '1000,5000', '5000,10000', '10000+'],
+            q_organization_keyword_tags: ['technology', 'software', 'saas', 'fintech'],
+            per_page: 25,
+            include_similar_titles: true,
+            contact_email_status: ['verified', 'likely to engage']
+        }
+    },
+    {
+        id: 'people-2',
+        category: 'people_search',
+        title: 'Finance Executives - NYC',
+        prompt: 'Search for CFOs and finance executives at NYSE companies in New York',
+        fullPrompt: 'As a JetVision executive targeting specialist, use Apollo.io to identify Chief Financial Officers and senior finance executives at NYSE-listed companies headquartered in New York City. Target roles: "Chief Financial Officer", "CFO", "SVP Finance", "VP Finance", "Treasurer", "Chief Investment Officer". Focus on: Public companies listed on NYSE, Headquarters in Manhattan or nearby boroughs, Market cap over $1 billion preferred, Industries: Financial Services, Real Estate, Media, Retail. Enrich profiles with: Board positions requiring travel, International office locations, Previous aviation industry connections, Speaking engagements and conference activity, Recent earnings call participation and travel implications. Score prospects based on: Company financial performance, Executive visibility and travel requirements, Previous luxury service usage indicators, Decision-making authority for travel budgets. Deliver 20 high-value prospects with personalized approach strategies and ideal contact timing.',
+        description: 'Target senior finance executives at public companies',
+        icon: IconBuilding,
+        parameters: {
+            person_titles: ['Chief Financial Officer', 'CFO', 'SVP Finance', 'VP Finance', 'Treasurer', 'Chief Investment Officer'],
+            person_locations: ['New York City', 'Manhattan', 'Brooklyn'],
+            organization_locations: ['New York'],
+            q_organization_keyword_tags: ['finance', 'investment', 'banking', 'insurance', 'real estate'],
+            organization_num_employees_ranges: ['1000,5000', '5000,10000', '10000+'],
+            per_page: 20,
+            person_seniorities: ['c_suite', 'vp'],
+            revenue_range: { min: 1000000000, max: 100000000000 }
+        }
+    },
+    {
+        id: 'people-3',
+        category: 'people_search',
+        title: 'Private Equity Partners',
+        prompt: 'Find managing partners and principals at private equity firms',
+        fullPrompt: 'As a JetVision high-net-worth specialist, use Apollo.io to identify Managing Partners, General Partners, and Principals at private equity firms with $1B+ AUM. Target titles: "Managing Partner", "General Partner", "Principal", "Managing Director", "Senior Partner". Firm criteria: Private equity focus (not venture capital), Assets under management >$1 billion, Active deal-making in past 12 months, Portfolio companies requiring travel oversight. Geographic focus: Northeast corridor, California, Texas, Illinois. Enrich data with: Portfolio company board positions, Recent deal announcements and travel requirements, Speaking at industry conferences, International office locations, Previous charter aviation usage. Priority scoring: Firm prestige and deal volume, Partner\'s portfolio responsibilities, Travel frequency indicators, Previous luxury service adoption. Include executive assistants supporting top partners. Provide 15 ultra-high-value prospects with white-glove approach strategies and relationship mapping to existing clients.',
+        description: 'Target decision makers at major PE firms',
+        icon: IconTarget,
+        parameters: {
+            person_titles: ['Managing Partner', 'General Partner', 'Principal', 'Managing Director', 'Senior Partner'],
+            q_organization_keyword_tags: ['private equity', 'investment', 'buyout', 'growth capital'],
+            person_seniorities: ['partner', 'c_suite', 'vp'],
+            organization_num_employees_ranges: ['50,200', '200,500', '500+'],
+            revenue_range: { min: 1000000000, max: 50000000000 },
+            per_page: 15,
+            person_locations: ['New York', 'California', 'Texas', 'Illinois'],
+            currently_using_any_of_technology_uids: ['salesforce', 'hubspot']
+        }
+    },
+    {
+        id: 'people-4',
+        category: 'people_search',
+        title: 'Healthcare CEOs',
+        prompt: 'Search healthcare industry CEOs and medical executives',
+        fullPrompt: 'As a JetVision healthcare sector specialist, use Apollo.io to find CEOs and senior executives at healthcare organizations including hospitals, pharmaceutical companies, medical device manufacturers, and biotech firms. Target roles: "Chief Executive Officer", "President", "Chief Medical Officer", "Chief Operating Officer". Organization types: Major hospital systems, Pharmaceutical companies, Medical device manufacturers, Biotechnology firms, Healthcare technology companies. Company size: 1,000+ employees or $500M+ revenue. Enrich profiles with: Medical conference speaking engagements, FDA trial oversight responsibilities, Multi-site location management, International business development, Board positions at medical organizations. Focus on executives requiring: Regular travel between facilities, Conference and symposium attendance, Client/partner meetings, Regulatory body interactions. Score by: Organization size and complexity, Executive travel indicators, Previous healthcare aviation usage, Conference circuit participation. Provide 20 qualified healthcare executives with industry-specific messaging strategies.',
+        description: 'Focus on healthcare industry decision makers',
+        icon: IconUsers,
+        parameters: {
+            person_titles: ['Chief Executive Officer', 'President', 'Chief Medical Officer', 'Chief Operating Officer'],
+            q_organization_keyword_tags: ['healthcare', 'pharmaceutical', 'biotech', 'medical device', 'hospital'],
+            organization_num_employees_ranges: ['1000,5000', '5000,10000', '10000+'],
+            person_seniorities: ['c_suite'],
+            revenue_range: { min: 500000000, max: 50000000000 },
+            per_page: 20,
+            include_similar_titles: true,
+            contact_email_status: ['verified', 'likely to engage']
+        }
+    },
+    {
+        id: 'people-5',
+        category: 'people_search',
+        title: 'Entertainment Industry',
+        prompt: 'Find entertainment executives and talent representatives',
+        fullPrompt: 'As a JetVision entertainment industry specialist, use Apollo.io to identify executives at major entertainment companies, talent agencies, and production studios in Los Angeles and New York. Target roles: "President", "VP Production", "Head of Development", "Managing Partner", "Agent", "Executive Producer". Companies: Major studios (Disney, Universal, Warner Bros), Talent agencies (CAA, WME, UTA), Production companies, Streaming platforms, Music labels. Geographic focus: Los Angeles (Hollywood, Beverly Hills, Century City), New York (Midtown, Tribeca). Enrich with: Current projects in production, Festival circuit participation, Awards season activity, International market development, Talent roster requiring travel support. Score prospects by: Company deal volume and prestige, Executive\'s project portfolio, Awards season travel requirements, International business development. Include: Executive assistants to top talent, Business managers for A-list clients, Production coordinators for location shoots. Deliver 25 entertainment industry contacts with event-based outreach timing and luxury service positioning.',
+        description: 'Target entertainment and media executives',
+        icon: IconSearch,
+        parameters: {
+            person_titles: ['President', 'VP Production', 'Head of Development', 'Managing Partner', 'Agent', 'Executive Producer'],
+            person_locations: ['Los Angeles', 'Beverly Hills', 'Century City', 'New York', 'Manhattan'],
+            q_organization_keyword_tags: ['entertainment', 'media', 'film', 'television', 'music', 'talent agency'],
+            organization_num_employees_ranges: ['100,500', '500,1000', '1000+'],
+            per_page: 25,
+            person_seniorities: ['vp', 'director', 'partner'],
+            include_similar_titles: true
+        }
+    },
+    {
+        id: 'people-6',
+        category: 'people_search',
+        title: 'Job Change Alerts',
+        prompt: 'Track recent job changes in target industries for warm outreach',
+        fullPrompt: 'As a JetVision trigger-based marketing specialist, use Apollo.io to identify professionals who have recently changed jobs in our target industries within the past 60 days. Focus on: New executives joining companies in our target accounts, Promotions to C-suite or VP levels, Job changes from commercial aviation to other industries, Executive assistants moving to larger companies, Travel managers taking on expanded roles. Industries to monitor: Finance, Technology, Healthcare, Entertainment, Private Equity, Real Estate. Track: Previous company and role, New company and expanded responsibilities, LinkedIn activity and announcement timing, Potential travel requirement changes, Connection opportunities through mutual contacts. Prioritize: Moves to companies with existing JetVision relationships, New roles with increased travel budgets, Promotions indicating expanded decision authority, Geographic moves requiring travel. Create time-sensitive outreach campaigns: Days 1-7: Congratulations and introduction, Days 14-21: Company overview and services, Days 30-45: Relevant case studies, Days 60+: Invitation for consultation. Monitor 50 job changes weekly with automated alert system.',
+        description: 'Monitor job changes for timely outreach opportunities',
+        icon: IconAddressBook,
+        parameters: {
+            job_change_tracking: true,
+            timeframe: 'last_60_days',
+            industries: ['finance', 'technology', 'healthcare', 'entertainment', 'private_equity', 'real_estate'],
+            job_levels: ['c_suite', 'vp', 'director', 'executive_assistant', 'travel_manager'],
+            company_types: ['target_accounts', 'funded_companies', 'public_companies'],
+            per_page: 50,
+            alert_frequency: 'weekly',
+            engagement_sequence: '60_day_drip'
+        }
+    },
 ];
 
 // Category configurations
@@ -393,6 +510,11 @@ const categoryConfig = {
         label: 'Analytics & Insights',
         icon: IconChartBar,
         description: 'Performance metrics and reporting',
+    },
+    people_search: {
+        label: 'People Search & Intelligence',
+        icon: IconUserSearch,
+        description: 'Apollo.io people search and prospect targeting',
     },
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@repo/ui';
-import { IconUsers, IconMail, IconChartBar, IconExternalLink, IconBriefcase, IconBuilding } from '@tabler/icons-react';
+import { IconUsers, IconMail, IconChartBar, IconExternalLink, IconBriefcase, IconBuilding, IconUserSearch } from '@tabler/icons-react';
 
 interface ApolloLead {
     name?: string;
@@ -21,9 +21,10 @@ interface ApolloMetrics {
 }
 
 interface ApolloDataDisplayProps {
-    type: 'apollo_leads' | 'apollo_campaign' | 'apollo_enrichment';
+    type: 'apollo_leads' | 'apollo_campaign' | 'apollo_enrichment' | 'people_search';
     data: {
         leads?: ApolloLead[];
+        people?: ApolloLead[]; // For people search results
         metrics?: ApolloMetrics;
         enrichment?: any;
         campaign?: any;
@@ -33,6 +34,10 @@ interface ApolloDataDisplayProps {
 }
 
 export const ApolloDataDisplay: React.FC<ApolloDataDisplayProps> = ({ type, data, summary }) => {
+    if (type === 'people_search' && data.people) {
+        return <PeopleSearchDisplay people={data.people} summary={summary} />;
+    }
+    
     if (type === 'apollo_leads' && data.leads) {
         return <ApolloLeadsDisplay leads={data.leads} summary={summary} />;
     }
@@ -165,6 +170,91 @@ const ApolloEnrichmentDisplay: React.FC<{ enrichment: any }> = ({ enrichment }) 
                             <span className="font-medium">{String(value)}</span>
                         </div>
                     ))}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+const PeopleSearchDisplay: React.FC<{ people: ApolloLead[]; summary?: string }> = ({ people, summary }) => {
+    return (
+        <Card className="mt-4 border-indigo-500/20 bg-gradient-to-br from-indigo-50/50 to-transparent dark:from-indigo-950/20">
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                        <IconUserSearch className="h-5 w-5 text-indigo-600" />
+                        People Search Results
+                    </CardTitle>
+                    <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">
+                        {people.length} people found
+                    </Badge>
+                </div>
+                {summary && <p className="text-sm text-muted-foreground mt-2">{summary}</p>}
+            </CardHeader>
+            <CardContent>
+                <div className="grid gap-3">
+                    {people.slice(0, 8).map((person, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 rounded-lg border bg-white/50 dark:bg-gray-900/50 hover:shadow-md transition-shadow">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="font-semibold text-base">{person.name || 'Unknown'}</h4>
+                                    {person.score && (
+                                        <Badge variant="outline" className="text-xs">
+                                            Match: {person.score}
+                                        </Badge>
+                                    )}
+                                </div>
+                                <div className="space-y-1">
+                                    {person.title && (
+                                        <div className="flex items-center gap-2">
+                                            <IconBriefcase className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{person.title}</span>
+                                        </div>
+                                    )}
+                                    {person.company && (
+                                        <div className="flex items-center gap-2">
+                                            <IconBuilding className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-sm text-muted-foreground">{person.company}</span>
+                                        </div>
+                                    )}
+                                    {person.email && (
+                                        <div className="flex items-center gap-2">
+                                            <IconMail className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-sm text-indigo-600 dark:text-indigo-400">{person.email}</span>
+                                        </div>
+                                    )}
+                                    {person.tags && person.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {person.tags.slice(0, 3).map((tag, tagIndex) => (
+                                                <Badge key={tagIndex} variant="outline" className="text-xs">
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex gap-2 ml-4">
+                                {person.linkedinUrl && (
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View LinkedIn Profile">
+                                        <IconExternalLink className="h-4 w-4" />
+                                    </Button>
+                                )}
+                                {person.email && (
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Send Email">
+                                        <IconMail className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    {people.length > 8 && (
+                        <div className="text-center pt-2">
+                            <Button variant="outlined" size="sm">
+                                View {people.length - 8} more results
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

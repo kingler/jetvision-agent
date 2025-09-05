@@ -7,6 +7,41 @@ import { IconCheck, IconCopy, IconPencil } from '@tabler/icons-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ImageMessage } from './image-message';
+
+/**
+ * Extract user text from message content
+ * Handles both plain text and JSON-wrapped messages
+ */
+function extractUserText(message: string): string {
+    // If the message is not JSON, return as-is
+    if (!message.trim().startsWith('{')) {
+        return message;
+    }
+    
+    try {
+        const parsed = JSON.parse(message);
+        
+        // Check for different possible text fields in the JSON structure
+        if (typeof parsed === 'string') {
+            return parsed;
+        }
+        
+        // Common field names for user text in JSON payloads
+        const textFields = ['message', 'prompt', 'text', 'content', 'query'];
+        
+        for (const field of textFields) {
+            if (parsed[field] && typeof parsed[field] === 'string') {
+                return parsed[field];
+            }
+        }
+        
+        // If no standard field found, return the original message
+        return message;
+    } catch {
+        // Not valid JSON, return original message
+        return message;
+    }
+}
 type MessageProps = {
     message: string;
     imageAttachment?: string;
@@ -21,11 +56,15 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
     const { copyToClipboard, status } = useCopyText();
     const maxHeight = 120;
     const isGenerating = useChatStore(state => state.isGenerating);
+    
+    // Extract the actual user text from the message (handles JSON-wrapped messages)
+    const displayText = extractUserText(message);
+    
     useEffect(() => {
         if (messageRef.current) {
             setShowExpandButton(messageRef.current.scrollHeight > maxHeight);
         }
-    }, [message]);
+    }, [displayText]);
 
     const handleCopy = useCallback(() => {
         if (messageRef.current) {
@@ -57,7 +96,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                                 transition: 'max-height 0.3s ease-in-out',
                             }}
                         >
-                            {message}
+                            {displayText}
                         </div>
                         <div
                             className={cn(
@@ -110,7 +149,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                 {isEditing && (
                     <EditMessage
                         width={messageRef.current?.offsetWidth}
-                        message={message}
+                        message={displayText}
                         threadItem={threadItem}
                         onCancel={() => {
                             setIsEditing(false);

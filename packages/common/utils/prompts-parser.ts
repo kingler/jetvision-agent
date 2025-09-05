@@ -151,6 +151,104 @@ export function parsePromptsMarkdown(content: string): PromptCategory[] {
 }
 
 /**
+ * Parse people search parameters from manual prompt text
+ */
+export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
+  const params: Record<string, any> = {};
+  const lowerPrompt = prompt.toLowerCase();
+  
+  // Extract job titles
+  const titlePatterns = [
+    /(?:find|search for|looking for)\s+([^,\n]+?)(?:\s+at|\s+in|\s+from|\s+with|$)/i,
+    /(executive assistant|ea|ceo|cfo|cto|vp|director|manager|president|partner|principal|chief)/gi,
+    /(managing director|general partner|senior partner|head of|vice president)/gi
+  ];
+  
+  const titles: string[] = [];
+  titlePatterns.forEach(pattern => {
+    const matches = prompt.match(pattern);
+    if (matches) {
+      matches.forEach(match => {
+        const cleaned = match.replace(/^(find|search for|looking for)\s+/i, '').trim();
+        if (cleaned && !titles.includes(cleaned)) {
+          titles.push(cleaned);
+        }
+      });
+    }
+  });
+  
+  if (titles.length > 0) {
+    params.person_titles = titles;
+    params.include_similar_titles = true;
+  }
+  
+  // Extract locations
+  const locationPatterns = [
+    /(?:in|at|from|based in)\s+(new york|nyc|san francisco|sf|los angeles|la|chicago|boston|miami|atlanta|dallas|houston|seattle)/gi,
+    /(?:silicon valley|wall street|manhattan|brooklyn|bay area)/gi
+  ];
+  
+  const locations: string[] = [];
+  locationPatterns.forEach(pattern => {
+    const matches = prompt.match(pattern);
+    if (matches) {
+      matches.forEach(match => {
+        const location = match.replace(/^(in|at|from|based in)\s+/i, '').trim();
+        if (location && !locations.includes(location)) {
+          locations.push(location);
+        }
+      });
+    }
+  });
+  
+  if (locations.length > 0) {
+    params.person_locations = locations;
+  }
+  
+  // Extract company information
+  if (lowerPrompt.includes('private equity') || lowerPrompt.includes('pe firm')) {
+    params.q_organization_keyword_tags = ['private equity', 'investment', 'buyout'];
+    params.organization_num_employees_ranges = ['50,200', '200,500', '500+'];
+  }
+  
+  if (lowerPrompt.includes('tech') || lowerPrompt.includes('technology')) {
+    params.q_organization_keyword_tags = ['technology', 'software', 'saas'];
+    params.organization_num_employees_ranges = ['500,1000', '1000,5000', '5000+'];
+  }
+  
+  if (lowerPrompt.includes('finance') || lowerPrompt.includes('financial')) {
+    params.q_organization_keyword_tags = ['finance', 'investment', 'banking'];
+  }
+  
+  if (lowerPrompt.includes('healthcare') || lowerPrompt.includes('medical')) {
+    params.q_organization_keyword_tags = ['healthcare', 'pharmaceutical', 'biotech'];
+  }
+  
+  if (lowerPrompt.includes('entertainment') || lowerPrompt.includes('media')) {
+    params.q_organization_keyword_tags = ['entertainment', 'media', 'film'];
+  }
+  
+  // Extract company size
+  const sizeMatches = prompt.match(/(\d+)\+?\s+(employees|people)/i);
+  if (sizeMatches) {
+    const size = parseInt(sizeMatches[1]);
+    if (size >= 1000) {
+      params.organization_num_employees_ranges = ['1000,5000', '5000,10000', '10000+'];
+    } else if (size >= 500) {
+      params.organization_num_employees_ranges = ['500,1000', '1000,5000'];
+    } else if (size >= 100) {
+      params.organization_num_employees_ranges = ['100,500', '500,1000'];
+    }
+  }
+  
+  // Default parameters
+  params.per_page = 25;
+  params.contact_email_status = ['verified', 'likely to engage'];
+  
+  return params;
+}
+
+/**
  * Static prompts data - this would normally be loaded from the markdown file
  * For now, including the key prompts for immediate functionality
  */

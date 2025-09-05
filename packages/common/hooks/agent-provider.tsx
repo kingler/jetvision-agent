@@ -118,6 +118,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                               text: (prevItem.answer?.text || '') + eventData.answer.text,
                           },
                       }
+                    : eventType === 'status' && eventData.statusData
+                    ? {
+                          n8nWorkflowStatus: eventData.statusData,
+                          status: eventData.statusData.status === 'error' ? 'ERROR' : 'PENDING'
+                      }
                     : { [eventType]: eventData[eventType] }),
             };
 

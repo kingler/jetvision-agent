@@ -100,7 +100,20 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {((isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING')) && (
+                        {/* N8N Workflow Status Display */}
+                        {threadItem.n8nWorkflowStatus && threadItem.status === 'PENDING' && (
+                            <AgentLoadingStatus 
+                                isLoading={true}
+                                customMessage={threadItem.n8nWorkflowStatus.message}
+                                progress={threadItem.n8nWorkflowStatus.progress}
+                                currentStep={threadItem.n8nWorkflowStatus.currentStep}
+                                elapsed={threadItem.n8nWorkflowStatus.elapsed}
+                            />
+                        )}
+                        
+                        {/* General thinking status for non-N8N workflows */}
+                        {((isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING')) && 
+                         !threadItem.n8nWorkflowStatus && (
                             <AgentThinkingStatus 
                                 isThinking={true}
                                 startTime={startTime}

@@ -4,7 +4,7 @@
  */
 
 export interface StructuredData {
-  type: 'apollo_leads' | 'aircraft_search' | 'booking_data' | 'general';
+  type: 'apollo_leads' | 'people_search' | 'aircraft_search' | 'booking_data' | 'general';
   data: any;
 }
 
@@ -140,7 +140,24 @@ export function extractStructuredData(responseText: string): StructuredData | nu
   // Pattern matching for different data types
   const lowerText = responseText.toLowerCase();
   
-  // Apollo.io lead data patterns
+  // People search data patterns (more specific)
+  if (lowerText.includes('people search') || 
+      lowerText.includes('find people') ||
+      lowerText.includes('executive search') ||
+      lowerText.includes('prospect search') ||
+      lowerText.includes('contact search')) {
+    
+    return {
+      type: 'people_search',
+      data: {
+        people: extractPeopleSearchData(responseText),
+        source: 'apollo.io',
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+  
+  // Apollo.io lead data patterns (general leads)
   if (lowerText.includes('executive assistant') || 
       lowerText.includes('lead') || 
       lowerText.includes('apollo') ||
@@ -227,7 +244,7 @@ function extractAircraftData(text: string): any[] {
   const locationMatches = text.match(/from\s+([A-Z]{3}|[A-Z][a-z]+)/gi) || [];
   const priceMatches = text.match(/\$[\d,]+/g) || [];
   
-  aircraftMatches.forEach((match, i) => {
+  aircraftMatches.forEach((match: string, i) => {
     const [manufacturer, model] = match.split(' ');
     aircraft.push({
       manufacturer,
@@ -240,6 +257,43 @@ function extractAircraftData(text: string): any[] {
   });
   
   return aircraft.length > 0 ? aircraft : [{ text, parsed: false }];
+}
+
+/**
+ * Extract people search data from Apollo.io responses
+ */
+function extractPeopleSearchData(text: string): any[] {
+  const people: any[] = [];
+  
+  // Enhanced pattern matching for people search results
+  const lines = text.split('\n');
+  
+  for (const line of lines) {
+    // Look for structured person data patterns
+    const nameMatch = line.match(/([A-Z][a-z]+ [A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/);
+    const titleMatch = line.match(/(CEO|CFO|CTO|VP|Director|Manager|Assistant|President|Partner|Principal)/i);
+    const companyMatch = line.match(/(?:at|@)\s+([A-Z][a-zA-Z\s&,.-]+)/);
+    const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    
+    if (nameMatch && titleMatch) {
+      people.push({
+        name: nameMatch[1],
+        title: titleMatch[1],
+        company: companyMatch ? companyMatch[1].trim() : null,
+        email: emailMatch ? emailMatch[1] : null,
+        source: 'apollo.io',
+        searchType: 'people_search',
+      });
+    }
+  }
+  
+  // If no structured data found, return raw text for manual processing
+  return people.length > 0 ? people : [{ 
+    text, 
+    parsed: false,
+    searchType: 'people_search',
+    source: 'apollo.io'
+  }];
 }
 
 /**
@@ -265,6 +319,10 @@ export function formatDisplayText(responseText: string, structuredData: Structur
   
   // Add appropriate headers based on data type
   switch (structuredData.type) {
+    case 'people_search':
+      formattedText = `**🔍 Apollo.io People Search Results**\n\n${responseText}`;
+      break;
+      
     case 'apollo_leads':
       formattedText = `**🎯 Apollo.io Lead Intelligence**\n\n${responseText}`;
       break;

@@ -44,6 +44,15 @@ export type Answer = {
     status?: ItemStatus;
 };
 
+export type N8nWorkflowStatus = {
+    status: 'connecting' | 'executing' | 'completed' | 'error';
+    currentStep: 'webhook' | 'apollo' | 'knowledge' | 'response';
+    progress: number;
+    message: string;
+    timestamp?: string;
+    elapsed?: number;
+};
+
 export type ToolCall = {
     type: 'tool-call';
     toolCallId: string;
@@ -80,6 +89,7 @@ export type ThreadItem = {
     object?: Record<string, any>;
     imageAttachment?: string;
     executionTime?: number;
+    n8nWorkflowStatus?: N8nWorkflowStatus;
 };
 
 export type MessageGroup = {

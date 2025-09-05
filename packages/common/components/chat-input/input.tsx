@@ -102,7 +102,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
     });
     const size = currentThreadId ? 'base' : 'sm';
     const getThreadItems = useChatStore(state => state.getThreadItems);
-    const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
+    const threadItemsLength = useChatStore(useShallow(state => state?.threadItems?.length || 0));
+    const getStoreState = useChatStore.getState;
     const { handleSubmit } = useAgentStream();
     const createThread = useChatStore(state => state.createThread);
     const createThreadItem = useChatStore(state => state.createThreadItem);
@@ -191,8 +192,9 @@ export const ChatInput = forwardRef<ChatInputRef, {
         // Get the message text - ensure it's never undefined
         const messageText = customPrompt || currentText || '';
         
-        // Get previous messages for context
-        const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
+        // Get previous messages for context from the store state (avoid async call during render)
+        const storeThreadItems = getStoreState().threadItems || [];
+        const threadItems = currentThreadId ? storeThreadItems.filter(item => item.threadId === currentThreadId.toString()) : [];
         const previousMessages = threadItems
             .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
             .slice(-5) // Last 5 messages
@@ -367,9 +369,10 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const handleEditLastMessage = useCallback(async () => {
         if (!currentThreadId) return;
         
-        // Get the last user message from the thread
-        const threadItems = await getThreadItems(currentThreadId.toString());
-        const lastUserMessage = threadItems
+        // Get the last user message from the thread from store state (avoid async call)
+        const storeThreadItems = getStoreState().threadItems || [];
+        const threadItems = storeThreadItems.filter(item => item.threadId === currentThreadId.toString());
+        const lastUserMessage = (threadItems || [])
             .filter(item => item.query) // Only user messages
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
             
@@ -383,18 +386,19 @@ export const ChatInput = forwardRef<ChatInputRef, {
         }
     }, [currentThreadId, getThreadItems, editor]);
 
+    const threadItems = useChatStore(useShallow(state => state?.threadItems || []));
+    
     const canEditLast = useCallback(() => {
         if (!currentThreadId || isGenerating) return false;
         
-        const threadItems = getThreadItems(currentThreadId.toString());
         if (!Array.isArray(threadItems)) return false;
         
-        const lastUserMessage = threadItems
-            .filter(item => item.query)
+        const lastUserMessage = (threadItems || [])
+            .filter(item => item.query && item.threadId === currentThreadId.toString())
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
             
         return !!lastUserMessage;
-    }, [currentThreadId, getThreadItems, isGenerating]);
+    }, [currentThreadId, isGenerating, threadItems]);
 
     const renderChatInput = () => (
         <AnimatePresence>

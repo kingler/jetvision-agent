@@ -603,8 +603,17 @@ export const useChatStore = create(
         },
 
         getThreadItems: async (threadId: string) => {
-            const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
-            return threadItems;
+            if (typeof window === 'undefined' || !db || !db.threadItems) {
+                // Return empty array during SSR or if db is not initialized
+                return [];
+            }
+            try {
+                const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
+                return threadItems;
+            } catch (error) {
+                console.error('Error getting thread items:', error);
+                return [];
+            }
         },
 
         setCurrentSources: (sources: string[]) => {
@@ -670,6 +679,13 @@ export const useChatStore = create(
             }),
 
         loadThreadItems: async (threadId: string) => {
+            if (typeof window === 'undefined' || !db) {
+                // During SSR, set empty array and return early
+                set(state => {
+                    state.threadItems = [];
+                });
+                return;
+            }
             const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
             set(state => {
                 state.threadItems = threadItems;

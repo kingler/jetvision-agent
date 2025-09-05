@@ -22,32 +22,40 @@ const statusMessages = [
 interface AgentLoadingStatusProps {
     isLoading: boolean
     customMessage?: string
+    progress?: number
+    currentStep?: string
+    elapsed?: number
 }
 
-export default function AgentLoadingStatus({ isLoading, customMessage }: AgentLoadingStatusProps) {
+export default function AgentLoadingStatus({ isLoading, customMessage, progress: externalProgress, currentStep, elapsed }: AgentLoadingStatusProps) {
     const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
-    const [progress, setProgress] = useState(0)
+    const [progress, setProgress] = useState(externalProgress || 0)
 
     useEffect(() => {
         if (!isLoading) {
             setCurrentMessageIndex(0)
-            setProgress(0)
+            setProgress(externalProgress || 0)
             return
         }
 
-        const messageInterval = setInterval(() => {
-            setCurrentMessageIndex((prev) => (prev + 1) % statusMessages.length)
-        }, 2500)
+        // Use external progress if provided, otherwise use auto-increment
+        if (externalProgress !== undefined) {
+            setProgress(externalProgress)
+        } else {
+            const messageInterval = setInterval(() => {
+                setCurrentMessageIndex((prev) => (prev + 1) % statusMessages.length)
+            }, 2500)
 
-        const progressInterval = setInterval(() => {
-            setProgress((prev) => Math.min(prev + 1, 95))
-        }, 300)
+            const progressInterval = setInterval(() => {
+                setProgress((prev) => Math.min(prev + 1, 95))
+            }, 300)
 
-        return () => {
-            clearInterval(messageInterval)
-            clearInterval(progressInterval)
+            return () => {
+                clearInterval(messageInterval)
+                clearInterval(progressInterval)
+            }
         }
-    }, [isLoading])
+    }, [isLoading, externalProgress])
 
     const messageVariants: Variants = {
         enter: {
@@ -104,9 +112,15 @@ export default function AgentLoadingStatus({ isLoading, customMessage }: AgentLo
                             transition={{ duration: 0.3, ease: "easeOut" }}
                         />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
-                        Processing... {progress}%
-                    </p>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                        <p>Processing... {Math.round(progress)}%</p>
+                        {elapsed && (
+                            <p>{Math.round(elapsed / 1000)}s elapsed</p>
+                        )}
+                        {currentStep && (
+                            <p className="capitalize">{currentStep} step</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

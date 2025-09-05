@@ -38,7 +38,7 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
             )}
             
             {/* Apollo Data Display */}
-            {dataType?.startsWith('apollo') && (
+            {(dataType?.startsWith('apollo') || dataType === 'people_search') && (
                 <ApolloDataDisplay
                     type={dataType as any}
                     data={data.data || data}
@@ -59,6 +59,7 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
             
             {/* Generic Structured Data Display */}
             {!dataType?.startsWith('apollo') && 
+             dataType !== 'people_search' &&
              !['aircraft_search', 'booking_quote', 'fleet_status'].includes(dataType || '') && 
              data.data && (
                 <GenericDataDisplay data={data.data} type={dataType} />
@@ -98,6 +99,7 @@ export function detectDataType(data: any): string | null {
     if (data.type) return data.type;
     
     // Check for Apollo patterns
+    if (data.people || (data.data && data.data.people)) return 'people_search';
     if (data.leads || (data.data && data.data.leads)) return 'apollo_leads';
     if (data.campaign || (data.data && data.data.campaign)) return 'apollo_campaign';
     if (data.enrichment || (data.data && data.data.enrichment)) return 'apollo_enrichment';
