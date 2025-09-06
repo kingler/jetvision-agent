@@ -181,7 +181,7 @@ export class ExecutionContext {
         let totalRuns = 0;
         let totalFailures = 0;
         let totalDurationMs = 0;
-        let totalTasks = Object.keys(taskSummary).length;
+        const totalTasks = Object.keys(taskSummary).length;
         let failedTasks = 0;
         let slowestTask = { name: '', duration: 0 };
         let highestFailureTask = { name: '', failures: 0 };

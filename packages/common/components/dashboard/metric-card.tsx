@@ -8,21 +8,30 @@ interface MetricCardProps {
     className?: string;
 }
 
-export function MetricCard({ title, value, change, trend = 'neutral', className = '' }: MetricCardProps) {
+export function MetricCard({
+    title,
+    value,
+    change,
+    trend = 'neutral',
+    className = '',
+}: MetricCardProps) {
     const getTrendColor = () => {
         switch (trend) {
-            case 'up': return 'text-green-600';
-            case 'down': return 'text-red-600';
-            default: return 'text-gray-600';
+            case 'up':
+                return 'text-green-600';
+            case 'down':
+                return 'text-red-600';
+            default:
+                return 'text-gray-600';
         }
     };
 
     return (
-        <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-            <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
+        <div className={`rounded-lg bg-white p-6 shadow-md ${className}`}>
+            <h3 className="mb-2 text-sm font-medium text-gray-600">{title}</h3>
             <p className="text-3xl font-bold text-gray-900">{value}</p>
             {change && (
-                <p className={`text-sm mt-2 ${getTrendColor()}`}>
+                <p className={`mt-2 text-sm ${getTrendColor()}`}>
                     {trend === 'up' ? '↗' : trend === 'down' ? '↘' : '→'} {change}
                 </p>
             )}

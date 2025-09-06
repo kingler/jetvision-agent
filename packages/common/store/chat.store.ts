@@ -33,26 +33,29 @@ if (typeof window !== 'undefined') {
 const loadInitialData = async () => {
     const threads = await db.threads.toArray();
     const configStr = localStorage.getItem(CONFIG_KEY);
-    
+
     // Default to JetVision Agent model
     const jetvisionModel = models.find(m => m.id === ModelEnum.JETVISION_AGENT) || models[0];
-    
+
     const config = configStr
         ? JSON.parse(configStr)
         : {
-              customInstructions: 'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.',
+              customInstructions:
+                  'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.',
               model: jetvisionModel.id,
               useWebSearch: false,
               showSuggestions: true,
               chatMode: ChatMode.GPT_4o_Mini,
           };
-    
+
     // Always use JetVision Agent model
     config.model = jetvisionModel.id;
-    
+
     const chatMode = config.chatMode || ChatMode.GPT_4o;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
-    const customInstructions = config.customInstructions || 'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.';
+    const customInstructions =
+        config.customInstructions ||
+        'You are JetVision Agent, specializing in Apollo.io lead generation and Avinode fleet management for private jet charter services.';
 
     const initialThreads = threads.length ? threads : [];
 
@@ -254,7 +257,10 @@ const initializeWorker = () => {
         try {
             dbWorker = new SharedWorker('/db-sync.worker.js');
         } catch (workerError) {
-            console.warn('SharedWorker creation failed, falling back to localStorage sync:', workerError);
+            console.warn(
+                'SharedWorker creation failed, falling back to localStorage sync:',
+                workerError
+            );
             initializeTabSync();
             return;
         }
@@ -608,7 +614,10 @@ export const useChatStore = create(
                 return [];
             }
             try {
-                const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
+                const threadItems = await db.threadItems
+                    .where('threadId')
+                    .equals(threadId)
+                    .toArray();
                 return threadItems;
             } catch (error) {
                 console.error('Error getting thread items:', error);
@@ -626,24 +635,27 @@ export const useChatStore = create(
             set(state => {
                 state.currentThreadItem = threadItem;
             }),
-        
+
         rollbackOptimisticUpdate: async threadItemId => {
             console.log('[rollbackOptimisticUpdate] Rolling back item:', threadItemId);
             try {
                 // Remove from database if it exists
                 await db.threadItems.delete(threadItemId);
-                
+
                 // Remove from store state
                 set(state => {
                     state.threadItems = state.threadItems.filter(item => item.id !== threadItemId);
-                    
+
                     // Clear current thread item if it matches
                     if (state.currentThreadItem?.id === threadItemId) {
                         state.currentThreadItem = null;
                     }
                 });
-                
-                console.log('[rollbackOptimisticUpdate] Successfully rolled back item:', threadItemId);
+
+                console.log(
+                    '[rollbackOptimisticUpdate] Successfully rolled back item:',
+                    threadItemId
+                );
             } catch (error) {
                 console.error('[rollbackOptimisticUpdate] Failed to rollback:', error);
             }
@@ -708,7 +720,9 @@ export const useChatStore = create(
 
         createThread: async (optimisticId: string, thread?: Pick<Thread, 'title'>) => {
             const threadId = optimisticId || nanoid();
-            const formattedTitle = thread?.title ? formatDisplayText(thread.title, 34) : 'New Thread';
+            const formattedTitle = thread?.title
+                ? formatDisplayText(thread.title, 34)
+                : 'New Thread';
             const newThread = {
                 id: threadId,
                 title: formattedTitle,
@@ -770,24 +784,35 @@ export const useChatStore = create(
         createThreadItem: async threadItem => {
             const threadId = get().currentThreadId;
             if (!threadId) return;
-            
-            console.log('[createThreadItem] Creating item:', threadItem.id, 'for thread:', threadId);
-            
+
+            console.log(
+                '[createThreadItem] Creating item:',
+                threadItem.id,
+                'for thread:',
+                threadId
+            );
+
             try {
                 // Check for existing item with same ID to prevent duplicates
                 const existingItem = get().threadItems.find(t => t.id === threadItem.id);
-                
+
                 if (existingItem) {
-                    console.log('[createThreadItem] Item already exists, updating:', existingItem.id);
+                    console.log(
+                        '[createThreadItem] Item already exists, updating:',
+                        existingItem.id
+                    );
                     // Item exists, merge the data (preserving optimistic updates)
                     const mergedItem = {
                         ...existingItem,
                         ...threadItem,
                         threadId, // Ensure threadId is correct
                         // Preserve optimistic status if real status isn't final
-                        status: threadItem.status === 'PENDING' ? existingItem.status || 'PENDING' : threadItem.status,
+                        status:
+                            threadItem.status === 'PENDING'
+                                ? existingItem.status || 'PENDING'
+                                : threadItem.status,
                     };
-                    
+
                     await db.threadItems.put(mergedItem);
                     set(state => {
                         state.threadItems = state.threadItems.map(t =>

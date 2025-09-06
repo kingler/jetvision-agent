@@ -31,7 +31,7 @@ export const ThreadItem = memo(
         isGenerating: boolean;
         isLast: boolean;
     }) => {
-        const [startTime] = useState(() => 
+        const [startTime] = useState(() =>
             threadItem.status === 'PENDING' || isGenerating ? Date.now() : undefined
         );
         const { isAnimationComplete, text: animatedText } = useAnimatedText(
@@ -102,7 +102,7 @@ export const ThreadItem = memo(
 
                         {/* N8N Workflow Status Display */}
                         {threadItem.n8nWorkflowStatus && threadItem.status === 'PENDING' && (
-                            <AgentLoadingStatus 
+                            <AgentLoadingStatus
                                 isLoading={true}
                                 customMessage={threadItem.n8nWorkflowStatus.message}
                                 progress={threadItem.n8nWorkflowStatus.progress}
@@ -110,16 +110,14 @@ export const ThreadItem = memo(
                                 elapsed={threadItem.n8nWorkflowStatus.elapsed}
                             />
                         )}
-                        
+
                         {/* General thinking status for non-N8N workflows */}
-                        {((isGenerating && !hasAnswer) || (!hasResponse && threadItem.status === 'PENDING')) && 
-                         !threadItem.n8nWorkflowStatus && (
-                            <AgentThinkingStatus 
-                                isThinking={true}
-                                startTime={startTime}
-                            />
-                        )}
-                        
+                        {((isGenerating && !hasAnswer) ||
+                            (!hasResponse && threadItem.status === 'PENDING')) &&
+                            !threadItem.n8nWorkflowStatus && (
+                                <AgentThinkingStatus isThinking={true} startTime={startTime} />
+                            )}
+
                         {!hasResponse && !isGenerating && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
                                 <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
@@ -147,10 +145,10 @@ export const ThreadItem = memo(
                                         }
                                         isLast={isLast}
                                     />
-                                    
+
                                     {/* Display structured data if present */}
                                     {(threadItem.answer as any)?.structured && (
-                                        <StructuredDataDisplay 
+                                        <StructuredDataDisplay
                                             data={(threadItem.answer as any).structured}
                                             metadata={threadItem.metadata}
                                         />

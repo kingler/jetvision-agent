@@ -60,12 +60,12 @@ export const IntroDialog = () => {
     ];
 
     const exampleRequests = [
-        "Find CEOs in the aviation industry in Miami with companies over 50 employees",
-        "Search for a midsize jet from KTEB to KLAS for 6 passengers next Friday",
-        "Get pricing for a round trip from New York to London for 8 passengers",
-        "Create an email sequence for luxury travel executives",
-        "Check available heavy jets from Los Angeles to Dubai",
-        "Track engagement metrics for our last email campaign",
+        'Find CEOs in the aviation industry in Miami with companies over 50 employees',
+        'Search for a midsize jet from KTEB to KLAS for 6 passengers next Friday',
+        'Get pricing for a round trip from New York to London for 8 passengers',
+        'Create an email sequence for luxury travel executives',
+        'Check available heavy jets from Los Angeles to Dubai',
+        'Track engagement metrics for our last email campaign',
     ];
 
     if (isSignedIn) {
@@ -106,10 +106,13 @@ export const IntroDialog = () => {
 
                     <div className="flex flex-col gap-2">
                         <h3 className="text-sm font-semibold">Welcome, JetVision Stakeholder</h3>
-                        <p className="text-muted-foreground text-sm mb-3">
-                            Experience the future of private jet charter operations. JetVision Agent seamlessly combines Apollo.io's sales intelligence with Avinode's aviation marketplace to revolutionize how you manage executive travel and grow your charter business.
+                        <p className="text-muted-foreground mb-3 text-sm">
+                            Experience the future of private jet charter operations. JetVision Agent
+                            seamlessly combines Apollo.io's sales intelligence with Avinode's
+                            aviation marketplace to revolutionize how you manage executive travel
+                            and grow your charter business.
                         </p>
-                        <h4 className="text-sm font-semibold mt-2">Platform Capabilities:</h4>
+                        <h4 className="mt-2 text-sm font-semibold">Platform Capabilities:</h4>
 
                         <div className="flex flex-col items-start gap-1.5">
                             {points.map((point, index) => (
@@ -136,9 +139,11 @@ export const IntroDialog = () => {
                             ))}
                         </div>
 
-                        <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                            <p className="text-xs text-muted-foreground text-center">
-                                <span className="font-semibold">Trusted by Charter Operators Worldwide</span>
+                        <div className="bg-muted/30 mt-4 rounded-lg p-3">
+                            <p className="text-muted-foreground text-center text-xs">
+                                <span className="font-semibold">
+                                    Trusted by Charter Operators Worldwide
+                                </span>
                                 <br />
                                 Powered by MCP Protocol • Enterprise-Ready • SOC2 Compliant
                             </p>

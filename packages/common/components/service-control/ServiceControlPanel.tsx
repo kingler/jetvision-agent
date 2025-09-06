@@ -97,18 +97,18 @@ export const ServiceControlPanel = ({
             <div className="flex items-center justify-between">
                 <div className="space-y-1">
                     <h2 className="text-2xl font-semibold tracking-tight">Service Control</h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                         Manage Apollo, Avinode, and N8N service availability
                     </p>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                    <ServiceStatusIndicator 
-                        status={enabledServicesCount > 0 ? 'enabled' : 'disabled'} 
-                        showLabel 
+                    <ServiceStatusIndicator
+                        status={enabledServicesCount > 0 ? 'enabled' : 'disabled'}
+                        showLabel
                         size="md"
                     />
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                         {enabledServicesCount}/{totalServicesCount} services active
                     </span>
                 </div>
@@ -117,18 +117,21 @@ export const ServiceControlPanel = ({
             {/* Bulk Actions Section */}
             {showBulkActions && (
                 <div className="bg-muted/50 rounded-lg p-4">
-                    <h3 className="font-medium mb-3">Bulk Actions</h3>
+                    <h3 className="mb-3 font-medium">Bulk Actions</h3>
                     <div className="flex flex-wrap gap-3">
                         <Button
                             variant="default"
                             size="sm"
                             onClick={handleEnableAll}
-                            disabled={isPerformingBulkAction || enabledServicesCount === totalServicesCount}
+                            disabled={
+                                isPerformingBulkAction ||
+                                enabledServicesCount === totalServicesCount
+                            }
                         >
                             <IconPower size={16} className="mr-2" />
                             Enable All Services
                         </Button>
-                        
+
                         <Button
                             variant="destructive"
                             size="sm"
@@ -138,7 +141,7 @@ export const ServiceControlPanel = ({
                             <IconX size={16} className="mr-2" />
                             Disable All Services
                         </Button>
-                        
+
                         {showHealthChecks && (
                             <Button
                                 variant="outlined"
@@ -156,9 +159,9 @@ export const ServiceControlPanel = ({
                             </Button>
                         )}
                     </div>
-                    
+
                     {lastHealthCheckTime && (
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <p className="text-muted-foreground mt-2 text-xs">
                             Last health check: {lastHealthCheckTime.toLocaleTimeString()}
                         </p>
                     )}
@@ -169,7 +172,7 @@ export const ServiceControlPanel = ({
             <div className="space-y-4">
                 <h3 className="font-medium">Individual Services</h3>
                 {servicesList.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-muted-foreground py-8 text-center">
                         <IconSettings size={48} className="mx-auto mb-4 opacity-50" />
                         <p>No services configured</p>
                     </div>
@@ -197,25 +200,25 @@ export const ServiceControlPanel = ({
             {showHealthChecks && (
                 <div className="space-y-4">
                     <h3 className="font-medium">Service Health Monitoring</h3>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         {Object.keys(services)
                             .filter(serviceId => serviceId !== 'n8n') // N8N is always healthy
                             .map(serviceId => (
-                            <ServiceHealthCheck
-                                key={serviceId}
-                                serviceId={serviceId}
-                                autoRefresh={true}
-                                refreshInterval={5 * 60 * 1000} // 5 minutes
-                                showDetails={true}
-                            />
-                        ))}
+                                <ServiceHealthCheck
+                                    key={serviceId}
+                                    serviceId={serviceId}
+                                    autoRefresh={true}
+                                    refreshInterval={5 * 60 * 1000} // 5 minutes
+                                    showDetails={true}
+                                />
+                            ))}
                     </div>
                 </div>
             )}
 
             {/* Service Dependencies Section */}
             <div className="bg-muted/30 rounded-lg p-4">
-                <h3 className="font-medium mb-3">Service Information</h3>
+                <h3 className="mb-3 font-medium">Service Information</h3>
                 <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">Apollo.io:</span>
@@ -230,11 +233,12 @@ export const ServiceControlPanel = ({
                         <span>Workflow automation and integrations</span>
                     </div>
                 </div>
-                
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+
+                <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3">
                     <p className="text-sm text-yellow-800">
-                        <strong>Note:</strong> Disabling services will hide their related prompts and workflows 
-                        from the interface. Users will not be able to access disabled service functionality.
+                        <strong>Note:</strong> Disabling services will hide their related prompts
+                        and workflows from the interface. Users will not be able to access disabled
+                        service functionality.
                     </p>
                 </div>
             </div>

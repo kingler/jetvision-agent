@@ -152,7 +152,7 @@ export const Sidebar = () => {
                     </Link>
                     <Button
                         variant="ghost"
-                        tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+                        tooltip={isSidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
                         tooltipSide="right"
                         size="icon-sm"
                         onClick={() => setIsSidebarOpen(prev => !prev)}

@@ -1,14 +1,14 @@
 import React from 'react';
 import { cn } from '@repo/ui';
-import { 
-    IconTrendingUp, 
-    IconTrendingDown, 
-    IconMail, 
+import {
+    IconTrendingUp,
+    IconTrendingDown,
+    IconMail,
     IconEye,
     IconClick,
     IconUserCheck,
     IconCurrencyDollar,
-    IconChartBar
+    IconChartBar,
 } from '@tabler/icons-react';
 
 interface MetricCardProps {
@@ -19,19 +19,19 @@ interface MetricCardProps {
     color?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ 
-    label, 
-    value, 
-    change, 
-    icon: Icon, 
-    color = 'text-brand' 
+const MetricCard: React.FC<MetricCardProps> = ({
+    label,
+    value,
+    change,
+    icon: Icon,
+    color = 'text-brand',
 }) => {
     const isPositive = change && change > 0;
     const TrendIcon = isPositive ? IconTrendingUp : IconTrendingDown;
     const trendColor = isPositive ? 'text-green-600' : 'text-red-600';
 
     return (
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="border-border bg-card rounded-lg border p-4">
             <div className="flex items-center justify-between">
                 <Icon size={20} className={cn('opacity-70', color)} />
                 {change !== undefined && (
@@ -42,8 +42,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
                 )}
             </div>
             <div className="mt-3">
-                <div className="text-2xl font-bold text-foreground">{value}</div>
-                <div className="text-xs text-muted-foreground">{label}</div>
+                <div className="text-foreground text-2xl font-bold">{value}</div>
+                <div className="text-muted-foreground text-xs">{label}</div>
             </div>
         </div>
     );
@@ -99,11 +99,11 @@ export const CampaignMetricsPanel: React.FC<CampaignMetricsProps> = ({
     return (
         <div className={cn('space-y-4', className)}>
             {/* Header */}
-            <div className="rounded-lg border border-border bg-gradient-to-r from-secondary to-transparent p-4">
+            <div className="border-border from-secondary rounded-lg border bg-gradient-to-r to-transparent p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-xl font-bold text-foreground">{campaignName}</h3>
-                        <p className="text-sm text-muted-foreground">{dateRange}</p>
+                        <h3 className="text-foreground text-xl font-bold">{campaignName}</h3>
+                        <p className="text-muted-foreground text-sm">{dateRange}</p>
                     </div>
                     <IconChartBar size={32} className="text-brand opacity-50" />
                 </div>
@@ -143,35 +143,33 @@ export const CampaignMetricsPanel: React.FC<CampaignMetricsProps> = ({
 
             {/* Financial Metrics */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border border-border bg-card p-4">
+                <div className="border-border bg-card rounded-lg border p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-xs text-muted-foreground">Revenue Generated</div>
-                            <div className="mt-1 text-2xl font-bold text-brand">
+                            <div className="text-muted-foreground text-xs">Revenue Generated</div>
+                            <div className="text-brand mt-1 text-2xl font-bold">
                                 {formatCurrency(revenue)}
                             </div>
                         </div>
                         <IconCurrencyDollar size={24} className="text-brand opacity-50" />
                     </div>
                 </div>
-                <div className="rounded-lg border border-border bg-card p-4">
+                <div className="border-border bg-card rounded-lg border p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-xs text-muted-foreground">Cost Per Lead</div>
-                            <div className="mt-1 text-2xl font-bold text-foreground">
+                            <div className="text-muted-foreground text-xs">Cost Per Lead</div>
+                            <div className="text-foreground mt-1 text-2xl font-bold">
                                 {formatCurrency(costPerLead)}
                             </div>
                         </div>
                         <IconUserCheck size={24} className="text-muted-foreground opacity-50" />
                     </div>
                 </div>
-                <div className="rounded-lg border border-border bg-card p-4">
+                <div className="border-border bg-card rounded-lg border p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-xs text-muted-foreground">ROI</div>
-                            <div className="mt-1 text-2xl font-bold text-green-600">
-                                {roi}%
-                            </div>
+                            <div className="text-muted-foreground text-xs">ROI</div>
+                            <div className="mt-1 text-2xl font-bold text-green-600">{roi}%</div>
                         </div>
                         <IconTrendingUp size={24} className="text-green-600 opacity-50" />
                     </div>
@@ -179,47 +177,51 @@ export const CampaignMetricsPanel: React.FC<CampaignMetricsProps> = ({
             </div>
 
             {/* Campaign Stats */}
-            <div className="rounded-lg border border-border bg-card p-4">
-                <h4 className="mb-3 font-semibold text-foreground">Campaign Performance</h4>
+            <div className="border-border bg-card rounded-lg border p-4">
+                <h4 className="text-foreground mb-3 font-semibold">Campaign Performance</h4>
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Emails Sent</span>
+                        <span className="text-muted-foreground text-sm">Emails Sent</span>
                         <span className="font-medium">{totalSent.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Opened</span>
+                        <span className="text-muted-foreground text-sm">Opened</span>
                         <span className="font-medium">{opened.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Clicked</span>
+                        <span className="text-muted-foreground text-sm">Clicked</span>
                         <span className="font-medium">{clicked.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Responded</span>
+                        <span className="text-muted-foreground text-sm">Responded</span>
                         <span className="font-medium">{responded.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between border-t border-border pt-3">
-                        <span className="text-sm font-semibold text-foreground">Conversions</span>
-                        <span className="font-bold text-brand">{conversions}</span>
+                    <div className="border-border flex items-center justify-between border-t pt-3">
+                        <span className="text-foreground text-sm font-semibold">Conversions</span>
+                        <span className="text-brand font-bold">{conversions}</span>
                     </div>
                 </div>
             </div>
 
             {/* Top Performers */}
             {topPerformers.length > 0 && (
-                <div className="rounded-lg border border-border bg-card p-4">
-                    <h4 className="mb-3 font-semibold text-foreground">Top Prospects</h4>
+                <div className="border-border bg-card rounded-lg border p-4">
+                    <h4 className="text-foreground mb-3 font-semibold">Top Prospects</h4>
                     <div className="space-y-2">
                         {topPerformers.map((performer, index) => (
                             <div
                                 key={index}
-                                className="flex items-center justify-between rounded-md bg-secondary p-2"
+                                className="bg-secondary flex items-center justify-between rounded-md p-2"
                             >
                                 <div>
-                                    <div className="font-medium text-foreground">{performer.name}</div>
-                                    <div className="text-xs text-muted-foreground">{performer.company}</div>
+                                    <div className="text-foreground font-medium">
+                                        {performer.name}
+                                    </div>
+                                    <div className="text-muted-foreground text-xs">
+                                        {performer.company}
+                                    </div>
                                 </div>
-                                <div className="rounded-full bg-brand/10 px-2 py-1 text-sm font-bold text-brand">
+                                <div className="bg-brand/10 text-brand rounded-full px-2 py-1 text-sm font-bold">
                                     {performer.score}
                                 </div>
                             </div>

@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { cn } from '@repo/ui';
 import { Button } from '@repo/ui';
-import { 
+import {
     PaperAirplaneIcon,
     UserGroupIcon,
     ClockIcon,
     CurrencyDollarIcon,
-    CheckIcon
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import type { BookingData } from './booking-wizard';
 
@@ -37,7 +37,7 @@ const availableAircraft: Aircraft[] = [
         speed: 527,
         hourlyRate: 4500,
         available: true,
-        features: ['Wi-Fi', 'Refreshment Center', 'Executive Seating', 'Entertainment System']
+        features: ['Wi-Fi', 'Refreshment Center', 'Executive Seating', 'Entertainment System'],
     },
     {
         id: '2',
@@ -49,7 +49,7 @@ const availableAircraft: Aircraft[] = [
         speed: 482,
         hourlyRate: 6200,
         available: false,
-        features: ['Full Galley', 'Private Lavatory', 'Conference Setup', 'Satellite Phone']
+        features: ['Full Galley', 'Private Lavatory', 'Conference Setup', 'Satellite Phone'],
     },
     {
         id: '3',
@@ -61,7 +61,7 @@ const availableAircraft: Aircraft[] = [
         speed: 488,
         hourlyRate: 7800,
         available: true,
-        features: ['Bedroom Suite', 'Full Kitchen', 'Entertainment Center', 'High-Speed Internet']
+        features: ['Bedroom Suite', 'Full Kitchen', 'Entertainment Center', 'High-Speed Internet'],
     },
     {
         id: '4',
@@ -73,8 +73,13 @@ const availableAircraft: Aircraft[] = [
         speed: 513,
         hourlyRate: 8500,
         available: true,
-        features: ['Master Suite', 'Conference Area', 'Premium Catering', 'Satellite Communications']
-    }
+        features: [
+            'Master Suite',
+            'Conference Area',
+            'Premium Catering',
+            'Satellite Communications',
+        ],
+    },
 ];
 
 interface AircraftSelectionStepProps {
@@ -98,14 +103,14 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
 
     const handleSelectAircraft = (aircraft: Aircraft) => {
         if (!aircraft.available) return;
-        
+
         onUpdate({
             selectedAircraft: {
                 id: aircraft.id,
                 model: aircraft.model,
                 tailNumber: aircraft.tailNumber,
-                hourlyRate: aircraft.hourlyRate
-            }
+                hourlyRate: aircraft.hourlyRate,
+            },
         });
     };
 
@@ -113,7 +118,7 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
-            minimumFractionDigits: 0
+            minimumFractionDigits: 0,
         }).format(amount);
     };
 
@@ -131,7 +136,8 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
                     size="sm"
                     onClick={() => setFilter('suitable')}
                 >
-                    Suitable for {data.passengers || 1} passenger{(data.passengers || 1) > 1 ? 's' : ''}
+                    Suitable for {data.passengers || 1} passenger
+                    {(data.passengers || 1) > 1 ? 's' : ''}
                 </Button>
                 <Button
                     variant={filter === 'available' ? 'default' : 'outlined'}
@@ -150,36 +156,37 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
             </div>
 
             {/* Aircraft Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filteredAircraft.map((aircraft) => {
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {filteredAircraft.map(aircraft => {
                     const isSelected = data.selectedAircraft?.id === aircraft.id;
-                    const canSelect = aircraft.available && aircraft.capacity >= (data.passengers || 1);
-                    
+                    const canSelect =
+                        aircraft.available && aircraft.capacity >= (data.passengers || 1);
+
                     return (
                         <div
                             key={aircraft.id}
                             className={cn(
-                                'relative border-2 rounded-lg p-6 transition-all cursor-pointer',
+                                'relative cursor-pointer rounded-lg border-2 p-6 transition-all',
                                 isSelected
                                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                                     : canSelect
-                                    ? 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                                    : 'border-gray-200 dark:border-gray-600 opacity-60 cursor-not-allowed',
+                                      ? 'border-gray-200 hover:border-gray-300 dark:border-gray-600 dark:hover:border-gray-500'
+                                      : 'cursor-not-allowed border-gray-200 opacity-60 dark:border-gray-600',
                                 !aircraft.available && 'bg-gray-50 dark:bg-gray-900/50'
                             )}
                             onClick={() => canSelect && handleSelectAircraft(aircraft)}
                         >
                             {/* Selection Indicator */}
                             {isSelected && (
-                                <div className="absolute top-4 right-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                <div className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500">
                                     <CheckIcon className="h-4 w-4 text-white" />
                                 </div>
                             )}
 
                             {/* Aircraft Header */}
-                            <div className="flex items-start justify-between mb-4">
+                            <div className="mb-4 flex items-start justify-between">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
                                         <PaperAirplaneIcon className="h-6 w-6 text-blue-600" />
                                     </div>
                                     <div>
@@ -200,18 +207,20 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
                             </div>
 
                             {/* Aircraft Specs */}
-                            <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div className="mb-4 grid grid-cols-3 gap-4">
                                 <div className="text-center">
-                                    <UserGroupIcon className="h-5 w-5 text-gray-400 mx-auto mb-1" />
+                                    <UserGroupIcon className="mx-auto mb-1 h-5 w-5 text-gray-400" />
                                     <div className="text-sm font-medium">{aircraft.capacity}</div>
                                     <div className="text-xs text-gray-500">Passengers</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-sm font-medium">{aircraft.range.toLocaleString()}</div>
+                                    <div className="text-sm font-medium">
+                                        {aircraft.range.toLocaleString()}
+                                    </div>
                                     <div className="text-xs text-gray-500">Range (nm)</div>
                                 </div>
                                 <div className="text-center">
-                                    <ClockIcon className="h-5 w-5 text-gray-400 mx-auto mb-1" />
+                                    <ClockIcon className="mx-auto mb-1 h-5 w-5 text-gray-400" />
                                     <div className="text-sm font-medium">{aircraft.speed}</div>
                                     <div className="text-xs text-gray-500">Speed (kts)</div>
                                 </div>
@@ -220,10 +229,10 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
                             {/* Features */}
                             <div className="mb-4">
                                 <div className="flex flex-wrap gap-2">
-                                    {aircraft.features.slice(0, 3).map((feature) => (
+                                    {aircraft.features.slice(0, 3).map(feature => (
                                         <span
                                             key={feature}
-                                            className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full"
+                                            className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                                         >
                                             {feature}
                                         </span>
@@ -239,20 +248,24 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
                             {/* Availability Status */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                    <div className={cn(
-                                        'w-2 h-2 rounded-full',
-                                        aircraft.available ? 'bg-green-500' : 'bg-red-500'
-                                    )} />
-                                    <span className={cn(
-                                        'text-sm font-medium',
-                                        aircraft.available 
-                                            ? 'text-green-600 dark:text-green-400' 
-                                            : 'text-red-600 dark:text-red-400'
-                                    )}>
+                                    <div
+                                        className={cn(
+                                            'h-2 w-2 rounded-full',
+                                            aircraft.available ? 'bg-green-500' : 'bg-red-500'
+                                        )}
+                                    />
+                                    <span
+                                        className={cn(
+                                            'text-sm font-medium',
+                                            aircraft.available
+                                                ? 'text-green-600 dark:text-green-400'
+                                                : 'text-red-600 dark:text-red-400'
+                                        )}
+                                    >
                                         {aircraft.available ? 'Available' : 'Unavailable'}
                                     </span>
                                 </div>
-                                
+
                                 {aircraft.capacity < (data.passengers || 1) && (
                                     <span className="text-xs text-orange-600 dark:text-orange-400">
                                         Too small for {data.passengers} passengers
@@ -262,13 +275,15 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
 
                             {/* Estimated Cost */}
                             {canSelect && (
-                                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-gray-600 dark:text-gray-400">
                                             Est. cost ({estimateFlightTime()}h flight):
                                         </span>
                                         <span className="font-semibold text-gray-900 dark:text-white">
-                                            {formatCurrency(aircraft.hourlyRate * estimateFlightTime())}
+                                            {formatCurrency(
+                                                aircraft.hourlyRate * estimateFlightTime()
+                                            )}
                                         </span>
                                     </div>
                                 </div>
@@ -279,13 +294,14 @@ export function AircraftSelectionStep({ data, onUpdate }: AircraftSelectionStepP
             </div>
 
             {filteredAircraft.length === 0 && (
-                <div className="text-center py-12">
-                    <PaperAirplaneIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <div className="py-12 text-center">
+                    <PaperAirplaneIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                         No aircraft available
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400">
-                        No aircraft match your current criteria. Try adjusting the filter or contact us for alternatives.
+                        No aircraft match your current criteria. Try adjusting the filter or contact
+                        us for alternatives.
                     </p>
                 </div>
             )}

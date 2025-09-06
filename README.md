@@ -17,18 +17,21 @@ At JetVision, we redefine luxury travel through seamless, bespoke private aircra
 ## Core Business Objectives
 
 ### 🎯 **Lead Generation & Sales Intelligence**
+
 - **Apollo.io Integration**: Identify and qualify high-value prospects in the private aviation market
 - **Target Audience**: Executive assistants, C-suite executives, travel coordinators at Fortune 500 companies
 - **Campaign Management**: Launch, monitor, and optimize email sequences and outreach campaigns
 - **Goal**: Increase qualified prospect pipeline by 25% quarterly through targeted campaigns
 
 ### ✈️ **Fleet Operations Management**
+
 - **Avinode Platform Integration**: Optimize aircraft availability, pricing, and charter operations
 - **Real-time Fleet Status**: Monitor aircraft locations, availability, and utilization rates
 - **Dynamic Pricing**: Generate competitive quotes and market-rate analysis
 - **Goal**: Maximize aircraft utilization rates and optimize pricing strategies
 
 ### 📊 **Business Intelligence & Analytics**
+
 - **Performance Tracking**: Monitor conversion rates, response metrics, and ROI optimization
 - **Market Intelligence**: Analyze competitor activities and industry trends
 - **Operational Metrics**: Track efficiency indicators and process improvement opportunities
@@ -37,17 +40,20 @@ At JetVision, we redefine luxury travel through seamless, bespoke private aircra
 ## Service Portfolio
 
 ### **Private Jet Charter Services**
+
 - **Light Jets**: Ideal for short trips (4-7 passengers, 1,000-1,800 miles)
 - **Midsize Jets**: Comfort for medium-range flights (6-8 passengers, 2,000-3,000 miles)
 - **Heavy Jets**: Ultimate luxury for longer journeys (10-16 passengers, 4,000+ miles)
 
 ### **Concierge Services**
+
 - Tailored in-flight dining experiences
 - Private ground transportation coordination
 - Personalized amenities and special requests
 - 24/7 customer support and trip management
 
 ### **Membership Programs**
+
 - Priority access to aircraft inventory
 - Exclusive rates and pricing tiers
 - Personalized service and dedicated account management
@@ -56,6 +62,7 @@ At JetVision, we redefine luxury travel through seamless, bespoke private aircra
 ## Technology Stack & Architecture
 
 ### **AI-Powered Workflow Orchestration**
+
 Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI technologies, featuring:
 
 - **n8n Integration**: Custom workflow automation connecting Apollo.io and Avinode operations
@@ -64,6 +71,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 - **Privacy-Focused**: Local data storage using IndexedDB for sensitive client information
 
 ### **System Architecture**
+
 ```
 ├── jetvision-agent/          # Main Next.js application
 │   ├── apps/web/            # Web application
@@ -76,18 +84,21 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 ## Key Features
 
 ### **Advanced Business Intelligence**
+
 - **Apollo.io Lead Discovery**: Target executive assistants, travel coordinators, and C-suite executives
 - **Campaign Performance Analytics**: Track conversion rates, response metrics, and ROI optimization
 - **Market Intelligence**: Monitor competitor activities and industry expansion opportunities
 - **Stakeholder Reporting**: Executive dashboards, KPI tracking, and business health indicators
 
 ### **Fleet Management Excellence**
+
 - **Aircraft Search & Availability**: Real-time fleet status and optimal aircraft matching
 - **Charter Management**: Coordinate booking requests and operational logistics
 - **Pricing Optimization**: Dynamic pricing based on market rates and demand
 - **Operator Relations**: Maintain relationships with aircraft operators and service providers
 
 ### **Seamless Integration**
+
 - **n8n Webhook Automation**: Custom workflows connecting all business systems
 - **Real-time Data Sync**: Instant updates across Apollo.io and Avinode platforms
 - **Multi-Platform Support**: Web, desktop, and mobile-responsive interfaces
@@ -96,6 +107,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 ## Business Impact & Success Metrics
 
 ### **Measurable Outcomes**
+
 - **Lead Generation**: 25% quarterly increase in qualified prospect pipeline
 - **Conversion Optimization**: 15%+ email response rates (above industry average)
 - **Operational Efficiency**: Maximized aircraft utilization and optimized pricing
@@ -103,6 +115,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 - **Revenue Growth**: Sustainable revenue increases through strategic market expansion
 
 ### **Competitive Advantages**
+
 - **20+ Years Industry Expertise**: Deep understanding of private aviation nuances
 - **AI-Powered Intelligence**: Advanced data analytics and predictive insights
 - **Luxury Brand Positioning**: Premium service delivery and client experience
@@ -112,6 +125,7 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 ## Getting Started
 
 ### Prerequisites
+
 - Ensure you have `bun` installed (recommended) or `yarn`
 - Access to Apollo.io and Avinode API credentials
 - n8n instance for webhook automation
@@ -119,12 +133,14 @@ Built as a sophisticated monorepo with Next.js, TypeScript, and cutting-edge AI 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/kingler/jetvision-agent.git
 cd jetvision-agent
 ```
 
 2. Install dependencies:
+
 ```bash
 bun install
 # or
@@ -132,12 +148,14 @@ yarn install
 ```
 
 3. Configure environment variables:
+
 ```bash
 cp .env.jetvision.example .env.local
 # Edit .env.local with your API keys and webhook URLs
 ```
 
 4. Start the development server:
+
 ```bash
 bun dev
 # or
@@ -149,18 +167,21 @@ yarn dev
 ## Usage Examples
 
 ### **Apollo.io Queries**
+
 - "Find executive assistants at Fortune 500 companies in California"
 - "Show conversion rates for jet charter campaigns this month"
 - "Launch campaign for Series B funded companies"
 - "Which executive assistants opened our emails the most?"
 
 ### **Avinode Operations**
+
 - "Check Gulfstream G650 availability NYC to London next week"
 - "Find empty leg flights Miami to New York"
 - "Show fleet status and locations"
 - "What's our fleet utilization rate this month?"
 
 ### **Integration Commands**
+
 - "Sync high-value Apollo leads with Avinode bookings"
 - "Check system health and API connections"
 - "Show active n8n workflows"
@@ -170,18 +191,18 @@ yarn dev
 
 **JetVision Agent** - Transforming private aviation through intelligent automation and exceptional service delivery. Where luxury meets technology, and every journey becomes an effortless, first-class experience.
 
-*"Whether flying for business or leisure, trust JetVision to elevate your journey with precision, style, and peace of mind."*
-│   │   ├── avinode-tools.ts  # Avinode tool handlers
-│   │   └── avinode-api-client.ts # API client
-│   ├── tests/
-│   │   ├── unit/              # Unit tests
-│   │   ├── integration/       # Integration tests
-│   │   ├── e2e/              # End-to-end tests
-│   │   └── fixtures/          # Test data
-│   └── package.json
+_"Whether flying for business or leisure, trust JetVision to elevate your journey with precision, style, and peace of mind."_
+│ │ ├── avinode-tools.ts # Avinode tool handlers
+│ │ └── avinode-api-client.ts # API client
+│ ├── tests/
+│ │ ├── unit/ # Unit tests
+│ │ ├── integration/ # Integration tests
+│ │ ├── e2e/ # End-to-end tests
+│ │ └── fixtures/ # Test data
+│ └── package.json
 └── README.md
 
-```
+````
 
 ## MCP Protocol
 
@@ -209,17 +230,19 @@ const result = await apolloClient.callTool('search-leads', {
   companySize: '50-200',
   location: 'United States'
 });
-```
+````
 
 ## API Documentation
 
 Detailed API documentation for each server:
+
 - [Apollo.io MCP Server Documentation](./apollo-io-mcp-server/README.md)
 - [Avinode MCP Server Documentation](./avinode-mcp-server/README.md)
 
 ## Testing
 
 ### Quality Standards
+
 - 95%+ test coverage requirement
 - Unit, integration, and E2E tests
 - Mock data fixtures for consistent testing
@@ -240,17 +263,20 @@ npm run test:e2e
 ## Deployment
 
 ### Docker Support (Coming Soon)
+
 Dockerfiles and docker-compose configuration for containerized deployment.
 
 ### Environment Variables
 
 **Apollo.io Server:**
+
 - `APOLLO_API_KEY`: Apollo.io API key
 - `PORT`: Server port (default: 8123)
 - `NODE_ENV`: Environment (development/production)
 - `LOG_LEVEL`: Logging level (info/debug/error)
 
 **Avinode Server:**
+
 - `AVAINODE_API_KEY`: Avinode API key
 - `PORT`: Server port (default: 8124)
 - `NODE_ENV`: Environment (development/production)
@@ -311,27 +337,31 @@ NEXT_PUBLIC_N8N_API_KEY=your-api-key
 
 # MCP Servers
 APOLLO_API_KEY=your-apollo-key
-AVAINODE_API_KEY=your-avainode-key
+AVAINODE_API_KEY=your-avinode-key
 ```
 
 ## Common Use Cases
 
 ### Search for Available Jets
+
 ```
 "I need a jet from New York to Miami next Tuesday for 8 passengers"
 ```
 
 ### Get Price Quotes
+
 ```
 "What's the cost for a light jet from LAX to Las Vegas?"
 ```
 
 ### Compare Aircraft
+
 ```
 "Show me the differences between a Citation X and a Gulfstream G550"
 ```
 
 ### Plan Multi-Leg Trips
+
 ```
 "Plan a trip: NYC → London → Dubai → NYC with 2-day stops"
 ```
@@ -339,6 +369,7 @@ AVAINODE_API_KEY=your-avainode-key
 ## API Integration
 
 ### n8n Webhook
+
 The application integrates with n8n for workflow automation:
 
 ```javascript
@@ -357,15 +388,17 @@ POST /api/n8n-webhook
 ### MCP Server Endpoints
 
 **Apollo.io MCP**:
+
 ```
 https://apollo-mcp.designthru.ai/search
 https://apollo-mcp.designthru.ai/operators
 ```
 
 **Avainode MCP**:
+
 ```
-https://avainode-mcp.designthru.ai/availability
-https://avainode-mcp.designthru.ai/quotes
+https://avinode-mcp.designthru.ai/availability
+https://avinode-mcp.designthru.ai/quotes
 ```
 
 ## Development Workflow
@@ -373,16 +406,19 @@ https://avainode-mcp.designthru.ai/quotes
 ### Making Changes
 
 1. **Standard Update**:
+
 ```bash
 ./UPDATE_DEPLOY.sh
 ```
 
 2. **Quick Deploy** (for minor changes):
+
 ```bash
 ./QUICK_DEPLOY.sh
 ```
 
 3. **Force Rebuild**:
+
 ```bash
 ./UPDATE_DEPLOY.sh --force
 ```

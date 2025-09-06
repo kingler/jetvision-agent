@@ -1,6 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@repo/ui';
-import { IconPlane, IconClock, IconUsers, IconCurrencyDollar, IconCalendar, IconMapPin } from '@tabler/icons-react';
+import {
+    IconPlane,
+    IconClock,
+    IconUsers,
+    IconCurrencyDollar,
+    IconCalendar,
+    IconMapPin,
+} from '@tabler/icons-react';
 
 interface Aircraft {
     manufacturer?: string;
@@ -43,27 +50,38 @@ interface AvinodeDataDisplayProps {
     recommendations?: string[];
 }
 
-export const AvinodeDataDisplay: React.FC<AvinodeDataDisplayProps> = ({ type, data, summary, recommendations }) => {
+export const AvinodeDataDisplay: React.FC<AvinodeDataDisplayProps> = ({
+    type,
+    data,
+    summary,
+    recommendations,
+}) => {
     if (type === 'aircraft_search' && data.aircraft) {
-        return <AircraftSearchDisplay aircraft={data.aircraft} summary={summary} recommendations={recommendations} />;
+        return (
+            <AircraftSearchDisplay
+                aircraft={data.aircraft}
+                summary={summary}
+                recommendations={recommendations}
+            />
+        );
     }
-    
+
     if (type === 'booking_quote' && data.quote) {
         return <BookingQuoteDisplay quote={data.quote} pricing={data.pricing} />;
     }
-    
+
     if (type === 'fleet_status' && data.fleet) {
         return <FleetStatusDisplay fleet={data.fleet} />;
     }
-    
+
     return null;
 };
 
-const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; recommendations?: string[] }> = ({ 
-    aircraft, 
-    summary, 
-    recommendations 
-}) => {
+const AircraftSearchDisplay: React.FC<{
+    aircraft: Aircraft[];
+    summary?: string;
+    recommendations?: string[];
+}> = ({ aircraft, summary, recommendations }) => {
     return (
         <Card className="mt-4 border-sky-500/20 bg-gradient-to-br from-sky-50/50 to-transparent dark:from-sky-950/20">
             <CardHeader>
@@ -72,26 +90,34 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
                         <IconPlane className="h-5 w-5 text-sky-600" />
                         Available Aircraft
                     </CardTitle>
-                    <Badge variant="secondary" className="bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300">
+                    <Badge
+                        variant="secondary"
+                        className="bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300"
+                    >
                         {aircraft.length} options
                     </Badge>
                 </div>
-                {summary && <p className="text-sm text-muted-foreground mt-2">{summary}</p>}
+                {summary && <p className="text-muted-foreground mt-2 text-sm">{summary}</p>}
             </CardHeader>
             <CardContent>
                 <div className="grid gap-3">
                     {aircraft.slice(0, 4).map((jet, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border bg-white/50 dark:bg-gray-900/50 hover:shadow-md transition-shadow">
+                        <div
+                            key={index}
+                            className="flex items-center justify-between rounded-lg border bg-white/50 p-3 transition-shadow hover:shadow-md dark:bg-gray-900/50"
+                        >
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold text-sm">{jet.fullName || `${jet.manufacturer} ${jet.model}`}</h4>
+                                    <h4 className="text-sm font-semibold">
+                                        {jet.fullName || `${jet.manufacturer} ${jet.model}`}
+                                    </h4>
                                     {jet.availability && (
                                         <Badge variant="secondary" className="text-xs">
                                             Available
                                         </Badge>
                                     )}
                                 </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs text-muted-foreground">
+                                <div className="text-muted-foreground mt-2 grid grid-cols-2 gap-2 text-xs md:grid-cols-4">
                                     {jet.passengers && (
                                         <span className="flex items-center gap-1">
                                             <IconUsers className="h-3 w-3" />
@@ -111,14 +137,14 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
                                         </span>
                                     )}
                                     {jet.hourlyRate && (
-                                        <span className="flex items-center gap-1 text-sky-600 font-medium">
+                                        <span className="flex items-center gap-1 font-medium text-sky-600">
                                             <IconCurrencyDollar className="h-3 w-3" />
                                             {jet.hourlyRate}/hr
                                         </span>
                                     )}
                                 </div>
                                 {jet.baseLocation && (
-                                    <div className="mt-1 text-xs text-muted-foreground">
+                                    <div className="text-muted-foreground mt-1 text-xs">
                                         Base: {jet.baseLocation}
                                     </div>
                                 )}
@@ -129,20 +155,25 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
                         </div>
                     ))}
                     {aircraft.length > 4 && (
-                        <div className="text-center pt-2">
+                        <div className="pt-2 text-center">
                             <Button variant="outlined" size="sm">
                                 View {aircraft.length - 4} more aircraft
                             </Button>
                         </div>
                     )}
                 </div>
-                
+
                 {recommendations && recommendations.length > 0 && (
-                    <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
-                        <h5 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Recommendations</h5>
+                    <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/30">
+                        <h5 className="mb-2 text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Recommendations
+                        </h5>
                         <ul className="space-y-1">
                             {recommendations.map((rec, index) => (
-                                <li key={index} className="text-xs text-blue-700 dark:text-blue-300">
+                                <li
+                                    key={index}
+                                    className="text-xs text-blue-700 dark:text-blue-300"
+                                >
                                     • {rec}
                                 </li>
                             ))}
@@ -154,7 +185,10 @@ const AircraftSearchDisplay: React.FC<{ aircraft: Aircraft[]; summary?: string; 
     );
 };
 
-const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({ quote, pricing }) => {
+const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
+    quote,
+    pricing,
+}) => {
     const costs = [
         { label: 'Flight Time', value: quote.flightTime, icon: IconClock },
         { label: 'Base Cost', value: quote.totalCost, icon: IconCurrencyDollar, highlight: true },
@@ -163,9 +197,9 @@ const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
         { label: 'Positioning', value: quote.positioning, icon: IconMapPin },
         { label: 'Overnight', value: quote.overnight, icon: IconCalendar },
     ].filter(item => item.value);
-    
+
     const total = pricing?.quotes?.[0] || calculateTotal(quote);
-    
+
     return (
         <Card className="mt-4 border-emerald-500/20 bg-gradient-to-br from-emerald-50/50 to-transparent dark:from-emerald-950/20">
             <CardHeader>
@@ -177,19 +211,26 @@ const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
             <CardContent>
                 <div className="space-y-2">
                     {costs.map((item, index) => (
-                        <div key={index} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <div
+                            key={index}
+                            className="flex items-center justify-between border-b py-2 last:border-0"
+                        >
                             <div className="flex items-center gap-2 text-sm">
-                                <item.icon className="h-4 w-4 text-muted-foreground" />
-                                <span className={item.highlight ? 'font-medium' : ''}>{item.label}</span>
+                                <item.icon className="text-muted-foreground h-4 w-4" />
+                                <span className={item.highlight ? 'font-medium' : ''}>
+                                    {item.label}
+                                </span>
                             </div>
-                            <span className={`text-sm ${item.highlight ? 'font-bold text-emerald-600' : ''}`}>
+                            <span
+                                className={`text-sm ${item.highlight ? 'font-bold text-emerald-600' : ''}`}
+                            >
                                 {item.value}
                             </span>
                         </div>
                     ))}
                 </div>
                 {total && (
-                    <div className="mt-4 pt-4 border-t-2 border-emerald-200 dark:border-emerald-800">
+                    <div className="mt-4 border-t-2 border-emerald-200 pt-4 dark:border-emerald-800">
                         <div className="flex items-center justify-between">
                             <span className="text-lg font-semibold">Total Estimated Cost</span>
                             <span className="text-xl font-bold text-emerald-600">{total}</span>
@@ -200,9 +241,7 @@ const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
                     <Button className="flex-1" variant="default">
                         Proceed with Booking
                     </Button>
-                    <Button variant="outlined">
-                        Modify Quote
-                    </Button>
+                    <Button variant="outlined">Modify Quote</Button>
                 </div>
             </CardContent>
         </Card>
@@ -216,7 +255,7 @@ const FleetStatusDisplay: React.FC<{ fleet: FleetStatus }> = ({ fleet }) => {
         { label: 'In Maintenance', value: fleet.inMaintenance, color: 'yellow' },
         { label: 'On Mission', value: fleet.onMission, color: 'purple' },
     ].filter(item => item.value !== undefined);
-    
+
     return (
         <Card className="mt-4 border-indigo-500/20 bg-gradient-to-br from-indigo-50/50 to-transparent dark:from-indigo-950/20">
             <CardHeader>
@@ -226,12 +265,12 @@ const FleetStatusDisplay: React.FC<{ fleet: FleetStatus }> = ({ fleet }) => {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     {statusItems.map((item, index) => (
                         <StatusCard key={index} {...item} />
                     ))}
                 </div>
-                <div className="mt-4 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/30">
+                <div className="mt-4 rounded-lg bg-indigo-50 p-3 dark:bg-indigo-950/30">
                     <div className="text-sm text-indigo-700 dark:text-indigo-300">
                         Fleet utilization rate: {calculateUtilization(fleet)}%
                     </div>
@@ -241,16 +280,22 @@ const FleetStatusDisplay: React.FC<{ fleet: FleetStatus }> = ({ fleet }) => {
     );
 };
 
-const StatusCard: React.FC<{ label: string; value?: number; color: string }> = ({ label, value, color }) => {
+const StatusCard: React.FC<{ label: string; value?: number; color: string }> = ({
+    label,
+    value,
+    color,
+}) => {
     const colorClasses = {
         blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
         green: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
         yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
         purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
     };
-    
+
     return (
-        <div className={`rounded-lg p-3 text-center ${colorClasses[color as keyof typeof colorClasses]}`}>
+        <div
+            className={`rounded-lg p-3 text-center ${colorClasses[color as keyof typeof colorClasses]}`}
+        >
             <div className="text-2xl font-bold">{value || 0}</div>
             <div className="text-xs opacity-80">{label}</div>
         </div>
@@ -263,7 +308,7 @@ function calculateTotal(quote: BookingQuote): string | null {
         .filter(v => typeof v === 'string' && v.includes('$'))
         .map(v => parseFloat(v.replace(/[$,]/g, '')))
         .filter(v => !isNaN(v));
-    
+
     if (values.length === 0) return null;
     const total = values.reduce((sum, val) => sum + val, 0);
     return `$${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

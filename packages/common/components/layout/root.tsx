@@ -34,7 +34,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     }, []);
 
     return (
-        <div className="bg-tertiary flex h-[100dvh] w-full flex-col sm:flex-row overflow-hidden">
+        <div className="bg-tertiary flex h-[100dvh] w-full flex-col overflow-hidden sm:flex-row">
             {/* Mobile access enabled - responsive layout below */}
             <Flex className="hidden sm:flex lg:flex">
                 <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>

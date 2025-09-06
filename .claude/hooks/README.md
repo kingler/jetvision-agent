@@ -7,7 +7,7 @@ This directory contains Claude Code hooks that help prevent recreating existing 
 The `prevent-duplicate-code.py` hook is designed to:
 
 - **Search existing files** with similar names before creating new ones
-- **Detect existing functions/classes** with matching names in the codebase  
+- **Detect existing functions/classes** with matching names in the codebase
 - **Find similar configuration files** to avoid duplication
 - **Provide helpful warnings** without blocking code creation
 - **Suggest best practices** like extending existing code or choosing different names
@@ -15,17 +15,20 @@ The `prevent-duplicate-code.py` hook is designed to:
 ## 🔧 Files
 
 ### Core Hook
+
 - `prevent-duplicate-code.py` - Main hook script that prevents code duplication
 - `test-hook.py` - Test script to verify hook functionality
 
 ### Configuration
+
 - `../settings.json` - Claude Code settings that enable the hook
 
 ## ⚙️ How It Works
 
 The hook is triggered on `PreToolUse` events for:
+
 - ✅ `Write` - Creating new files
-- ✅ `Edit` - Editing existing files  
+- ✅ `Edit` - Editing existing files
 - ✅ `MultiEdit` - Multiple file edits
 
 ### Search Process
@@ -39,6 +42,7 @@ The hook is triggered on `PreToolUse` events for:
 ### Supported Languages
 
 The hook detects code patterns for:
+
 - **JavaScript/TypeScript**: functions, arrow functions, classes, interfaces, types
 - **Python**: functions and classes
 - **Java**: methods and classes
@@ -61,7 +65,7 @@ When duplicates are found, Claude receives a warning like:
 
 Recommendation: Use the Read tool to examine existing files first, then:
 • Extend existing code if appropriate
-• Choose different names if creating new functionality  
+• Choose different names if creating new functionality
 • Consider refactoring existing code instead
 
 Proceed with creation? The tool will continue after this warning.
@@ -76,6 +80,7 @@ python3 .claude/hooks/test-hook.py
 ```
 
 This tests various scenarios:
+
 - New React component creation
 - Function/class duplication detection
 - Configuration file similarity detection
@@ -92,6 +97,7 @@ This tests various scenarios:
 ### Modify Search Patterns
 
 Edit the `prevent-duplicate-code.py` script to:
+
 - Add new programming language patterns
 - Adjust function/class detection regex
 - Modify skip patterns for certain file types
@@ -103,20 +109,20 @@ In `.claude/settings.json`, modify the timeout value:
 
 ```json
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prevent-duplicate-code.py",
-            "timeout": 60
-          }
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Write|Edit|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prevent-duplicate-code.py",
+                        "timeout": 60
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  }
+    }
 }
 ```
 
@@ -130,21 +136,25 @@ In `.claude/settings.json`, modify the timeout value:
 ## 🛠️ Troubleshooting
 
 ### Hook Not Running
+
 1. Check if `.claude/settings.json` exists and is valid JSON
 2. Ensure the hook script is executable: `chmod +x .claude/hooks/prevent-duplicate-code.py`
 3. Restart Claude Code after configuration changes
 
-### Timeout Issues  
+### Timeout Issues
+
 1. Increase timeout in settings.json
 2. Check if `ripgrep` is installed for better performance
 3. Reduce search scope by adding more skip patterns
 
 ### Debug Mode
+
 Run Claude Code with `--debug` flag to see hook execution details.
 
 ## 🔄 Future Enhancements
 
 Potential improvements:
+
 - **Semantic similarity**: Use AI to detect functionally similar code
 - **Import analysis**: Check if functions are already imported/available
 - **Git integration**: Consider recent changes and branch history

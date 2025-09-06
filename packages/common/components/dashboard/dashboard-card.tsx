@@ -8,8 +8,8 @@ interface DashboardCardProps {
 
 export function DashboardCard({ title, children, className = '' }: DashboardCardProps) {
     return (
-        <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-            <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className={`rounded-lg bg-white p-6 shadow-md ${className}`}>
+            <h3 className="mb-4 text-lg font-semibold">{title}</h3>
             {children}
         </div>
     );

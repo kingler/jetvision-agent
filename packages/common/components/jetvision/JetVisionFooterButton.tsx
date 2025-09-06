@@ -17,14 +17,14 @@ export const JetVisionFooterButton: React.FC = () => {
     };
 
     return (
-        <div className="border-t border-border bg-secondary/30 py-4">
+        <div className="border-border bg-secondary/30 border-t py-4">
             <div className="mx-auto max-w-7xl px-4">
                 <div className="flex items-center justify-center gap-4">
                     {/* Primary Button - Visit JetVision */}
                     <Button
                         onClick={handleJetVisionClick}
                         size="lg"
-                        className="bg-brand hover:bg-brand/90 text-white font-semibold"
+                        className="bg-brand hover:bg-brand/90 font-semibold text-white"
                     >
                         Visit JetVision.com
                     </Button>

@@ -17,7 +17,7 @@ const colors = {
     red: '\x1b[31m',
     yellow: '\x1b[33m',
     blue: '\x1b[34m',
-    cyan: '\x1b[36m'
+    cyan: '\x1b[36m',
 };
 
 function log(message, color = 'reset') {
@@ -43,19 +43,22 @@ function logWarning(message) {
 // Test 1: Health Check
 async function testHealthCheck() {
     logTest('Health Check Endpoint');
-    
+
     try {
         const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'GET'
+            method: 'GET',
         });
-        
+
         const data = await response.json();
-        
+
         if (response.status === 200) {
             logSuccess(`Health check passed - Status: ${data.status}`);
             log(`  Webhook URL: ${data.webhook?.url || 'Not configured'}`, 'blue');
             log(`  API Key configured: ${data.configuration?.hasApiKey ? 'Yes' : 'No'}`, 'blue');
-            log(`  Circuit breaker: ${data.webhook?.circuitBreaker?.isOpen ? 'OPEN' : 'CLOSED'}`, 'blue');
+            log(
+                `  Circuit breaker: ${data.webhook?.circuitBreaker?.isOpen ? 'OPEN' : 'CLOSED'}`,
+                'blue'
+            );
             return true;
         } else {
             logError(`Health check failed - Status: ${response.status}`);
@@ -70,48 +73,56 @@ async function testHealthCheck() {
 // Test 2: Message Validation
 async function testMessageValidation() {
     logTest('Message Validation');
-    
+
     const testCases = [
         {
             name: 'Empty message',
             payload: { message: '', threadId: 'test-123' },
             expectedStatus: 400,
-            expectedError: 'Message is required'
+            expectedError: 'Message is required',
         },
         {
             name: 'Long message',
             payload: { message: 'a'.repeat(4001), threadId: 'test-123' },
             expectedStatus: 400,
-            expectedError: 'Message too long'
+            expectedError: 'Message too long',
         },
         {
             name: 'Valid message',
             payload: { message: 'Test message', threadId: 'test-123', threadItemId: 'item-456' },
             expectedStatus: 200,
-            expectedError: null
-        }
+            expectedError: null,
+        },
     ];
-    
+
     let passed = true;
-    
+
     for (const testCase of testCases) {
         try {
             const response = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(testCase.payload)
+                body: JSON.stringify(testCase.payload),
             });
-            
+
             if (testCase.expectedError) {
                 const data = await response.json();
-                if (response.status === testCase.expectedStatus && data.error?.includes(testCase.expectedError)) {
+                if (
+                    response.status === testCase.expectedStatus &&
+                    data.error?.includes(testCase.expectedError)
+                ) {
                     logSuccess(`  ✓ ${testCase.name}: Correctly rejected`);
                 } else {
-                    logError(`  ✗ ${testCase.name}: Expected status ${testCase.expectedStatus}, got ${response.status}`);
+                    logError(
+                        `  ✗ ${testCase.name}: Expected status ${testCase.expectedStatus}, got ${response.status}`
+                    );
                     passed = false;
                 }
             } else {
-                if (response.status === testCase.expectedStatus || response.headers.get('content-type')?.includes('event-stream')) {
+                if (
+                    response.status === testCase.expectedStatus ||
+                    response.headers.get('content-type')?.includes('event-stream')
+                ) {
                     logSuccess(`  ✓ ${testCase.name}: Accepted`);
                 } else {
                     logError(`  ✗ ${testCase.name}: Expected success, got ${response.status}`);
@@ -123,14 +134,14 @@ async function testMessageValidation() {
             passed = false;
         }
     }
-    
+
     return passed;
 }
 
 // Test 3: SSE Stream Response
 async function testStreamResponse() {
     logTest('Server-Sent Events Stream');
-    
+
     try {
         const response = await fetch(N8N_WEBHOOK_URL, {
             method: 'POST',
@@ -138,35 +149,36 @@ async function testStreamResponse() {
             body: JSON.stringify({
                 message: 'Test streaming response',
                 threadId: 'stream-test-123',
-                threadItemId: 'stream-item-456'
-            })
+                threadItemId: 'stream-item-456',
+            }),
         });
-        
+
         if (response.headers.get('content-type')?.includes('event-stream')) {
             logSuccess('SSE headers correctly set');
-            
+
             // Read first chunk of stream
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
-            
+
             const { value, done } = await reader.read();
             if (!done && value) {
                 const text = decoder.decode(value);
-                
+
                 // Check for expected events
                 const hasStatusEvent = text.includes('event: status');
-                const hasAnswerEvent = text.includes('event: answer') || text.includes('event: error');
-                
+                const hasAnswerEvent =
+                    text.includes('event: answer') || text.includes('event: error');
+
                 if (hasStatusEvent) {
                     logSuccess('  ✓ Status event found in stream');
                 }
                 if (hasAnswerEvent) {
                     logSuccess('  ✓ Answer/Error event found in stream');
                 }
-                
+
                 // Close the stream
                 reader.cancel();
-                
+
                 return hasStatusEvent || hasAnswerEvent;
             }
         } else {
@@ -182,38 +194,38 @@ async function testStreamResponse() {
 // Test 4: Response Transformation
 async function testResponseTransformation() {
     logTest('Response Transformation');
-    
+
     // This would require the actual transformer module
     try {
         // Import the transformer if available
         const transformerPath = '../lib/n8n-response-transformer';
         let transformer;
-        
+
         try {
             transformer = require(transformerPath);
         } catch {
             logWarning('Transformer module not found, skipping transformation tests');
             return true;
         }
-        
+
         const testData = [
             {
                 name: 'Apollo.io response',
                 input: { response: 'Found Executive Assistant leads', executionId: 'test-123' },
-                expected: { type: 'apollo_leads' }
+                expected: { type: 'apollo_leads' },
             },
             {
                 name: 'Avinode response',
                 input: { response: 'Gulfstream G650 available', executionId: 'test-456' },
-                expected: { type: 'aircraft_search' }
-            }
+                expected: { type: 'aircraft_search' },
+            },
         ];
-        
+
         let passed = true;
-        
+
         for (const test of testData) {
             const result = transformer.transformN8nResponse(test.input, 'thread-1', 'item-1');
-            
+
             if (result.answer?.text) {
                 logSuccess(`  ✓ ${test.name}: Transformed successfully`);
             } else {
@@ -221,7 +233,7 @@ async function testResponseTransformation() {
                 passed = false;
             }
         }
-        
+
         return passed;
     } catch (error) {
         logError(`Transformation test error: ${error.message}`);
@@ -232,22 +244,22 @@ async function testResponseTransformation() {
 // Test 5: Error Handling
 async function testErrorHandling() {
     logTest('Error Handling');
-    
+
     // Simulate circuit breaker test
     log('  Testing circuit breaker behavior...', 'blue');
-    
+
     // Make multiple failing requests to trigger circuit breaker
     let circuitBreakerTriggered = false;
-    
+
     for (let i = 0; i < 6; i++) {
         try {
             // Use an invalid endpoint to simulate failure
             const response = await fetch(`${BASE_URL}/api/n8n-webhook-invalid`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Test', threadId: 'test' })
+                body: JSON.stringify({ message: 'Test', threadId: 'test' }),
             });
-            
+
             if (response.status === 503) {
                 const data = await response.json();
                 if (data.error?.includes('temporarily unavailable')) {
@@ -260,11 +272,11 @@ async function testErrorHandling() {
             // Expected to fail
         }
     }
-    
+
     if (!circuitBreakerTriggered) {
         logWarning('  ⚠ Circuit breaker test inconclusive (may need real n8n connection)');
     }
-    
+
     return true;
 }
 
@@ -272,29 +284,29 @@ async function testErrorHandling() {
 async function runTests() {
     log('\n🚀 Starting n8n Webhook Tests\n', 'cyan');
     log(`Testing against: ${N8N_WEBHOOK_URL}\n`, 'blue');
-    
+
     const results = {
         healthCheck: false,
         validation: false,
         streaming: false,
         transformation: false,
-        errorHandling: false
+        errorHandling: false,
     };
-    
+
     // Run all tests
     results.healthCheck = await testHealthCheck();
     results.validation = await testMessageValidation();
     results.streaming = await testStreamResponse();
     results.transformation = await testResponseTransformation();
     results.errorHandling = await testErrorHandling();
-    
+
     // Summary
     log('\n📊 Test Summary', 'cyan');
     log('━'.repeat(40), 'blue');
-    
+
     let totalPassed = 0;
     let totalTests = 0;
-    
+
     for (const [test, passed] of Object.entries(results)) {
         totalTests++;
         if (passed) {
@@ -304,16 +316,19 @@ async function runTests() {
             log(`❌ ${test}: FAILED`, 'red');
         }
     }
-    
+
     log('━'.repeat(40), 'blue');
-    log(`\nTotal: ${totalPassed}/${totalTests} tests passed`, totalPassed === totalTests ? 'green' : 'yellow');
-    
+    log(
+        `\nTotal: ${totalPassed}/${totalTests} tests passed`,
+        totalPassed === totalTests ? 'green' : 'yellow'
+    );
+
     // Exit code
     process.exit(totalPassed === totalTests ? 0 : 1);
 }
 
 // Handle errors
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', error => {
     logError(`Unhandled error: ${error}`);
     process.exit(1);
 });

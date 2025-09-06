@@ -57,7 +57,7 @@ export const useChatEditor = (editorProps: {
             }),
             HardBreak,
         ],
-        immediatelyRender: false,  // Set to false to prevent SSR issues
+        immediatelyRender: false, // Set to false to prevent SSR issues
         content: editorProps?.defaultContent || '',
         autofocus: true,
         editable: true,
@@ -73,7 +73,7 @@ export const useChatEditor = (editorProps: {
             const { editor } = props;
             const text = editor.getText();
             const html = editor.getHTML();
-            
+
             if (text === '/') {
                 // Command palette trigger logic can go here
             } else {
@@ -81,7 +81,7 @@ export const useChatEditor = (editorProps: {
                 const { selection } = editor.state;
                 const { $from } = selection;
                 const currentLineText = $from.parent.textContent;
-                
+
                 if (currentLineText && currentLineText.match(/^(\*|-)\s/)) {
                     // Convert to bullet list
                     editor.commands.toggleBulletList();
@@ -89,7 +89,7 @@ export const useChatEditor = (editorProps: {
                     // Convert to numbered list
                     editor.commands.toggleOrderedList();
                 }
-                
+
                 // Handle highlight syntax
                 const newHTML = html.replace(/::((?:(?!::).)+)::/g, (_, content) => {
                     return ` <mark class="prompt-highlight">${content}</mark> `;
@@ -102,27 +102,33 @@ export const useChatEditor = (editorProps: {
                 }
             }
         },
-        onCreate: useCallback((props) => {
-            console.log('TipTap editor created successfully');
-            setIsInitialized(true);
-            
-            if (editorProps?.defaultContent) {
-                props.editor.commands.setContent(editorProps.defaultContent, true, {
-                    preserveWhitespace: true,
-                });
-            }
-            
-            if (editorProps?.onInit) {
-                editorProps.onInit({ editor: props.editor });
-            }
-        }, [editorProps?.defaultContent, editorProps?.onInit]),
-        
-        onUpdate: useCallback((props) => {
-            const { editor } = props;
-            if (editorProps?.onUpdate) {
-                editorProps.onUpdate({ editor });
-            }
-        }, [editorProps?.onUpdate]),
+        onCreate: useCallback(
+            (props: { editor: Editor }) => {
+                console.log('TipTap editor created successfully');
+                setIsInitialized(true);
+
+                if (editorProps?.defaultContent) {
+                    props.editor.commands.setContent(editorProps.defaultContent, true, {
+                        preserveWhitespace: true,
+                    });
+                }
+
+                if (editorProps?.onInit) {
+                    editorProps.onInit({ editor: props.editor });
+                }
+            },
+            [editorProps?.defaultContent, editorProps?.onInit]
+        ),
+
+        onUpdate: useCallback(
+            (props: { editor: Editor }) => {
+                const { editor } = props;
+                if (editorProps?.onUpdate) {
+                    editorProps.onUpdate({ editor });
+                }
+            },
+            [editorProps?.onUpdate]
+        ),
 
         onDestroy: useCallback(() => {
             console.log('TipTap editor destroyed');
@@ -142,7 +148,7 @@ export const useChatEditor = (editorProps: {
             const focusTimer = setTimeout(() => {
                 editor.commands.focus('end');
             }, 100);
-            
+
             return () => clearTimeout(focusTimer);
         }
     }, [editor, isInitialized]);

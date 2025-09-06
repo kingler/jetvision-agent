@@ -38,4 +38,4 @@ Configure development environment
 Set up development environment for $TYPE project.
 Create configuration files for linting, testing, and building.
 Generate sample environment variables file with documentation.
-``` 
+```

@@ -3,7 +3,11 @@ import { Button } from '@repo/ui';
 import { IconCheck, IconX, IconAlertTriangle } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { ServiceConfig, ServiceStatus, useServiceControlStore } from '../../store/service-control.store';
+import {
+    ServiceConfig,
+    ServiceStatus,
+    useServiceControlStore,
+} from '../../store/service-control.store';
 import { ServiceStatusIndicator } from './ServiceStatusIndicator';
 
 interface ServiceToggleProps {
@@ -23,12 +27,13 @@ export const ServiceToggle = ({
 }: ServiceToggleProps) => {
     const [showDialog, setShowDialog] = useState(false);
     const [pendingAction, setPendingAction] = useState<'enable' | 'disable' | null>(null);
-    
-    const { toggleService, enableService, disableService, setServiceStatus } = useServiceControlStore();
+
+    const { toggleService, enableService, disableService, setServiceStatus } =
+        useServiceControlStore();
 
     const handleToggleClick = () => {
         const newStatus = service.status === 'enabled' ? 'disabled' : 'enabled';
-        
+
         if (showConfirmation) {
             setPendingAction(newStatus === 'enabled' ? 'enable' : 'disable');
             setShowDialog(true);
@@ -57,21 +62,17 @@ export const ServiceToggle = ({
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
-            <div className="flex items-center justify-between p-4 rounded-lg border bg-background">
+            <div className="bg-background flex items-center justify-between rounded-lg border p-4">
                 <div className="flex items-center gap-3">
                     <ServiceStatusIndicator status={service.status} size="md" />
                     <div className="flex flex-col">
-                        <h3 className="font-medium text-sm">{service.name}</h3>
-                        <p className="text-xs text-muted-foreground">
-                            Service ID: {serviceId}
-                        </p>
+                        <h3 className="text-sm font-medium">{service.name}</h3>
+                        <p className="text-muted-foreground text-xs">Service ID: {serviceId}</p>
                         {service.errorMessage && (
-                            <p className="text-xs text-red-500 mt-1">
-                                {service.errorMessage}
-                            </p>
+                            <p className="mt-1 text-xs text-red-500">{service.errorMessage}</p>
                         )}
                         {service.lastHealthCheck && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                                 Last check: {new Date(service.lastHealthCheck).toLocaleTimeString()}
                             </p>
                         )}
@@ -89,7 +90,7 @@ export const ServiceToggle = ({
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                                className="w-4 h-4"
+                                className="h-4 w-4"
                             >
                                 🔄
                             </motion.div>
@@ -106,40 +107,39 @@ export const ServiceToggle = ({
             <AnimatePresence>
                 {showDialog && (
                     <motion.div
-                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={handleCancel}
                     >
                         <motion.div
-                            className="bg-background border rounded-lg shadow-lg p-6 max-w-md mx-4"
+                            className="bg-background mx-4 max-w-md rounded-lg border p-6 shadow-lg"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={e => e.stopPropagation()}
                         >
-                            <div className="flex items-center gap-3 mb-4">
+                            <div className="mb-4 flex items-center gap-3">
                                 <IconAlertTriangle className="text-yellow-500" size={24} />
-                                <h3 className="font-semibold text-lg">
+                                <h3 className="text-lg font-semibold">
                                     {pendingAction === 'enable' ? 'Enable' : 'Disable'} Service
                                 </h3>
                             </div>
-                            
+
                             <p className="text-muted-foreground mb-6">
-                                Are you sure you want to {pendingAction} the <strong>{service.name}</strong> service?
+                                Are you sure you want to {pendingAction} the{' '}
+                                <strong>{service.name}</strong> service?
                                 {pendingAction === 'disable' && (
-                                    <span className="block mt-2 text-sm text-red-600">
-                                        This will hide all related prompts and workflows from the interface.
+                                    <span className="mt-2 block text-sm text-red-600">
+                                        This will hide all related prompts and workflows from the
+                                        interface.
                                     </span>
                                 )}
                             </p>
 
                             <div className="flex justify-end gap-3">
-                                <Button
-                                    variant="outlined"
-                                    onClick={handleCancel}
-                                >
+                                <Button variant="outlined" onClick={handleCancel}>
                                     <IconX size={16} className="mr-2" />
                                     Cancel
                                 </Button>

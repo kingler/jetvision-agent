@@ -38,4 +38,4 @@ Generate API documentation
 Generate API documentation for the project.
 Document each endpoint with parameters, response format, and example usage.
 Include authentication requirements and error handling information.
-``` 
+```

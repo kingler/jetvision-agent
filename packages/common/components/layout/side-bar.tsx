@@ -3,7 +3,13 @@ import { FullPageLoader, HistoryItem } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { Thread, useAppStore, useChatStore } from '@repo/common/store';
 import { Button, cn, Flex } from '@repo/ui';
-import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch, IconPlane } from '@tabler/icons-react';
+import {
+    IconArrowBarLeft,
+    IconArrowBarRight,
+    IconPlus,
+    IconSearch,
+    IconPlane,
+} from '@tabler/icons-react';
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
@@ -21,6 +27,8 @@ export const Sidebar = () => {
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
+    const pinThread = useChatStore(state => state.pinThread);
+    const unpinThread = useChatStore(state => state.unpinThread);
 
     const groupedThreads: Record<string, Thread[]> = {
         today: [],
@@ -64,6 +72,9 @@ export const Sidebar = () => {
                                 setIsSidebarOpen(prev => false);
                             }}
                             isActive={thread.id === currentThreadId}
+                            isPinned={thread.pinned}
+                            pinThread={pinThread}
+                            unpinThread={unpinThread}
                         />
                     ))}
                 </Flex>
@@ -84,24 +95,26 @@ export const Sidebar = () => {
                 {/* JetVision Branding */}
                 <Flex
                     className={cn(
-                        "px-2 py-3 border-b border-border/50 mb-2",
-                        isSidebarOpen ? "flex" : "hidden"
+                        'border-border/50 mb-2 border-b px-2 py-3',
+                        isSidebarOpen ? 'flex' : 'hidden'
                     )}
                     items="center"
                     gap="xs"
                 >
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground">JetVision Agent</span>
+                        <span className="text-foreground text-sm font-semibold">
+                            JetVision Agent
+                        </span>
                     </div>
                 </Flex>
 
                 {/* When sidebar is collapsed, show abbreviated text */}
                 {!isSidebarOpen && (
-                    <Flex className="px-2 py-3 mb-2" justify="center">
-                        <span className="text-xs font-semibold text-foreground">JV</span>
+                    <Flex className="mb-2 px-2 py-3" justify="center">
+                        <span className="text-foreground text-xs font-semibold">JV</span>
                     </Flex>
                 )}
-                
+
                 <Flex direction="col" className="w-full px-2" gap="sm">
                     <Button
                         size={isSidebarOpen ? 'sm' : 'icon'}

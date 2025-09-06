@@ -6,13 +6,7 @@ import { useChatStore } from '@repo/common/store';
 import { ChatEditor } from '../chat-input/chat-editor';
 import { PromptCards } from './PromptCards';
 import { Thread, TableOfMessages } from '@repo/common/components';
-import {
-    IconSend,
-    IconLoader2,
-    IconSparkles,
-    IconPlane,
-    IconCommand
-} from '@tabler/icons-react';
+import { IconSend, IconLoader2, IconSparkles, IconPlane, IconCommand } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@repo/ui';
 import { scrollToChatInputWithFocus } from '@repo/common/utils';
@@ -26,11 +20,7 @@ interface JetVisionChatProps {
     userId?: string;
 }
 
-export const JetVisionChat: React.FC<JetVisionChatProps> = ({ 
-    className,
-    sessionId,
-    userId 
-}) => {
+export const JetVisionChat: React.FC<JetVisionChatProps> = ({ className, sessionId, userId }) => {
     const [prompt, setPrompt] = useState('');
     const [showCards, setShowCards] = useState(true);
     const router = useRouter();
@@ -44,14 +34,16 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
         switchThread,
         createThread,
         editor: storeEditor,
-        setEditor
-    } = useChatStore(useShallow(state => ({
-        isGenerating: state.isGenerating,
-        switchThread: state.switchThread,
-        createThread: state.createThread,
-        editor: state.editor,
-        setEditor: state.setEditor
-    })));
+        setEditor,
+    } = useChatStore(
+        useShallow(state => ({
+            isGenerating: state.isGenerating,
+            switchThread: state.switchThread,
+            createThread: state.createThread,
+            editor: state.editor,
+            setEditor: state.setEditor,
+        }))
+    );
 
     const { editor } = useChatEditor({
         placeholder: 'Ask about Apollo.io campaigns, Avinode availability, or system operations...',
@@ -69,7 +61,11 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
     });
 
     // Handle prompt selection from cards with enhanced parameters support
-    const handlePromptSelect = (displayPrompt: string, fullPrompt: string, parameters?: Record<string, any>) => {
+    const handlePromptSelect = (
+        displayPrompt: string,
+        fullPrompt: string,
+        parameters?: Record<string, any>
+    ) => {
         if (editor) {
             // Clear existing content
             editor.commands.clearContent();
@@ -133,13 +129,13 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                 setPrompt('');
             }
             setShowCards(false);
-
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+            const errorMessage =
+                err instanceof Error ? err.message : 'An unexpected error occurred';
             toast({
-                title: "Connection Error",
+                title: 'Connection Error',
                 description: errorMessage,
-                variant: "destructive",
+                variant: 'destructive',
             });
         }
     };
@@ -167,24 +163,30 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
     }, [prompt, showCards]);
 
     return (
-        <div className={cn("relative flex h-full w-full flex-col", className)}>
+        <div className={cn('relative flex h-full w-full flex-col', className)}>
             {/* Header */}
-            <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b backdrop-blur">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                             <IconPlane size={24} className="text-brand" />
-                            <h1 className="text-xl font-semibold text-foreground">JetVision Agent</h1>
+                            <h1 className="text-foreground text-xl font-semibold">
+                                JetVision Agent
+                            </h1>
                         </div>
-                        <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
+                        <span className="bg-brand/10 text-brand rounded-full px-2 py-0.5 text-xs font-medium">
                             Apollo.io + Avinode
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <kbd className="rounded border border-border bg-secondary px-1.5 py-0.5 font-mono">⌘K</kbd>
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                        <kbd className="border-border bg-secondary rounded border px-1.5 py-0.5 font-mono">
+                            ⌘K
+                        </kbd>
                         <span>Show prompts</span>
                         <span className="mx-2">•</span>
-                        <kbd className="rounded border border-border bg-secondary px-1.5 py-0.5 font-mono">⌘↵</kbd>
+                        <kbd className="border-border bg-secondary rounded border px-1.5 py-0.5 font-mono">
+                            ⌘↵
+                        </kbd>
                         <span>Submit</span>
                     </div>
                 </div>
@@ -207,12 +209,13 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                                     >
                                         <div className="mb-2 flex items-center justify-center gap-2">
                                             <IconSparkles size={20} className="text-brand" />
-                                            <h2 className="text-lg font-medium text-foreground">
+                                            <h2 className="text-foreground text-lg font-medium">
                                                 How can JetVision Agent assist you today?
                                             </h2>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            Select a prompt card or type your own query about Apollo.io campaigns or Avinode operations
+                                        <p className="text-muted-foreground text-sm">
+                                            Select a prompt card or type your own query about
+                                            Apollo.io campaigns or Avinode operations
                                         </p>
                                     </motion.div>
                                 )}
@@ -245,20 +248,20 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
 
             {/* Input Area - Fixed at bottom */}
             <div
-                className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+                className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 border-t backdrop-blur"
                 data-chat-input="true"
             >
                 <div className="mx-auto max-w-4xl p-4">
                     <div className="flex gap-3">
                         <div className="relative flex-1">
-                            <div className="rounded-lg border border-border bg-background shadow-sm transition-all focus-within:border-brand/50 focus-within:shadow-md">
+                            <div className="border-border bg-background focus-within:border-brand/50 rounded-lg border shadow-sm transition-all focus-within:shadow-md">
                                 <ChatEditor
                                     editor={editor}
                                     sendMessage={handleSubmit}
                                     className="px-4 py-3"
                                 />
                                 {prompt.length > 0 && (
-                                    <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                                    <div className="text-muted-foreground absolute bottom-2 right-2 text-xs">
                                         {prompt.length} characters
                                     </div>
                                 )}
@@ -268,10 +271,10 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                             onClick={handleSubmit}
                             disabled={!prompt.trim() || isGenerating}
                             className={cn(
-                                "flex h-12 w-12 items-center justify-center rounded-lg transition-all",
-                                "bg-brand text-brand-foreground hover:bg-brand/90",
-                                "disabled:opacity-50 disabled:cursor-not-allowed",
-                                isGenerating && "animate-pulse"
+                                'flex h-12 w-12 items-center justify-center rounded-lg transition-all',
+                                'bg-brand text-brand-foreground hover:bg-brand/90',
+                                'disabled:cursor-not-allowed disabled:opacity-50',
+                                isGenerating && 'animate-pulse'
                             )}
                         >
                             {isGenerating ? (
@@ -284,7 +287,7 @@ export const JetVisionChat: React.FC<JetVisionChatProps> = ({
                     {!showCards && !hasActiveThread && (
                         <button
                             onClick={() => setShowCards(true)}
-                            className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-brand"
+                            className="text-muted-foreground hover:text-brand mt-2 flex items-center gap-1 text-xs"
                         >
                             <IconCommand size={12} />
                             <span>Show prompt suggestions</span>

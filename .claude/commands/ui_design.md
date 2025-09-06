@@ -38,4 +38,4 @@ Generate UI components from specifications
 Generate UI components based on the specifications at $PATH.
 Implement components using $FRAMEWORK and $DESIGN_SYSTEM.
 Include responsive behavior, accessibility features, and comprehensive documentation.
-``` 
+```

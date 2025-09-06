@@ -4,7 +4,7 @@ First, analyze the current project structure:
 
 $PROJECT_STRUCTURE
 
-- run tree command in the project root to extrapolate project tree structure. Excluding node module,  and any development level directories
+- run tree command in the project root to extrapolate project tree structure. Excluding node module, and any development level directories
 
 The project is using the following base programing framework:
 $FRAMEWORK

@@ -9,7 +9,11 @@ interface StatusIndicatorProps {
     size?: 'sm' | 'md' | 'lg';
 }
 
-export function StatusIndicator({ className, showLabel = false, size = 'sm' }: StatusIndicatorProps) {
+export function StatusIndicator({
+    className,
+    showLabel = false,
+    size = 'sm',
+}: StatusIndicatorProps) {
     const { connectionStatus, isConnected } = useWebSocket();
 
     const getStatusConfig = () => {
@@ -18,35 +22,35 @@ export function StatusIndicator({ className, showLabel = false, size = 'sm' }: S
                 return {
                     color: 'bg-green-500',
                     label: 'Connected',
-                    pulse: false
+                    pulse: false,
                 };
             case 'connecting':
                 return {
                     color: 'bg-yellow-500',
                     label: 'Connecting',
-                    pulse: true
+                    pulse: true,
                 };
             case 'error':
                 return {
                     color: 'bg-red-500',
                     label: 'Connection Error',
-                    pulse: false
+                    pulse: false,
                 };
             default:
                 return {
                     color: 'bg-gray-400',
                     label: 'Disconnected',
-                    pulse: false
+                    pulse: false,
                 };
         }
     };
 
     const config = getStatusConfig();
-    
+
     const sizeClasses = {
         sm: 'h-2 w-2',
         md: 'h-3 w-3',
-        lg: 'h-4 w-4'
+        lg: 'h-4 w-4',
     };
 
     return (
@@ -63,7 +67,7 @@ export function StatusIndicator({ className, showLabel = false, size = 'sm' }: S
                 {config.pulse && (
                     <div
                         className={cn(
-                            'absolute inset-0 rounded-full animate-ping',
+                            'absolute inset-0 animate-ping rounded-full',
                             sizeClasses[size],
                             config.color,
                             'opacity-75'
@@ -72,9 +76,7 @@ export function StatusIndicator({ className, showLabel = false, size = 'sm' }: S
                 )}
             </div>
             {showLabel && (
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {config.label}
-                </span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">{config.label}</span>
             )}
         </div>
     );
@@ -89,11 +91,13 @@ export function NotificationBadge({ count, className }: NotificationBadgeProps) 
     if (count === 0) return null;
 
     return (
-        <div className={cn(
-            'absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs font-medium rounded-full flex items-center justify-center',
-            'transform scale-100 animate-pulse',
-            className
-        )}>
+        <div
+            className={cn(
+                'absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white',
+                'scale-100 transform animate-pulse',
+                className
+            )}
+        >
             {count > 99 ? '99+' : count}
         </div>
     );

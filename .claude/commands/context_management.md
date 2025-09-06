@@ -41,4 +41,4 @@ Generate context documentation for the project.
 Create visual representation of component relationships.
 Document key abstractions, patterns, and architectural decisions.
 Include detailed component interaction flows and data models.
-``` 
+```

@@ -29,29 +29,29 @@ export type ServiceControlActions = {
     toggleService: (serviceId: string) => void;
     enableAllServices: () => void;
     disableAllServices: () => void;
-    
+
     // Service status management
     setServiceStatus: (serviceId: string, status: ServiceStatus, errorMessage?: string) => void;
     setServiceError: (serviceId: string, errorMessage: string) => void;
     clearServiceError: (serviceId: string) => void;
-    
+
     // Health checking
     performHealthCheck: (serviceId: string) => Promise<void>;
     performAllHealthChecks: () => Promise<void>;
     startHealthCheckInterval: (serviceId: string) => void;
     stopHealthCheckInterval: (serviceId: string) => void;
     updateHealthCheckResult: (serviceId: string, isHealthy: boolean, errorMessage?: string) => void;
-    
+
     // Service configuration
     updateServiceConfig: (serviceId: string, config: Partial<ServiceConfig>) => void;
     getServiceConfig: (serviceId: string) => ServiceConfig | undefined;
     isServiceAvailable: (serviceId: string) => boolean;
     getAvailableServices: () => string[];
-    
+
     // Maintenance mode
     setMaintenanceMode: (serviceId: string, enabled: boolean) => void;
     isServiceInMaintenance: (serviceId: string) => boolean;
-    
+
     // API key validation
     validateApiKey: (serviceId: string) => Promise<boolean>;
     hasValidApiKey: (serviceId: string) => boolean;
@@ -91,7 +91,7 @@ export const useServiceControlStore = create<ServiceControlState & ServiceContro
             // Core service management
             initializeServices: () => {
                 if (get().isInitialized) return;
-                
+
                 set(state => {
                     state.isInitialized = true;
                     // Initialize health checks for enabled services
@@ -127,7 +127,7 @@ export const useServiceControlStore = create<ServiceControlState & ServiceContro
             toggleService: (serviceId: string) => {
                 const service = get().services[serviceId];
                 if (!service) return;
-                
+
                 if (service.status === 'enabled') {
                     get().disableService(serviceId);
                 } else if (service.status === 'disabled') {
@@ -232,7 +232,11 @@ export const useServiceControlStore = create<ServiceControlState & ServiceContro
                 }
             },
 
-            updateHealthCheckResult: (serviceId: string, isHealthy: boolean, errorMessage?: string) => {
+            updateHealthCheckResult: (
+                serviceId: string,
+                isHealthy: boolean,
+                errorMessage?: string
+            ) => {
                 set(state => {
                     if (state.services[serviceId]) {
                         state.services[serviceId].status = isHealthy ? 'enabled' : 'error';
@@ -271,7 +275,7 @@ export const useServiceControlStore = create<ServiceControlState & ServiceContro
                         state.services[serviceId].status = enabled ? 'maintenance' : 'enabled';
                     }
                 });
-                
+
                 if (enabled) {
                     get().stopHealthCheckInterval(serviceId);
                 } else {
@@ -307,7 +311,7 @@ export const useServiceControlStore = create<ServiceControlState & ServiceContro
         {
             name: 'service-control-storage',
             // Only persist service configurations, not runtime state like intervals
-            partialize: (state) => ({
+            partialize: state => ({
                 services: Object.fromEntries(
                     Object.entries(state.services).map(([id, service]) => [
                         id,

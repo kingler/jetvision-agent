@@ -5,7 +5,7 @@ import { ProviderEnumType } from './providers';
 export enum ModelEnum {
     // JetVision Agent Model (Backend)
     JETVISION_AGENT = 'jetvision-agent',
-    
+
     // OpenAI Frontend Agent Models
     GPT_4o = 'gpt-4o',
     GPT_4o_Mini = 'gpt-4o-mini',

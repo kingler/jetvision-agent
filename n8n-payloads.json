@@ -1,411 +1,424 @@
 {
-  "n8nWorkflowPayloads": {
-    "description": "Structured JSON payloads for testing JetVision Agent n8n workflows with sessionId tracking and executionId responses",
-    "webhookEndpoint": "/api/n8n-webhook",
-    "payloadStructures": {
-      "leadGeneration": {
-        "name": "Apollo.io Lead Generation Workflow",
-        "description": "Generate qualified leads for private aviation services with advanced targeting criteria",
-        "expectedResponse": {
-          "status": "processing",
-          "message": "Lead generation workflow initiated",
-          "executionId": "exec_12345abc",
-          "timestamp": "2025-01-01T00:00:00.000Z",
-          "workflowId": "lead-gen-workflow",
-          "estimatedCompletion": "2-5 minutes"
-        },
-        "payload": {
-          "sessionId": "{{uuid}}",
-          "threadId": "{{uuid}}",
-          "message": "Generate qualified leads for private aviation services targeting executive assistants at tech companies with 101-500 employees in Los Angeles, focusing on verified emails only.",
-          "body": {
-            "context": {
-              "source": "jetvision-agent",
-              "timestamp": "{{iso_timestamp}}",
-              "workflowType": "lead-generation",
-              "priority": "high"
+    "n8nWorkflowPayloads": {
+        "description": "Structured JSON payloads for testing JetVision Agent n8n workflows with sessionId tracking and executionId responses",
+        "webhookEndpoint": "/api/n8n-webhook",
+        "payloadStructures": {
+            "leadGeneration": {
+                "name": "Apollo.io Lead Generation Workflow",
+                "description": "Generate qualified leads for private aviation services with advanced targeting criteria",
+                "expectedResponse": {
+                    "status": "processing",
+                    "message": "Lead generation workflow initiated",
+                    "executionId": "exec_12345abc",
+                    "timestamp": "2025-01-01T00:00:00.000Z",
+                    "workflowId": "lead-gen-workflow",
+                    "estimatedCompletion": "2-5 minutes"
+                },
+                "payload": {
+                    "sessionId": "{{uuid}}",
+                    "threadId": "{{uuid}}",
+                    "message": "Generate qualified leads for private aviation services targeting executive assistants at tech companies with 101-500 employees in Los Angeles, focusing on verified emails only.",
+                    "body": {
+                        "context": {
+                            "source": "jetvision-agent",
+                            "timestamp": "{{iso_timestamp}}",
+                            "workflowType": "lead-generation",
+                            "priority": "high"
+                        },
+                        "parameters": {
+                            "apollo": {
+                                "searchCriteria": {
+                                    "jobTitles": [
+                                        "Executive Assistant",
+                                        "Personal Assistant",
+                                        "Chief of Staff",
+                                        "Executive Coordinator"
+                                    ],
+                                    "companySizeRange": ["101-200", "201-500", "501-1000"],
+                                    "locations": [
+                                        "Los Angeles, California",
+                                        "San Francisco, California",
+                                        "New York City, New York",
+                                        "Miami, Florida"
+                                    ],
+                                    "industries": [
+                                        "Technology",
+                                        "Software",
+                                        "Fintech",
+                                        "Private Equity",
+                                        "Investment Banking",
+                                        "Venture Capital"
+                                    ],
+                                    "emailStatus": "verified",
+                                    "excludeTitles": [
+                                        "teacher",
+                                        "virtual assistant",
+                                        "administrative assistant",
+                                        "receptionist"
+                                    ]
+                                },
+                                "limits": {
+                                    "totalRecords": 100,
+                                    "perPage": 25,
+                                    "maxPages": 4
+                                },
+                                "enrichment": {
+                                    "companyRevenue": true,
+                                    "fundingInfo": true,
+                                    "executiveNames": true,
+                                    "travelPatterns": false,
+                                    "socialProfiles": true,
+                                    "companyTechnologies": false
+                                }
+                            },
+                            "targeting": {
+                                "leadTiers": {
+                                    "tier1": ["Private Equity", "Hedge Funds", "Venture Capital"],
+                                    "tier2": ["Technology", "Luxury Brands", "Entertainment"],
+                                    "tier3": ["Professional Services", "Healthcare", "Real Estate"]
+                                },
+                                "priorityScore": "hot",
+                                "expectedResponseRate": "15%",
+                                "followUpCadence": "standard",
+                                "personalizationLevel": "high"
+                            },
+                            "workflow": {
+                                "autoEnrichment": true,
+                                "createSequence": false,
+                                "notifySlack": true,
+                                "updateCRM": true,
+                                "generateReports": true,
+                                "scheduleFollowUp": true
+                            }
+                        }
+                    }
+                }
             },
-            "parameters": {
-              "apollo": {
-                "searchCriteria": {
-                  "jobTitles": [
-                    "Executive Assistant",
-                    "Personal Assistant", 
-                    "Chief of Staff",
-                    "Executive Coordinator"
-                  ],
-                  "companySizeRange": ["101-200", "201-500", "501-1000"],
-                  "locations": [
-                    "Los Angeles, California",
-                    "San Francisco, California",
-                    "New York City, New York",
-                    "Miami, Florida"
-                  ],
-                  "industries": [
-                    "Technology",
-                    "Software",
-                    "Fintech",
-                    "Private Equity",
-                    "Investment Banking",
-                    "Venture Capital"
-                  ],
-                  "emailStatus": "verified",
-                  "excludeTitles": [
-                    "teacher",
-                    "virtual assistant",
-                    "administrative assistant",
-                    "receptionist"
-                  ]
+            "outreachSequence": {
+                "name": "Email Outreach Sequence Workflow",
+                "description": "Create personalized email campaigns with A/B testing and automated follow-ups for customer acquisition",
+                "expectedResponse": {
+                    "status": "processing",
+                    "message": "Outreach sequence workflow initiated",
+                    "executionId": "exec_67890def",
+                    "timestamp": "2025-01-01T00:00:00.000Z",
+                    "workflowId": "outreach-sequence-workflow",
+                    "estimatedCompletion": "1-3 minutes"
                 },
-                "limits": {
-                  "totalRecords": 100,
-                  "perPage": 25,
-                  "maxPages": 4
-                },
-                "enrichment": {
-                  "companyRevenue": true,
-                  "fundingInfo": true,
-                  "executiveNames": true,
-                  "travelPatterns": false,
-                  "socialProfiles": true,
-                  "companyTechnologies": false
+                "payload": {
+                    "sessionId": "{{uuid}}",
+                    "threadId": "{{uuid}}",
+                    "message": "Create personalized outreach email sequence for private jet charter services targeting executive assistants at high-growth tech companies, with A/B testing for subject lines and personalized value propositions.",
+                    "body": {
+                        "context": {
+                            "source": "jetvision-agent",
+                            "timestamp": "{{iso_timestamp}}",
+                            "workflowType": "outreach-sequence",
+                            "priority": "high"
+                        },
+                        "parameters": {
+                            "campaign": {
+                                "name": "Q1 Private Aviation Outreach - Tech Companies",
+                                "type": "email-sequence",
+                                "target": "executive-assistants",
+                                "industry": "technology",
+                                "duration": "14-days",
+                                "objective": "customer-acquisition",
+                                "budget": "$5000",
+                                "expectedROI": "300%"
+                            },
+                            "sequence": {
+                                "totalEmails": 4,
+                                "cadence": "3-2-4-7",
+                                "emails": [
+                                    {
+                                        "emailNumber": 1,
+                                        "day": 1,
+                                        "type": "introduction",
+                                        "subjectLines": [
+                                            "Elevate Your Executive Travel Experience",
+                                            "Private Jet Solutions for {{Company_Name}}",
+                                            "Exclusive Charter Access for {{First_Name}}"
+                                        ],
+                                        "personalization": {
+                                            "companyAchievement": true,
+                                            "executiveName": true,
+                                            "industrySpecific": true,
+                                            "recentFunding": true,
+                                            "officeLocation": true
+                                        },
+                                        "cta": {
+                                            "type": "soft-inquiry",
+                                            "text": "Would this be valuable for your executives?",
+                                            "link": false
+                                        },
+                                        "length": "short",
+                                        "tone": "professional-warm"
+                                    },
+                                    {
+                                        "emailNumber": 2,
+                                        "day": 3,
+                                        "type": "value-addition",
+                                        "subject": "Quick Question About Your Q{{Quarter}} Travel Plans",
+                                        "elements": [
+                                            "case-study",
+                                            "empty-legs",
+                                            "testimonial",
+                                            "social-proof"
+                                        ],
+                                        "personalization": {
+                                            "seasonalTiming": true,
+                                            "industryEvents": true,
+                                            "competitorMention": false
+                                        },
+                                        "cta": {
+                                            "type": "calendar-link",
+                                            "text": "Quick 10-minute call?",
+                                            "link": "https://calendly.com/jetvision"
+                                        }
+                                    },
+                                    {
+                                        "emailNumber": 3,
+                                        "day": 7,
+                                        "type": "urgency-scarcity",
+                                        "subject": "Limited Availability for {{Specific_Route}}",
+                                        "elements": [
+                                            "aircraft-availability",
+                                            "time-sensitive-offer",
+                                            "membership-benefit",
+                                            "empty-leg-opportunity"
+                                        ],
+                                        "personalization": {
+                                            "popularRoutes": true,
+                                            "seasonalDemand": true,
+                                            "membershipTier": true
+                                        },
+                                        "cta": {
+                                            "type": "direct-booking",
+                                            "text": "Secure Your Flight",
+                                            "link": "https://jetvision.com/book"
+                                        }
+                                    },
+                                    {
+                                        "emailNumber": 4,
+                                        "day": 14,
+                                        "type": "break-up",
+                                        "subject": "Should I Close Your File?",
+                                        "elements": [
+                                            "final-value-prop",
+                                            "alternative-contact",
+                                            "future-engagement",
+                                            "referral-request"
+                                        ],
+                                        "personalization": {
+                                            "finalOffer": true,
+                                            "connectionReason": true
+                                        },
+                                        "cta": {
+                                            "type": "final-chance",
+                                            "text": "Last opportunity to connect",
+                                            "link": "https://jetvision.com/contact"
+                                        }
+                                    }
+                                ]
+                            },
+                            "personalization": {
+                                "dynamicFields": [
+                                    "First_Name",
+                                    "Last_Name",
+                                    "Company_Name",
+                                    "Industry",
+                                    "Recent_News",
+                                    "Executive_Name",
+                                    "Home_Airport",
+                                    "Popular_Route",
+                                    "Season",
+                                    "Membership_Tier",
+                                    "Company_Size",
+                                    "Funding_Stage",
+                                    "Office_Location",
+                                    "Quarter"
+                                ],
+                                "contextualTriggers": [
+                                    "company-funding-announcement",
+                                    "executive-hire-announcement",
+                                    "office-expansion",
+                                    "industry-conference",
+                                    "earnings-call",
+                                    "merger-acquisition",
+                                    "ipo-announcement"
+                                ],
+                                "industrySpecific": {
+                                    "technology": {
+                                        "keywords": [
+                                            "innovation",
+                                            "scaling",
+                                            "growth",
+                                            "digital transformation"
+                                        ],
+                                        "events": ["CES", "TechCrunch Disrupt", "SXSW"],
+                                        "challenges": ["talent acquisition", "market expansion"]
+                                    },
+                                    "privateEquity": {
+                                        "keywords": ["portfolio", "due diligence", "exit strategy"],
+                                        "events": ["SuperReturn", "PEI Awards"],
+                                        "challenges": ["deal sourcing", "value creation"]
+                                    }
+                                }
+                            },
+                            "abTesting": {
+                                "subjectLines": {
+                                    "enabled": true,
+                                    "variations": 3,
+                                    "minSampleSize": 100,
+                                    "significanceThreshold": 0.05
+                                },
+                                "sendTimes": {
+                                    "enabled": true,
+                                    "timeSlots": ["9:00 AM", "1:00 PM", "4:00 PM"],
+                                    "timezones": ["PST", "EST", "CST"]
+                                },
+                                "ctaButtons": {
+                                    "enabled": true,
+                                    "variations": ["button", "text-link", "both"]
+                                },
+                                "emailLength": {
+                                    "enabled": true,
+                                    "variations": ["short", "medium", "detailed"]
+                                },
+                                "valuePropositions": {
+                                    "enabled": true,
+                                    "focus": ["luxury", "convenience", "time-saving", "status"]
+                                }
+                            },
+                            "tracking": {
+                                "kpis": {
+                                    "openRate": {
+                                        "target": "25%",
+                                        "industryBenchmark": "15%",
+                                        "tracking": "pixel-based"
+                                    },
+                                    "responseRate": {
+                                        "target": "15%",
+                                        "industryBenchmark": "8%",
+                                        "tracking": "reply-detection"
+                                    },
+                                    "meetingBookRate": {
+                                        "target": "5%",
+                                        "tracking": "calendar-integration"
+                                    },
+                                    "sqlConversion": {
+                                        "target": "20%",
+                                        "tracking": "crm-integration"
+                                    },
+                                    "dealVelocity": {
+                                        "target": "30-days",
+                                        "tracking": "pipeline-analysis"
+                                    }
+                                },
+                                "attribution": {
+                                    "utm_source": "jetvision-email",
+                                    "utm_medium": "outreach-sequence",
+                                    "utm_campaign": "q1-tech-outreach",
+                                    "utm_content": "{{email_number}}"
+                                }
+                            },
+                            "automation": {
+                                "responseHandling": {
+                                    "positiveResponses": {
+                                        "action": "notify-sales-team",
+                                        "sla": "48-hours",
+                                        "escalation": true
+                                    },
+                                    "objections": {
+                                        "autoResponse": false,
+                                        "categorization": true,
+                                        "humanHandoff": true
+                                    },
+                                    "outOfOffice": {
+                                        "detection": true,
+                                        "pauseSequence": true,
+                                        "resumeAfter": "7-days"
+                                    }
+                                },
+                                "meetingScheduling": {
+                                    "calendarIntegration": "calendly",
+                                    "autoConfirmation": true,
+                                    "reminderEmails": true,
+                                    "preparationMaterials": true
+                                },
+                                "notifications": {
+                                    "slack": {
+                                        "channel": "#sales-notifications",
+                                        "triggers": [
+                                            "response",
+                                            "meeting-booked",
+                                            "sequence-completed"
+                                        ]
+                                    },
+                                    "email": {
+                                        "recipients": ["sales@jetvision.com"],
+                                        "frequency": "real-time"
+                                    }
+                                },
+                                "crmUpdates": {
+                                    "system": "hubspot",
+                                    "syncFields": [
+                                        "email-status",
+                                        "engagement-score",
+                                        "last-activity"
+                                    ],
+                                    "createTasks": true,
+                                    "updateDeals": true
+                                },
+                                "leadScoring": {
+                                    "engagementWeight": 0.4,
+                                    "companyFitWeight": 0.3,
+                                    "responseQualityWeight": 0.3,
+                                    "scoreThresholds": {
+                                        "hot": 80,
+                                        "warm": 60,
+                                        "cold": 40
+                                    }
+                                }
+                            },
+                            "compliance": {
+                                "canSpam": true,
+                                "gdpr": true,
+                                "unsubscribeLink": true,
+                                "optOutHonoring": "24-hours",
+                                "dataRetention": "2-years"
+                            }
+                        }
+                    }
                 }
-              },
-              "targeting": {
-                "leadTiers": {
-                  "tier1": ["Private Equity", "Hedge Funds", "Venture Capital"],
-                  "tier2": ["Technology", "Luxury Brands", "Entertainment"],
-                  "tier3": ["Professional Services", "Healthcare", "Real Estate"]
-                },
-                "priorityScore": "hot",
-                "expectedResponseRate": "15%",
-                "followUpCadence": "standard",
-                "personalizationLevel": "high"
-              },
-              "workflow": {
-                "autoEnrichment": true,
-                "createSequence": false,
-                "notifySlack": true,
-                "updateCRM": true,
-                "generateReports": true,
-                "scheduleFollowUp": true
-              }
             }
-          }
-        }
-      },
-      "outreachSequence": {
-        "name": "Email Outreach Sequence Workflow", 
-        "description": "Create personalized email campaigns with A/B testing and automated follow-ups for customer acquisition",
-        "expectedResponse": {
-          "status": "processing",
-          "message": "Outreach sequence workflow initiated",
-          "executionId": "exec_67890def",
-          "timestamp": "2025-01-01T00:00:00.000Z",
-          "workflowId": "outreach-sequence-workflow",
-          "estimatedCompletion": "1-3 minutes"
         },
-        "payload": {
-          "sessionId": "{{uuid}}",
-          "threadId": "{{uuid}}",
-          "message": "Create personalized outreach email sequence for private jet charter services targeting executive assistants at high-growth tech companies, with A/B testing for subject lines and personalized value propositions.",
-          "body": {
-            "context": {
-              "source": "jetvision-agent",
-              "timestamp": "{{iso_timestamp}}",
-              "workflowType": "outreach-sequence",
-              "priority": "high"
-            },
-            "parameters": {
-              "campaign": {
-                "name": "Q1 Private Aviation Outreach - Tech Companies",
-                "type": "email-sequence",
-                "target": "executive-assistants",
-                "industry": "technology",
-                "duration": "14-days",
-                "objective": "customer-acquisition",
-                "budget": "$5000",
-                "expectedROI": "300%"
-              },
-              "sequence": {
-                "totalEmails": 4,
-                "cadence": "3-2-4-7",
-                "emails": [
-                  {
-                    "emailNumber": 1,
-                    "day": 1,
-                    "type": "introduction",
-                    "subjectLines": [
-                      "Elevate Your Executive Travel Experience",
-                      "Private Jet Solutions for {{Company_Name}}",
-                      "Exclusive Charter Access for {{First_Name}}"
-                    ],
-                    "personalization": {
-                      "companyAchievement": true,
-                      "executiveName": true,
-                      "industrySpecific": true,
-                      "recentFunding": true,
-                      "officeLocation": true
-                    },
-                    "cta": {
-                      "type": "soft-inquiry",
-                      "text": "Would this be valuable for your executives?",
-                      "link": false
-                    },
-                    "length": "short",
-                    "tone": "professional-warm"
-                  },
-                  {
-                    "emailNumber": 2,
-                    "day": 3,
-                    "type": "value-addition",
-                    "subject": "Quick Question About Your Q{{Quarter}} Travel Plans",
-                    "elements": [
-                      "case-study",
-                      "empty-legs",
-                      "testimonial",
-                      "social-proof"
-                    ],
-                    "personalization": {
-                      "seasonalTiming": true,
-                      "industryEvents": true,
-                      "competitorMention": false
-                    },
-                    "cta": {
-                      "type": "calendar-link",
-                      "text": "Quick 10-minute call?",
-                      "link": "https://calendly.com/jetvision"
-                    }
-                  },
-                  {
-                    "emailNumber": 3,
-                    "day": 7,
-                    "type": "urgency-scarcity",
-                    "subject": "Limited Availability for {{Specific_Route}}",
-                    "elements": [
-                      "aircraft-availability",
-                      "time-sensitive-offer",
-                      "membership-benefit",
-                      "empty-leg-opportunity"
-                    ],
-                    "personalization": {
-                      "popularRoutes": true,
-                      "seasonalDemand": true,
-                      "membershipTier": true
-                    },
-                    "cta": {
-                      "type": "direct-booking",
-                      "text": "Secure Your Flight",
-                      "link": "https://jetvision.com/book"
-                    }
-                  },
-                  {
-                    "emailNumber": 4,
-                    "day": 14,
-                    "type": "break-up",
-                    "subject": "Should I Close Your File?",
-                    "elements": [
-                      "final-value-prop",
-                      "alternative-contact",
-                      "future-engagement",
-                      "referral-request"
-                    ],
-                    "personalization": {
-                      "finalOffer": true,
-                      "connectionReason": true
-                    },
-                    "cta": {
-                      "type": "final-chance",
-                      "text": "Last opportunity to connect",
-                      "link": "https://jetvision.com/contact"
-                    }
-                  }
-                ]
-              },
-              "personalization": {
-                "dynamicFields": [
-                  "First_Name",
-                  "Last_Name", 
-                  "Company_Name",
-                  "Industry",
-                  "Recent_News",
-                  "Executive_Name",
-                  "Home_Airport",
-                  "Popular_Route",
-                  "Season",
-                  "Membership_Tier",
-                  "Company_Size",
-                  "Funding_Stage",
-                  "Office_Location",
-                  "Quarter"
-                ],
-                "contextualTriggers": [
-                  "company-funding-announcement",
-                  "executive-hire-announcement", 
-                  "office-expansion",
-                  "industry-conference",
-                  "earnings-call",
-                  "merger-acquisition",
-                  "ipo-announcement"
-                ],
-                "industrySpecific": {
-                  "technology": {
-                    "keywords": ["innovation", "scaling", "growth", "digital transformation"],
-                    "events": ["CES", "TechCrunch Disrupt", "SXSW"],
-                    "challenges": ["talent acquisition", "market expansion"]
-                  },
-                  "privateEquity": {
-                    "keywords": ["portfolio", "due diligence", "exit strategy"],
-                    "events": ["SuperReturn", "PEI Awards"],
-                    "challenges": ["deal sourcing", "value creation"]
-                  }
-                }
-              },
-              "abTesting": {
-                "subjectLines": {
-                  "enabled": true,
-                  "variations": 3,
-                  "minSampleSize": 100,
-                  "significanceThreshold": 0.05
-                },
-                "sendTimes": {
-                  "enabled": true,
-                  "timeSlots": ["9:00 AM", "1:00 PM", "4:00 PM"],
-                  "timezones": ["PST", "EST", "CST"]
-                },
-                "ctaButtons": {
-                  "enabled": true,
-                  "variations": ["button", "text-link", "both"]
-                },
-                "emailLength": {
-                  "enabled": true,
-                  "variations": ["short", "medium", "detailed"]
-                },
-                "valuePropositions": {
-                  "enabled": true,
-                  "focus": ["luxury", "convenience", "time-saving", "status"]
-                }
-              },
-              "tracking": {
-                "kpis": {
-                  "openRate": {
-                    "target": "25%",
-                    "industryBenchmark": "15%",
-                    "tracking": "pixel-based"
-                  },
-                  "responseRate": {
-                    "target": "15%", 
-                    "industryBenchmark": "8%",
-                    "tracking": "reply-detection"
-                  },
-                  "meetingBookRate": {
-                    "target": "5%",
-                    "tracking": "calendar-integration"
-                  },
-                  "sqlConversion": {
-                    "target": "20%",
-                    "tracking": "crm-integration"
-                  },
-                  "dealVelocity": {
-                    "target": "30-days",
-                    "tracking": "pipeline-analysis"
-                  }
-                },
-                "attribution": {
-                  "utm_source": "jetvision-email",
-                  "utm_medium": "outreach-sequence", 
-                  "utm_campaign": "q1-tech-outreach",
-                  "utm_content": "{{email_number}}"
-                }
-              },
-              "automation": {
-                "responseHandling": {
-                  "positiveResponses": {
-                    "action": "notify-sales-team",
-                    "sla": "48-hours",
-                    "escalation": true
-                  },
-                  "objections": {
-                    "autoResponse": false,
-                    "categorization": true,
-                    "humanHandoff": true
-                  },
-                  "outOfOffice": {
-                    "detection": true,
-                    "pauseSequence": true,
-                    "resumeAfter": "7-days"
-                  }
-                },
-                "meetingScheduling": {
-                  "calendarIntegration": "calendly",
-                  "autoConfirmation": true,
-                  "reminderEmails": true,
-                  "preparationMaterials": true
-                },
-                "notifications": {
-                  "slack": {
-                    "channel": "#sales-notifications",
-                    "triggers": ["response", "meeting-booked", "sequence-completed"]
-                  },
-                  "email": {
-                    "recipients": ["sales@jetvision.com"],
-                    "frequency": "real-time"
-                  }
-                },
-                "crmUpdates": {
-                  "system": "hubspot",
-                  "syncFields": ["email-status", "engagement-score", "last-activity"],
-                  "createTasks": true,
-                  "updateDeals": true
-                },
-                "leadScoring": {
-                  "engagementWeight": 0.4,
-                  "companyFitWeight": 0.3,
-                  "responseQualityWeight": 0.3,
-                  "scoreThresholds": {
-                    "hot": 80,
-                    "warm": 60,
-                    "cold": 40
-                  }
-                }
-              },
-              "compliance": {
-                "canSpam": true,
-                "gdpr": true,
-                "unsubscribeLink": true,
-                "optOutHonoring": "24-hours",
-                "dataRetention": "2-years"
-              }
-            }
-          }
+        "testingInstructions": {
+            "steps": [
+                "1. Navigate to http://localhost:3001/n8n-test",
+                "2. Select either 'Apollo.io Lead Generation' or 'Email Outreach Sequence'",
+                "3. Review the JSON payload structure in the preview",
+                "4. Click 'Test Workflow' to send the request",
+                "5. Monitor the response for executionId and status",
+                "6. Use the executionId to track workflow progress in n8n"
+            ],
+            "expectedFlow": [
+                "Frontend sends structured JSON to /api/n8n-webhook",
+                "N8N webhook receives request and extracts sessionId from threadId",
+                "Immediate acknowledgment node returns executionId",
+                "Workflow processes asynchronously through JetVision Agent",
+                "Apollo/Avinode MCP tools execute based on parameters",
+                "Results stored in Postgres with session context",
+                "Email sequences created via Gmail integration if specified"
+            ]
+        },
+        "realTimeTracking": {
+            "executionId": "Used to monitor workflow progress",
+            "sessionId": "Links chat context with workflow execution",
+            "workflowId": "Identifies specific n8n workflow template",
+            "status": "processing | completed | failed | paused",
+            "estimatedCompletion": "Time range for workflow completion"
         }
-      }
-    },
-    "testingInstructions": {
-      "steps": [
-        "1. Navigate to http://localhost:3001/n8n-test",
-        "2. Select either 'Apollo.io Lead Generation' or 'Email Outreach Sequence'",
-        "3. Review the JSON payload structure in the preview",
-        "4. Click 'Test Workflow' to send the request",
-        "5. Monitor the response for executionId and status",
-        "6. Use the executionId to track workflow progress in n8n"
-      ],
-      "expectedFlow": [
-        "Frontend sends structured JSON to /api/n8n-webhook",
-        "N8N webhook receives request and extracts sessionId from threadId",
-        "Immediate acknowledgment node returns executionId",
-        "Workflow processes asynchronously through JetVision Agent",
-        "Apollo/Avinode MCP tools execute based on parameters",
-        "Results stored in Postgres with session context",
-        "Email sequences created via Gmail integration if specified"
-      ]
-    },
-    "realTimeTracking": {
-      "executionId": "Used to monitor workflow progress",
-      "sessionId": "Links chat context with workflow execution", 
-      "workflowId": "Identifies specific n8n workflow template",
-      "status": "processing | completed | failed | paused",
-      "estimatedCompletion": "Time range for workflow completion"
     }
-  }
 }

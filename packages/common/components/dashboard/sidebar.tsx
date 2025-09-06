@@ -1,16 +1,16 @@
 'use client';
 
 import { cn } from '@repo/ui';
-import { 
-    ChartBarIcon, 
-    HomeIcon, 
-    UserGroupIcon, 
+import {
+    ChartBarIcon,
+    HomeIcon,
+    UserGroupIcon,
     CogIcon,
     PaperAirplaneIcon,
     ChatBubbleLeftIcon,
     DocumentChartBarIcon,
     BellIcon,
-    MagnifyingGlassIcon
+    MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -38,10 +38,12 @@ export function DashboardSidebar() {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
-        <div className={cn(
-            'flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300',
-            isCollapsed ? 'w-16' : 'w-64'
-        )}>
+        <div
+            className={cn(
+                'flex flex-col border-r border-gray-200 bg-white transition-all duration-300 dark:border-gray-700 dark:bg-gray-800',
+                isCollapsed ? 'w-16' : 'w-64'
+            )}
+        >
             {/* Header */}
             <div className="flex h-16 items-center justify-between px-4">
                 {!isCollapsed && (
@@ -53,7 +55,7 @@ export function DashboardSidebar() {
                     </div>
                 )}
                 {isCollapsed && (
-                    <div className="flex justify-center w-full">
+                    <div className="flex w-full justify-center">
                         <Logo className="h-8 w-8" />
                     </div>
                 )}
@@ -80,7 +82,7 @@ export function DashboardSidebar() {
                         <input
                             type="text"
                             placeholder="Quick search..."
-                            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                            className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-blue-400"
                         />
                     </div>
                 </div>
@@ -88,7 +90,7 @@ export function DashboardSidebar() {
 
             {/* Main Navigation */}
             <nav className="flex-1 space-y-1 px-2">
-                {navigation.map((item) => {
+                {navigation.map(item => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                     return (
                         <Link
@@ -97,25 +99,23 @@ export function DashboardSidebar() {
                             className={cn(
                                 'group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-colors',
                                 isActive
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
                             )}
                             title={isCollapsed ? item.name : undefined}
                         >
                             <item.icon
                                 className={cn(
-                                    'flex-shrink-0 h-5 w-5',
+                                    'h-5 w-5 flex-shrink-0',
                                     isActive
                                         ? 'text-blue-600 dark:text-blue-400'
                                         : 'text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300',
                                     !isCollapsed ? 'mr-3' : 'mx-auto'
                                 )}
                             />
-                            {!isCollapsed && (
-                                <span className="flex-1">{item.name}</span>
-                            )}
+                            {!isCollapsed && <span className="flex-1">{item.name}</span>}
                             {!isCollapsed && isActive && (
-                                <div className="ml-auto h-2 w-2 bg-blue-600 dark:bg-blue-400 rounded-full" />
+                                <div className="ml-auto h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
                             )}
                         </Link>
                     );
@@ -130,8 +130,8 @@ export function DashboardSidebar() {
             </div>
 
             {/* Bottom Navigation */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-2">
-                {bottomNavigation.map((item) => {
+            <div className="border-t border-gray-200 p-2 dark:border-gray-700">
+                {bottomNavigation.map(item => {
                     const isActive = pathname === item.href;
                     return (
                         <Link
@@ -140,30 +140,28 @@ export function DashboardSidebar() {
                             className={cn(
                                 'group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-colors',
                                 isActive
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
                             )}
                             title={isCollapsed ? item.name : undefined}
                         >
                             <item.icon
                                 className={cn(
-                                    'flex-shrink-0 h-5 w-5',
+                                    'h-5 w-5 flex-shrink-0',
                                     isActive
                                         ? 'text-blue-600 dark:text-blue-400'
                                         : 'text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300',
                                     !isCollapsed ? 'mr-3' : 'mx-auto'
                                 )}
                             />
-                            {!isCollapsed && (
-                                <span className="flex-1">{item.name}</span>
-                            )}
+                            {!isCollapsed && <span className="flex-1">{item.name}</span>}
                         </Link>
                     );
                 })}
             </div>
 
             {/* Collapse Toggle */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-2">
+            <div className="border-t border-gray-200 p-2 dark:border-gray-700">
                 <Button
                     variant="ghost"
                     size="sm"

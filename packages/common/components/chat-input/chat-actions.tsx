@@ -101,14 +101,17 @@ export const ChatModeButton = () => {
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const isChatPage = usePathname().startsWith('/chat');
 
-    const selectedOption = modelOptions.find(option => option.value === chatMode) ?? modelOptions[1]; // Default to GPT-4o Mini
+    const selectedOption =
+        modelOptions.find(option => option.value === chatMode) ?? modelOptions[1]; // Default to GPT-4o Mini
 
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
                 <Button variant={'secondary'} size="xs">
                     {selectedOption?.icon}
-                    <span className="max-w-[120px] truncate">{selectedOption?.label?.replace(' (Aviation Agent)', '')}</span>
+                    <span className="max-w-[120px] truncate">
+                        {selectedOption?.label?.replace(' (Aviation Agent)', '')}
+                    </span>
                     <IconChevronDown size={14} strokeWidth={2} />
                 </Button>
             </DropdownMenuTrigger>
@@ -291,7 +294,12 @@ export const SendStopButton = ({
                             variant={hasTextInput ? 'default' : 'secondary'}
                             disabled={!hasTextInput || isGenerating}
                             onClick={() => {
-                                console.log('[SendButton] Clicked - hasTextInput:', hasTextInput, 'isGenerating:', isGenerating);
+                                console.log(
+                                    '[SendButton] Clicked - hasTextInput:',
+                                    hasTextInput,
+                                    'isGenerating:',
+                                    isGenerating
+                                );
                                 if (!hasTextInput) {
                                     console.error('[SendButton] No text input detected!');
                                     return;

@@ -100,11 +100,12 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                     </Button>
                 )}
                 {threadItem.mode && (
-                    <div className="flex items-center gap-3 text-muted-foreground text-xs">
+                    <div className="text-muted-foreground flex items-center gap-3 text-xs">
                         {threadItem.executionTime && (
                             <>
                                 <span className="font-medium">
-                                    Thought for {Math.round(threadItem.executionTime / 1000)} seconds
+                                    Thought for {Math.round(threadItem.executionTime / 1000)}{' '}
+                                    seconds
                                 </span>
                                 <span className="text-gray-300">•</span>
                             </>

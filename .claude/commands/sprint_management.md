@@ -52,4 +52,4 @@ Track implementation progress for the current sprint.
 Assess story completion against sprint timeline.
 Identify blockers, dependencies, and scope changes.
 Provide recommendations for sprint adjustments if needed.
-``` 
+```

@@ -30,12 +30,11 @@ export class N8nWebhookService {
     private readonly apiKey?: string;
     private readonly timeout: number;
 
-    constructor(config?: {
-        webhookUrl?: string;
-        apiKey?: string;
-        timeout?: number;
-    }) {
-        this.webhookUrl = config?.webhookUrl || process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/jetvision-agent';
+    constructor(config?: { webhookUrl?: string; apiKey?: string; timeout?: number }) {
+        this.webhookUrl =
+            config?.webhookUrl ||
+            process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+            'http://localhost:5678/webhook/jetvision-agent';
         this.apiKey = config?.apiKey || process.env.NEXT_PUBLIC_N8N_API_KEY;
         this.timeout = config?.timeout || 30000; // 30 seconds default
     }
@@ -126,7 +125,7 @@ export class N8nWebhookService {
             })}`
         );
 
-        eventSource.onmessage = (event) => {
+        eventSource.onmessage = event => {
             try {
                 const data = JSON.parse(event.data);
                 onMessage(data);
@@ -135,7 +134,7 @@ export class N8nWebhookService {
             }
         };
 
-        eventSource.onerror = (error) => {
+        eventSource.onerror = error => {
             console.error('SSE error:', error);
             onError?.('Connection to n8n webhook failed');
             eventSource.close();

@@ -1,4 +1,4 @@
-import { ChatEditor, markdownStyles } from '@repo/common/components';
+import { ChatEditor, markdownStyles, MarkdownContent } from '@repo/common/components';
 import { useAgentStream, useChatEditor, useCopyText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem } from '@repo/shared/types';
@@ -14,27 +14,102 @@ import { ImageMessage } from './image-message';
  */
 function extractUserText(message: string): string {
     // If the message is not JSON, return as-is
-    if (!message.trim().startsWith('{')) {
+    if (!message.trim().startsWith('{') && !message.trim().startsWith('[')) {
         return message;
     }
-    
+
     try {
         const parsed = JSON.parse(message);
-        
+
         // Check for different possible text fields in the JSON structure
         if (typeof parsed === 'string') {
             return parsed;
         }
-        
+
+        // Handle array of messages (e.g., from chat APIs)
+        if (Array.isArray(parsed)) {
+            // Look for the last user message in the array
+            const userMessage = parsed
+                .reverse()
+                .find(
+                    item =>
+                        item &&
+                        typeof item === 'object' &&
+                        (item.role === 'user' || item.type === 'user')
+                );
+
+            if (userMessage) {
+                // Extract content from the user message
+                const contentFields = ['content', 'message', 'text', 'prompt', 'query'];
+                for (const field of contentFields) {
+                    if (userMessage[field] && typeof userMessage[field] === 'string') {
+                        return userMessage[field];
+                    }
+                    // Handle nested content arrays (like Claude API format)
+                    if (Array.isArray(userMessage[field])) {
+                        const textContent = userMessage[field].find(
+                            item => item && typeof item === 'object' && item.type === 'text'
+                        );
+                        if (textContent && textContent.text) {
+                            return textContent.text;
+                        }
+                    }
+                }
+            }
+
+            // If no user message found, try to extract text from first item
+            if (parsed.length > 0) {
+                const firstItem = parsed[0];
+                if (typeof firstItem === 'string') {
+                    return firstItem;
+                }
+                if (firstItem && typeof firstItem === 'object') {
+                    const textFields = ['content', 'message', 'text', 'prompt', 'query'];
+                    for (const field of textFields) {
+                        if (firstItem[field] && typeof firstItem[field] === 'string') {
+                            return firstItem[field];
+                        }
+                    }
+                }
+            }
+        }
+
         // Common field names for user text in JSON payloads
-        const textFields = ['message', 'prompt', 'text', 'content', 'query'];
-        
+        const textFields = [
+            'message',
+            'prompt',
+            'text',
+            'content',
+            'query',
+            'input',
+            'userInput',
+            'userMessage',
+        ];
+
         for (const field of textFields) {
             if (parsed[field] && typeof parsed[field] === 'string') {
                 return parsed[field];
             }
+            // Handle nested content arrays (like Claude API format)
+            if (Array.isArray(parsed[field])) {
+                const textContent = parsed[field].find(
+                    item => item && typeof item === 'object' && item.type === 'text'
+                );
+                if (textContent && textContent.text) {
+                    return textContent.text;
+                }
+            }
         }
-        
+
+        // Try to extract from nested structures
+        if (parsed.data && typeof parsed.data === 'object') {
+            for (const field of textFields) {
+                if (parsed.data[field] && typeof parsed.data[field] === 'string') {
+                    return parsed.data[field];
+                }
+            }
+        }
+
         // If no standard field found, return the original message
         return message;
     } catch {
@@ -56,10 +131,10 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
     const { copyToClipboard, status } = useCopyText();
     const maxHeight = 120;
     const isGenerating = useChatStore(state => state.isGenerating);
-    
+
     // Extract the actual user text from the message (handles JSON-wrapped messages)
     const displayText = extractUserText(message);
-    
+
     useEffect(() => {
         if (messageRef.current) {
             setShowExpandButton(messageRef.current.scrollHeight > maxHeight);
@@ -89,14 +164,17 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                             ref={messageRef}
                             className={cn('prose-sm relative px-3 py-1.5 font-normal', {
                                 'pb-12': isExpanded,
-                                markdownStyles,
                             })}
                             style={{
                                 maxHeight: isExpanded ? 'none' : maxHeight,
                                 transition: 'max-height 0.3s ease-in-out',
                             }}
                         >
-                            {displayText}
+                            <MarkdownContent
+                                content={displayText}
+                                isCompleted={true}
+                                isLast={true}
+                            />
                         </div>
                         <div
                             className={cn(

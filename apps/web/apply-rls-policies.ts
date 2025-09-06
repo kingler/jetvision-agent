@@ -15,114 +15,121 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables');
+    throw new Error(
+        'Missing required environment variables: ' +
+            `NEXT_PUBLIC_SUPABASE_URL=${supabaseUrl ? '✓' : '✗'}, ` +
+            `SUPABASE_SERVICE_ROLE_KEY=${supabaseServiceKey ? '✓' : '✗'}`
+    );
 }
 
-async function applyRLSPolicies() {
-  console.log('🔒 Applying Row Level Security policies to Supabase...\n');
+// Type assertion after null check to satisfy TypeScript
+const validatedSupabaseUrl: string = supabaseUrl;
+const validatedSupabaseServiceKey: string = supabaseServiceKey;
 
-  try {
-    // Create Supabase client with service role key
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
+async function applyRLSPolicies(): Promise<void> {
+    console.log('🔒 Applying Row Level Security policies to Supabase...\n');
 
-    // Read the RLS policies SQL file
-    const rlsSql = readFileSync(
-      join(__dirname, 'lib/database/migrations/rls-policies.sql'),
-      'utf8'
-    );
-
-    // Split SQL into individual statements
-    const statements = rlsSql
-      .split(';')
-      .filter(stmt => stmt.trim())
-      .map(stmt => stmt.trim() + ';');
-
-    console.log(`📝 Found ${statements.length} SQL statements to execute\n`);
-
-    let successCount = 0;
-    let errorCount = 0;
-
-    // Execute each statement
-    for (let i = 0; i < statements.length; i++) {
-      const statement = statements[i];
-      
-      // Extract a description from the statement
-      let description = 'SQL statement';
-      if (statement.includes('CREATE POLICY')) {
-        const match = statement.match(/CREATE POLICY "([^"]+)"/);
-        description = `Policy: ${match?.[1] || 'Unknown'}`;
-      } else if (statement.includes('ALTER TABLE')) {
-        const match = statement.match(/ALTER TABLE (\w+)/);
-        description = `Enable RLS on: ${match?.[1] || 'Unknown'}`;
-      }
-
-      process.stdout.write(`[${i + 1}/${statements.length}] ${description}...`);
-
-      try {
-        let result;
-        try {
-          result = await supabase.rpc('exec_sql', {
-            sql: statement
-          });
-        } catch (rpcError) {
-          // If exec_sql doesn't exist, try direct execution
-          result = await supabase.from('_sql').select(statement);
-        }
-        const { error } = result;
-
-        if (error) {
-          // Try alternative method
-          const response = await fetch(`${supabaseUrl}/rest/v1/rpc/query`, {
-            method: 'POST',
-            headers: {
-              'apikey': supabaseServiceKey,
-              'Authorization': `Bearer ${supabaseServiceKey}`,
-              'Content-Type': 'application/json',
+    try {
+        // Create Supabase client with service role key
+        const supabase = createClient(validatedSupabaseUrl, validatedSupabaseServiceKey, {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false,
             },
-            body: JSON.stringify({ query: statement }),
-          });
+        });
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
+        // Read the RLS policies SQL file
+        const rlsSql = readFileSync(
+            join(__dirname, 'lib/database/migrations/rls-policies.sql'),
+            'utf8'
+        );
+
+        // Split SQL into individual statements
+        const statements = rlsSql
+            .split(';')
+            .filter(stmt => stmt.trim())
+            .map(stmt => stmt.trim() + ';');
+
+        console.log(`📝 Found ${statements.length} SQL statements to execute\n`);
+
+        let successCount = 0;
+        let errorCount = 0;
+
+        // Execute each statement
+        for (let i = 0; i < statements.length; i++) {
+            const statement = statements[i];
+
+            // Extract a description from the statement
+            let description = 'SQL statement';
+            if (statement.includes('CREATE POLICY')) {
+                const match = statement.match(/CREATE POLICY "([^"]+)"/);
+                description = `Policy: ${match?.[1] || 'Unknown'}`;
+            } else if (statement.includes('ALTER TABLE')) {
+                const match = statement.match(/ALTER TABLE (\w+)/);
+                description = `Enable RLS on: ${match?.[1] || 'Unknown'}`;
+            }
+
+            process.stdout.write(`[${i + 1}/${statements.length}] ${description}...`);
+
+            try {
+                let result;
+                try {
+                    result = await supabase.rpc('exec_sql', {
+                        sql: statement,
+                    });
+                } catch (rpcError) {
+                    // If exec_sql doesn't exist, try direct execution
+                    result = await supabase.from('_sql').select(statement);
+                }
+                const { error } = result;
+
+                if (error) {
+                    // Try alternative method
+                    const response = await fetch(`${validatedSupabaseUrl}/rest/v1/rpc/query`, {
+                        method: 'POST',
+                        headers: {
+                            apikey: validatedSupabaseServiceKey,
+                            Authorization: `Bearer ${validatedSupabaseServiceKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query: statement }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                }
+
+                console.log(' ✅');
+                successCount++;
+            } catch (err: any) {
+                console.log(` ❌ ${err.message}`);
+                errorCount++;
+
+                // Log the statement that failed for debugging
+                if (process.env.DEBUG) {
+                    console.log('Failed statement:', statement.substring(0, 100) + '...');
+                }
+            }
         }
 
-        console.log(' ✅');
-        successCount++;
-      } catch (err: any) {
-        console.log(` ❌ ${err.message}`);
-        errorCount++;
-        
-        // Log the statement that failed for debugging
-        if (process.env.DEBUG) {
-          console.log('Failed statement:', statement.substring(0, 100) + '...');
+        console.log('\n📊 Summary:');
+        console.log(`✅ Successfully applied: ${successCount} statements`);
+        console.log(`❌ Failed: ${errorCount} statements`);
+
+        if (errorCount === 0) {
+            console.log('\n🎉 All RLS policies applied successfully!');
+        } else {
+            console.log('\n⚠️ Some policies failed to apply. This might be because:');
+            console.log('   - Policies already exist (not an issue)');
+            console.log("   - Tables don't exist yet (run migrations first)");
+            console.log('   - Syntax differences between local and Supabase SQL');
+            console.log('\nYou can apply policies manually in the Supabase dashboard.');
         }
-      }
+    } catch (error) {
+        console.error('❌ Failed to apply RLS policies:', error);
+        process.exit(1);
     }
-
-    console.log('\n📊 Summary:');
-    console.log(`✅ Successfully applied: ${successCount} statements`);
-    console.log(`❌ Failed: ${errorCount} statements`);
-
-    if (errorCount === 0) {
-      console.log('\n🎉 All RLS policies applied successfully!');
-    } else {
-      console.log('\n⚠️ Some policies failed to apply. This might be because:');
-      console.log('   - Policies already exist (not an issue)');
-      console.log('   - Tables don\'t exist yet (run migrations first)');
-      console.log('   - Syntax differences between local and Supabase SQL');
-      console.log('\nYou can apply policies manually in the Supabase dashboard.');
-    }
-
-  } catch (error) {
-    console.error('❌ Failed to apply RLS policies:', error);
-    process.exit(1);
-  }
 }
 
 // Run the script

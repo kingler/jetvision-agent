@@ -10,16 +10,18 @@ export const scrollToChatInput = (delay: number = 300) => {
     setTimeout(() => {
         // Look for the chat input container by its ref or class
         const chatInputElement = document.querySelector('[data-chat-input="true"]') as HTMLElement;
-        
+
         if (!chatInputElement) {
             // Fallback: look for the chat input by common selectors
-            const fallbackElement = document.querySelector('.chat-input-container, [class*="chat-input"]') as HTMLElement;
+            const fallbackElement = document.querySelector(
+                '.chat-input-container, [class*="chat-input"]'
+            ) as HTMLElement;
             if (fallbackElement) {
                 scrollToElement(fallbackElement);
             }
             return;
         }
-        
+
         scrollToElement(chatInputElement);
     }, delay);
 };
@@ -30,17 +32,17 @@ export const scrollToChatInput = (delay: number = 300) => {
  */
 export const scrollToElement = (element: HTMLElement) => {
     if (!element) return;
-    
+
     const elementRect = element.getBoundingClientRect();
     const absoluteElementTop = elementRect.top + window.pageYOffset;
-    
+
     // Position element at 1/3 from top of viewport for optimal viewing
     const viewportHeight = window.innerHeight;
-    const targetPosition = absoluteElementTop - (viewportHeight / 3);
-    
+    const targetPosition = absoluteElementTop - viewportHeight / 3;
+
     window.scrollTo({
         top: Math.max(0, targetPosition),
-        behavior: 'smooth'
+        behavior: 'smooth',
     });
 };
 
@@ -51,12 +53,12 @@ export const scrollToElement = (element: HTMLElement) => {
 export const scrollToChatInputWithFocus = (delay: number = 300) => {
     setTimeout(() => {
         const chatInputElement = document.querySelector('[data-chat-input="true"]') as HTMLElement;
-        
+
         if (!chatInputElement) return;
-        
+
         // Scroll to element
         scrollToElement(chatInputElement);
-        
+
         // Add focus effect after scroll completes
         setTimeout(() => {
             // Find the editor element within the chat input
@@ -67,7 +69,7 @@ export const scrollToChatInputWithFocus = (delay: number = 300) => {
                 setTimeout(() => {
                     editorElement.classList.remove('animate-pulse');
                 }, 1000);
-                
+
                 // Focus the editor
                 editorElement.focus();
             }

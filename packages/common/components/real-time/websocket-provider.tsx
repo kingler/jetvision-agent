@@ -22,10 +22,15 @@ interface WebSocketProviderProps {
     url?: string;
 }
 
-export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: WebSocketProviderProps) {
+export function WebSocketProvider({
+    children,
+    url = 'ws://localhost:8123/ws',
+}: WebSocketProviderProps) {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
-    const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected' | 'error'>('disconnected');
+    const [connectionStatus, setConnectionStatus] = useState<
+        'connected' | 'connecting' | 'disconnected' | 'error'
+    >('disconnected');
     const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null);
 
     const sendMessage = (message: any) => {
@@ -40,16 +45,16 @@ export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: 
 
         const connect = () => {
             setConnectionStatus('connecting');
-            
+
             try {
                 ws = new WebSocket(url);
-                
+
                 ws.onopen = () => {
                     console.log('WebSocket connected');
                     setIsConnected(true);
                     setConnectionStatus('connected');
                     setSocket(ws);
-                    
+
                     // Send heartbeat every 30 seconds
                     const heartbeat = setInterval(() => {
                         if (ws.readyState === WebSocket.OPEN) {
@@ -60,11 +65,11 @@ export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: 
                     ws.heartbeatInterval = heartbeat;
                 };
 
-                ws.onmessage = (event) => {
+                ws.onmessage = event => {
                     try {
                         const message: WebSocketMessage = JSON.parse(event.data);
                         setLastMessage(message);
-                        
+
                         // Handle different message types
                         switch (message.type) {
                             case 'lead_update':
@@ -85,12 +90,12 @@ export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: 
                     }
                 };
 
-                ws.onclose = (event) => {
+                ws.onclose = event => {
                     console.log('WebSocket disconnected:', event.reason);
                     setIsConnected(false);
                     setConnectionStatus('disconnected');
                     setSocket(null);
-                    
+
                     if (ws.heartbeatInterval) {
                         clearInterval(ws.heartbeatInterval);
                     }
@@ -104,15 +109,14 @@ export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: 
                     }
                 };
 
-                ws.onerror = (error) => {
+                ws.onerror = error => {
                     console.error('WebSocket error:', error);
                     setConnectionStatus('error');
                 };
-
             } catch (error) {
                 console.error('Failed to create WebSocket connection:', error);
                 setConnectionStatus('error');
-                
+
                 // Try to reconnect after 10 seconds on error
                 reconnectTimeout = setTimeout(() => {
                     connect();
@@ -144,11 +148,7 @@ export function WebSocketProvider({ children, url = 'ws://localhost:8123/ws' }: 
         sendMessage,
     };
 
-    return (
-        <WebSocketContext.Provider value={value}>
-            {children}
-        </WebSocketContext.Provider>
-    );
+    return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
 }
 
 export function useWebSocket() {

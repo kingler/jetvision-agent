@@ -3,11 +3,7 @@
 import { useState, useCallback } from 'react';
 import { cn } from '@repo/ui';
 import { Button } from '@repo/ui';
-import { 
-    ChevronRightIcon, 
-    ChevronLeftIcon,
-    CheckIcon
-} from '@heroicons/react/24/outline';
+import { ChevronRightIcon, ChevronLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { FlightDetailsStep } from './flight-details-step';
 import { AircraftSelectionStep } from './aircraft-selection-step';
 import { PassengerDetailsStep } from './passenger-details-step';
@@ -27,7 +23,7 @@ export interface BookingData {
     };
     passengers: number;
     tripType: 'one-way' | 'round-trip';
-    
+
     // Aircraft Selection
     selectedAircraft?: {
         id: string;
@@ -35,7 +31,7 @@ export interface BookingData {
         tailNumber: string;
         hourlyRate: number;
     };
-    
+
     // Passenger Details
     primaryContact: {
         name: string;
@@ -47,7 +43,7 @@ export interface BookingData {
         email?: string;
         phone?: string;
     }>;
-    
+
     // Special Requirements
     specialRequests?: string;
     cateringRequests?: string;
@@ -63,7 +59,11 @@ interface BookingWizardProps {
 const steps = [
     { id: 'flight-details', name: 'Flight Details', description: 'Where and when you want to fly' },
     { id: 'aircraft-selection', name: 'Select Aircraft', description: 'Choose your preferred jet' },
-    { id: 'passenger-details', name: 'Passenger Info', description: 'Contact and passenger details' },
+    {
+        id: 'passenger-details',
+        name: 'Passenger Info',
+        description: 'Contact and passenger details',
+    },
     { id: 'review', name: 'Review & Book', description: 'Confirm your booking' },
 ];
 
@@ -73,7 +73,7 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
         tripType: 'one-way',
         passengers: 1,
         passengerList: [],
-        primaryContact: { name: '', email: '', phone: '' }
+        primaryContact: { name: '', email: '', phone: '' },
     });
 
     const updateBookingData = useCallback((updates: Partial<BookingData>) => {
@@ -95,16 +95,20 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
     const canProceed = useCallback(() => {
         switch (currentStep) {
             case 0: // Flight Details
-                return !!(bookingData.departure?.airport && 
-                         bookingData.departure?.date && 
-                         bookingData.departure?.time &&
-                         bookingData.arrival?.airport);
+                return !!(
+                    bookingData.departure?.airport &&
+                    bookingData.departure?.date &&
+                    bookingData.departure?.time &&
+                    bookingData.arrival?.airport
+                );
             case 1: // Aircraft Selection
                 return !!bookingData.selectedAircraft;
             case 2: // Passenger Details
-                return !!(bookingData.primaryContact?.name && 
-                         bookingData.primaryContact?.email && 
-                         bookingData.primaryContact?.phone);
+                return !!(
+                    bookingData.primaryContact?.name &&
+                    bookingData.primaryContact?.email &&
+                    bookingData.primaryContact?.phone
+                );
             case 3: // Review
                 return true;
             default:
@@ -113,7 +117,7 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
     }, [currentStep, bookingData]);
 
     const handleComplete = useCallback(() => {
-        if (canProceed() && bookingData as BookingData) {
+        if (canProceed() && (bookingData as BookingData)) {
             onComplete(bookingData as BookingData);
         }
     }, [bookingData, onComplete, canProceed]);
@@ -121,26 +125,11 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
     const renderStep = () => {
         switch (currentStep) {
             case 0:
-                return (
-                    <FlightDetailsStep
-                        data={bookingData}
-                        onUpdate={updateBookingData}
-                    />
-                );
+                return <FlightDetailsStep data={bookingData} onUpdate={updateBookingData} />;
             case 1:
-                return (
-                    <AircraftSelectionStep
-                        data={bookingData}
-                        onUpdate={updateBookingData}
-                    />
-                );
+                return <AircraftSelectionStep data={bookingData} onUpdate={updateBookingData} />;
             case 2:
-                return (
-                    <PassengerDetailsStep
-                        data={bookingData}
-                        onUpdate={updateBookingData}
-                    />
-                );
+                return <PassengerDetailsStep data={bookingData} onUpdate={updateBookingData} />;
             case 3:
                 return (
                     <ReviewBookingStep
@@ -154,21 +143,23 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
     };
 
     return (
-        <div className={cn('max-w-4xl mx-auto', className)}>
+        <div className={cn('mx-auto max-w-4xl', className)}>
             {/* Progress Steps */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     {steps.map((step, index) => (
                         <div key={step.id} className="flex items-center">
                             <div className="flex flex-col items-center">
-                                <div className={cn(
-                                    'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
-                                    index < currentStep 
-                                        ? 'bg-green-500 text-white'
-                                        : index === currentStep
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                                )}>
+                                <div
+                                    className={cn(
+                                        'flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-colors',
+                                        index < currentStep
+                                            ? 'bg-green-500 text-white'
+                                            : index === currentStep
+                                              ? 'bg-blue-500 text-white'
+                                              : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                                    )}
+                                >
                                     {index < currentStep ? (
                                         <CheckIcon className="h-5 w-5" />
                                     ) : (
@@ -176,26 +167,30 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
                                     )}
                                 </div>
                                 <div className="mt-2 text-center">
-                                    <div className={cn(
-                                        'text-sm font-medium',
-                                        index <= currentStep 
-                                            ? 'text-gray-900 dark:text-white' 
-                                            : 'text-gray-500 dark:text-gray-400'
-                                    )}>
+                                    <div
+                                        className={cn(
+                                            'text-sm font-medium',
+                                            index <= currentStep
+                                                ? 'text-gray-900 dark:text-white'
+                                                : 'text-gray-500 dark:text-gray-400'
+                                        )}
+                                    >
                                         {step.name}
                                     </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                         {step.description}
                                     </div>
                                 </div>
                             </div>
                             {index < steps.length - 1 && (
-                                <div className={cn(
-                                    'flex-1 h-0.5 mx-4',
-                                    index < currentStep 
-                                        ? 'bg-green-500' 
-                                        : 'bg-gray-200 dark:bg-gray-700'
-                                )} />
+                                <div
+                                    className={cn(
+                                        'mx-4 h-0.5 flex-1',
+                                        index < currentStep
+                                            ? 'bg-green-500'
+                                            : 'bg-gray-200 dark:bg-gray-700'
+                                    )}
+                                />
                             )}
                         </div>
                     ))}
@@ -203,12 +198,12 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
             </div>
 
             {/* Step Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {steps[currentStep].name}
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="mt-1 text-gray-600 dark:text-gray-400">
                         {steps[currentStep].description}
                     </p>
                 </div>
@@ -220,27 +215,20 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
             <div className="flex items-center justify-between">
                 <div>
                     {currentStep > 0 && (
-                        <Button
-                            variant="outlined"
-                            onClick={prevStep}
-                            className="flex items-center"
-                        >
-                            <ChevronLeftIcon className="h-4 w-4 mr-2" />
+                        <Button variant="outlined" onClick={prevStep} className="flex items-center">
+                            <ChevronLeftIcon className="mr-2 h-4 w-4" />
                             Previous
                         </Button>
                     )}
                 </div>
-                
+
                 <div className="flex space-x-3">
                     {onCancel && (
-                        <Button
-                            variant="ghost"
-                            onClick={onCancel}
-                        >
+                        <Button variant="ghost" onClick={onCancel}>
                             Cancel
                         </Button>
                     )}
-                    
+
                     {currentStep < steps.length - 1 ? (
                         <Button
                             onClick={nextStep}
@@ -248,7 +236,7 @@ export function BookingWizard({ onComplete, onCancel, className }: BookingWizard
                             className="flex items-center"
                         >
                             Next
-                            <ChevronRightIcon className="h-4 w-4 ml-2" />
+                            <ChevronRightIcon className="ml-2 h-4 w-4" />
                         </Button>
                     ) : (
                         <Button

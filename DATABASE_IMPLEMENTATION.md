@@ -7,6 +7,7 @@ This document describes the comprehensive database implementation for JetVision 
 ## Architecture
 
 ### Dual ORM Strategy
+
 - **Prisma**: Primary ORM for migrations and schema management
 - **Drizzle**: TypeScript-first ORM for runtime queries and better performance
 - **Supabase**: PostgreSQL database with built-in auth and real-time features
@@ -35,20 +36,24 @@ This document describes the comprehensive database implementation for JetVision 
 ### Core Entities
 
 #### 1. User Management
+
 - **Users**: Extended profiles with aviation preferences and company affiliations
 - **Companies**: Business entities with Apollo.io integration
 - **Executive Assistants**: User relationships for executive assistant workflows
 
 #### 2. Apollo.io Lead Management
+
 - **Leads**: Contact information with scoring and status tracking
 - **Campaigns**: Email sequences and LinkedIn outreach campaigns
 - **Campaign Targets**: Individual campaign recipients with engagement tracking
 
 #### 3. Avinode Aircraft & Booking System
+
 - **Aircraft**: Fleet inventory with performance specifications and availability
 - **Bookings**: Flight requests and confirmations with pricing
 
 #### 4. Conversation & AI System
+
 - **Conversations**: Chat sessions with context and workflow tracking
 - **Messages**: Individual messages with AI metadata and N8N workflow data
 - **Integration Logs**: Tracking for all external API interactions
@@ -56,16 +61,19 @@ This document describes the comprehensive database implementation for JetVision 
 ### Key Features
 
 #### Data Protection
+
 - **Soft Deletes**: All critical entities support soft deletion with `deletedAt` timestamps
 - **Row Level Security (RLS)**: Comprehensive policies for Supabase multi-tenancy
 - **Audit Fields**: Created/updated timestamps with user tracking
 
 #### Performance Optimization
+
 - **Strategic Indexes**: Optimized for common query patterns
 - **JSON Fields**: Flexible metadata storage for external API data
 - **Foreign Key Constraints**: Proper referential integrity
 
 #### Integration Support
+
 - **Apollo.io**: Contact syncing with enrichment data tracking
 - **Avinode**: Aircraft inventory and booking management
 - **N8N Workflows**: AI orchestration with execution logging
@@ -76,12 +84,12 @@ This document describes the comprehensive database implementation for JetVision 
 
 ```typescript
 // Supabase clients for different contexts
-createSupabaseBrowserClient()     // Client-side operations
-createSupabaseServiceClient()     // Server-side with elevated privileges
-createSupabaseAnonClient()        // Server-side with user context
+createSupabaseBrowserClient(); // Client-side operations
+createSupabaseServiceClient(); // Server-side with elevated privileges
+createSupabaseAnonClient(); // Server-side with user context
 
 // Drizzle client for type-safe queries
-getDrizzleClient()                // Connection-pooled PostgreSQL client
+getDrizzleClient(); // Connection-pooled PostgreSQL client
 ```
 
 ### Repository Pattern
@@ -90,27 +98,27 @@ Each domain has a dedicated repository with comprehensive CRUD operations:
 
 ```typescript
 // Example: LeadRepository methods
-LeadRepository.create(data)
-LeadRepository.getByApolloContactId(id)
-LeadRepository.getHighScoreLeads(minScore)
-LeadRepository.getLeadsRequiringFollowUp()
-LeadRepository.updateStatus(id, status)
-LeadRepository.getConversionStats()
+LeadRepository.create(data);
+LeadRepository.getByApolloContactId(id);
+LeadRepository.getHighScoreLeads(minScore);
+LeadRepository.getLeadsRequiringFollowUp();
+LeadRepository.updateStatus(id, status);
+LeadRepository.getConversionStats();
 ```
 
 ### Unified Service Layer
 
 ```typescript
 // Access all repositories through DatabaseService
-DatabaseService.users.getById(id)
-DatabaseService.companies.searchByName(term)
-DatabaseService.leads.getConversionStats()
-DatabaseService.aircraft.searchWithFilters(filters)
+DatabaseService.users.getById(id);
+DatabaseService.companies.searchByName(term);
+DatabaseService.leads.getConversionStats();
+DatabaseService.aircraft.searchWithFilters(filters);
 
 // Service-level operations
-DatabaseService.healthCheck()
-DatabaseService.getStats()
-DatabaseService.cleanupSoftDeleted(days)
+DatabaseService.healthCheck();
+DatabaseService.getStats();
+DatabaseService.cleanupSoftDeleted(days);
 ```
 
 ## Migration Strategy
@@ -136,21 +144,22 @@ DatabaseService.cleanupSoftDeleted(days)
 
 ```sql
 -- Users can only access their own data
-CREATE POLICY "Users can access own data" ON "users" 
+CREATE POLICY "Users can access own data" ON "users"
 FOR ALL USING (auth.jwt() ->> 'sub' = "clerkId");
 
 -- Company data access for company members
-CREATE POLICY "Users can access company data" ON "companies" 
+CREATE POLICY "Users can access company data" ON "companies"
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users."companyId" = companies.id 
+    SELECT 1 FROM users
+    WHERE users."companyId" = companies.id
     AND users."clerkId" = auth.jwt() ->> 'sub'
   )
 );
 ```
 
 ### Data Protection
+
 - Sensitive PII encrypted at application layer
 - API keys and tokens stored in environment variables
 - Integration logs sanitized of sensitive information
@@ -158,16 +167,19 @@ FOR ALL USING (
 ## Performance Considerations
 
 ### Query Optimization
+
 - Strategic indexes on high-frequency queries
 - Proper join patterns in repository methods
 - Pagination for large result sets
 
 ### Connection Management
+
 - Connection pooling with postgres client
 - Separate clients for different access patterns
 - Health check monitoring
 
 ### Caching Strategy
+
 - Repository-level caching for static data
 - Redis integration planned for session data
 - IndexedDB client-side caching (90% complete)
@@ -175,12 +187,14 @@ FOR ALL USING (
 ## Testing Strategy
 
 ### Test Coverage
+
 - Unit tests for all repository methods
 - Integration tests for database operations
 - Schema validation tests
 - Performance benchmarks
 
 ### Test Data Management
+
 - Isolated test database environment
 - Automated test data cleanup
 - Factory pattern for test data generation
@@ -188,16 +202,19 @@ FOR ALL USING (
 ## Integration Points
 
 ### Apollo.io Sync
+
 - Bulk lead import with conflict resolution
 - Enrichment data tracking in `apolloData` JSON field
 - Campaign performance metrics aggregation
 
 ### Avinode Integration
+
 - Real-time aircraft availability updates
 - Booking synchronization with external calendar systems
 - Fleet utilization reporting
 
 ### N8N Workflow Integration
+
 - Workflow execution logging in `integration_logs`
 - Message context preservation
 - Error handling and retry logic
@@ -205,11 +222,13 @@ FOR ALL USING (
 ## Monitoring and Observability
 
 ### Health Checks
+
 - Database connectivity monitoring
 - Query performance tracking
 - Migration status verification
 
 ### Metrics Collection
+
 - Repository method execution times
 - Connection pool utilization
 - RLS policy effectiveness
@@ -217,12 +236,14 @@ FOR ALL USING (
 ## Future Enhancements
 
 ### Planned Features
+
 - Read replicas for analytics queries
 - Time-series data for usage patterns
 - Advanced full-text search with PostgreSQL extensions
 - GraphQL API layer over existing repositories
 
 ### Scaling Considerations
+
 - Horizontal sharding strategy
 - Archive strategy for historical data
 - Advanced caching with Redis
@@ -231,6 +252,7 @@ FOR ALL USING (
 ## Development Workflow
 
 ### Local Development
+
 1. Clone repository and install dependencies
 2. Set up environment variables for database connections
 3. Run migrations: `npm run db:migrate`
@@ -238,6 +260,7 @@ FOR ALL USING (
 5. Run tests: `npm test`
 
 ### Schema Changes
+
 1. Update Prisma schema
 2. Generate migration: `npm run db:migrate`
 3. Mirror changes in Drizzle schema
@@ -245,6 +268,7 @@ FOR ALL USING (
 5. Run tests and update as needed
 
 ### Code Quality
+
 - TypeScript strict mode enabled
 - ESLint rules for database interactions
 - Automated testing in CI/CD pipeline

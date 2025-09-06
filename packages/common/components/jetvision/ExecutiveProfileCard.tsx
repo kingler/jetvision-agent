@@ -51,19 +51,19 @@ export const ExecutiveProfileCard: React.FC<ExecutiveProfileProps> = ({
     return (
         <div
             className={cn(
-                'rounded-lg border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md',
+                'border-border bg-card rounded-lg border p-4 shadow-sm transition-all hover:shadow-md',
                 className
             )}
         >
             {/* Header */}
             <div className="mb-3 flex items-start justify-between">
                 <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground">{name}</h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <h3 className="text-foreground text-lg font-semibold">{name}</h3>
+                    <div className="text-muted-foreground flex items-center gap-2 text-sm">
                         <IconBriefcase size={14} />
                         <span>{title}</span>
                     </div>
-                    <div className="mt-1 text-sm font-medium text-accent">{company}</div>
+                    <div className="text-accent mt-1 text-sm font-medium">{company}</div>
                 </div>
                 {apolloScore && (
                     <div className="flex flex-col items-center">
@@ -75,13 +75,13 @@ export const ExecutiveProfileCard: React.FC<ExecutiveProfileProps> = ({
                         >
                             {apolloScore}
                         </span>
-                        <span className="mt-1 text-xs text-muted-foreground">Apollo Score</span>
+                        <span className="text-muted-foreground mt-1 text-xs">Apollo Score</span>
                     </div>
                 )}
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-2 border-t border-border pt-3">
+            <div className="border-border space-y-2 border-t pt-3">
                 <div className="flex items-center gap-2 text-sm">
                     <IconMapPin size={14} className="text-muted-foreground" />
                     <span>{location}</span>
@@ -103,23 +103,28 @@ export const ExecutiveProfileCard: React.FC<ExecutiveProfileProps> = ({
             </div>
 
             {/* Travel Preferences */}
-            <div className="mt-3 space-y-2 border-t border-border pt-3">
+            <div className="border-border mt-3 space-y-2 border-t pt-3">
                 <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Travel Frequency</span>
-                    <span className={cn('rounded-full px-2 py-1 text-xs font-medium', getFrequencyColor(travelFrequency))}>
+                    <span className="text-muted-foreground text-sm">Travel Frequency</span>
+                    <span
+                        className={cn(
+                            'rounded-full px-2 py-1 text-xs font-medium',
+                            getFrequencyColor(travelFrequency)
+                        )}
+                    >
                         <IconPlane size={12} className="mr-1 inline" />
                         {travelFrequency}
                     </span>
                 </div>
                 {preferredAircraft && (
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Preferred Aircraft</span>
+                        <span className="text-muted-foreground text-sm">Preferred Aircraft</span>
                         <span className="text-sm font-medium">{preferredAircraft}</span>
                     </div>
                 )}
                 {lastContact && (
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Last Contact</span>
+                        <span className="text-muted-foreground text-sm">Last Contact</span>
                         <span className="text-sm">{lastContact}</span>
                     </div>
                 )}
@@ -127,10 +132,10 @@ export const ExecutiveProfileCard: React.FC<ExecutiveProfileProps> = ({
 
             {/* Action Buttons */}
             <div className="mt-4 flex gap-2">
-                <button className="flex-1 rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground hover:bg-brand/90">
+                <button className="bg-brand text-brand-foreground hover:bg-brand/90 flex-1 rounded-md px-3 py-2 text-sm font-medium">
                     Send Quote
                 </button>
-                <button className="flex-1 rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-secondary">
+                <button className="border-border hover:bg-secondary flex-1 rounded-md border px-3 py-2 text-sm font-medium">
                     View History
                 </button>
             </div>

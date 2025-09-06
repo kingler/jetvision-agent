@@ -156,28 +156,40 @@ export const CommandSearch = () => {
             icon: IconPlane,
             description: 'Check real-time fleet availability',
             prompt: "Which aircraft are available for tomorrow's Miami to New York flight?",
-            action: () => setPromptInEditor("Which aircraft are available for tomorrow's Miami to New York flight?"),
+            action: () =>
+                setPromptInEditor(
+                    "Which aircraft are available for tomorrow's Miami to New York flight?"
+                ),
         },
         {
             name: 'Empty Legs',
             icon: IconPlane,
             description: 'Find discounted repositioning flights',
             prompt: 'What empty leg opportunities are available from Los Angeles this week?',
-            action: () => setPromptInEditor('What empty leg opportunities are available from Los Angeles this week?'),
+            action: () =>
+                setPromptInEditor(
+                    'What empty leg opportunities are available from Los Angeles this week?'
+                ),
         },
         {
             name: 'Fleet Utilization',
             icon: IconPlane,
             description: 'Monitor aircraft usage metrics',
-            prompt: "How can we improve fleet utilization for our Gulfstream G650 aircraft?",
-            action: () => setPromptInEditor("How can we improve fleet utilization for our Gulfstream G650 aircraft?"),
+            prompt: 'How can we improve fleet utilization for our Gulfstream G650 aircraft?',
+            action: () =>
+                setPromptInEditor(
+                    'How can we improve fleet utilization for our Gulfstream G650 aircraft?'
+                ),
         },
         {
             name: 'Heavy Jet Search',
             icon: IconPlane,
             description: 'Search for specific aircraft types',
             prompt: 'Find available heavy jets for a 10-passenger transatlantic flight next month',
-            action: () => setPromptInEditor('Find available heavy jets for a 10-passenger transatlantic flight next month'),
+            action: () =>
+                setPromptInEditor(
+                    'Find available heavy jets for a 10-passenger transatlantic flight next month'
+                ),
         },
     ];
 
@@ -188,28 +200,38 @@ export const CommandSearch = () => {
             icon: IconChartBar,
             description: 'Track conversion metrics',
             prompt: 'What were our Apollo.io email campaign conversion rates last week?',
-            action: () => setPromptInEditor('What were our Apollo.io email campaign conversion rates last week?'),
+            action: () =>
+                setPromptInEditor(
+                    'What were our Apollo.io email campaign conversion rates last week?'
+                ),
         },
         {
             name: 'EA Engagement',
             icon: IconUsers,
             description: 'Analyze engagement patterns',
             prompt: 'Which executive assistants have the highest engagement rates with our campaigns?',
-            action: () => setPromptInEditor('Which executive assistants have the highest engagement rates with our campaigns?'),
+            action: () =>
+                setPromptInEditor(
+                    'Which executive assistants have the highest engagement rates with our campaigns?'
+                ),
         },
         {
             name: 'Finance Campaigns',
             icon: IconBrandCampaignmonitor,
             description: 'Industry-specific metrics',
             prompt: 'How did our financial services jet charter campaigns perform last quarter?',
-            action: () => setPromptInEditor('How did our financial services jet charter campaigns perform last quarter?'),
+            action: () =>
+                setPromptInEditor(
+                    'How did our financial services jet charter campaigns perform last quarter?'
+                ),
         },
         {
             name: 'VIP Campaign',
             icon: IconRocket,
             description: 'Launch targeted campaigns',
             prompt: 'Create a VIP jet charter campaign for Fortune 500 CEOs',
-            action: () => setPromptInEditor('Create a VIP jet charter campaign for Fortune 500 CEOs'),
+            action: () =>
+                setPromptInEditor('Create a VIP jet charter campaign for Fortune 500 CEOs'),
         },
     ];
 
@@ -220,28 +242,40 @@ export const CommandSearch = () => {
             icon: IconCalendar,
             description: 'Complex itinerary management',
             prompt: 'Plan a multi-city European tour: London, Paris, Geneva, ending in Monaco',
-            action: () => setPromptInEditor('Plan a multi-city European tour: London, Paris, Geneva, ending in Monaco'),
+            action: () =>
+                setPromptInEditor(
+                    'Plan a multi-city European tour: London, Paris, Geneva, ending in Monaco'
+                ),
         },
         {
             name: 'Weather Routes',
             icon: IconCalendar,
             description: 'Weather-optimized routing',
             prompt: 'What are the best weather-optimized routes for Caribbean flights this hurricane season?',
-            action: () => setPromptInEditor('What are the best weather-optimized routes for Caribbean flights this hurricane season?'),
+            action: () =>
+                setPromptInEditor(
+                    'What are the best weather-optimized routes for Caribbean flights this hurricane season?'
+                ),
         },
         {
             name: 'Industry Patterns',
             icon: IconCalendar,
             description: 'Analyze travel trends',
             prompt: 'What are the peak travel patterns for tech executives to Austin?',
-            action: () => setPromptInEditor('What are the peak travel patterns for tech executives to Austin?'),
+            action: () =>
+                setPromptInEditor(
+                    'What are the peak travel patterns for tech executives to Austin?'
+                ),
         },
         {
             name: 'Ground Transport',
             icon: IconCalendar,
             description: 'End-to-end travel coordination',
             prompt: 'Coordinate ground transportation for our Teterboro to Manhattan clients',
-            action: () => setPromptInEditor('Coordinate ground transportation for our Teterboro to Manhattan clients'),
+            action: () =>
+                setPromptInEditor(
+                    'Coordinate ground transportation for our Teterboro to Manhattan clients'
+                ),
         },
     ];
 
@@ -252,28 +286,38 @@ export const CommandSearch = () => {
             icon: IconTrendingUp,
             description: 'Target funded companies',
             prompt: 'Find companies that recently raised Series B funding and may need charter services',
-            action: () => setPromptInEditor('Find companies that recently raised Series B funding and may need charter services'),
+            action: () =>
+                setPromptInEditor(
+                    'Find companies that recently raised Series B funding and may need charter services'
+                ),
         },
         {
             name: 'EA Database',
             icon: IconUsers,
             description: 'Executive assistant targeting',
             prompt: 'Build a list of executive assistants at private equity firms in New York',
-            action: () => setPromptInEditor('Build a list of executive assistants at private equity firms in New York'),
+            action: () =>
+                setPromptInEditor(
+                    'Build a list of executive assistants at private equity firms in New York'
+                ),
         },
         {
             name: 'Tech Executives',
             icon: IconTarget,
             description: 'Industry-specific leads',
             prompt: 'Identify Bay Area tech executives who frequently travel to Asia',
-            action: () => setPromptInEditor('Identify Bay Area tech executives who frequently travel to Asia'),
+            action: () =>
+                setPromptInEditor(
+                    'Identify Bay Area tech executives who frequently travel to Asia'
+                ),
         },
         {
             name: 'Event Travel',
             icon: IconUsers,
             description: 'Event-based opportunities',
             prompt: 'Which companies are sending large teams to CES Las Vegas?',
-            action: () => setPromptInEditor('Which companies are sending large teams to CES Las Vegas?'),
+            action: () =>
+                setPromptInEditor('Which companies are sending large teams to CES Las Vegas?'),
         },
     ];
 
@@ -284,28 +328,38 @@ export const CommandSearch = () => {
             icon: IconChartBar,
             description: 'Campaign return metrics',
             prompt: 'Calculate the ROI of our Apollo.io campaigns versus traditional marketing',
-            action: () => setPromptInEditor('Calculate the ROI of our Apollo.io campaigns versus traditional marketing'),
+            action: () =>
+                setPromptInEditor(
+                    'Calculate the ROI of our Apollo.io campaigns versus traditional marketing'
+                ),
         },
         {
             name: 'Best Times',
             icon: IconTarget,
             description: 'Optimal engagement timing',
             prompt: 'When do executive assistants typically respond to charter inquiries?',
-            action: () => setPromptInEditor('When do executive assistants typically respond to charter inquiries?'),
+            action: () =>
+                setPromptInEditor(
+                    'When do executive assistants typically respond to charter inquiries?'
+                ),
         },
         {
             name: 'Competitor Analysis',
             icon: IconChartBar,
             description: 'Market comparison',
             prompt: 'How do our charter rates compare to NetJets and Flexjet?',
-            action: () => setPromptInEditor('How do our charter rates compare to NetJets and Flexjet?'),
+            action: () =>
+                setPromptInEditor('How do our charter rates compare to NetJets and Flexjet?'),
         },
         {
             name: 'Revenue Forecast',
             icon: IconTrendingUp,
             description: 'Predictive analytics',
             prompt: 'Forecast Q4 charter revenue based on current Apollo.io pipeline',
-            action: () => setPromptInEditor('Forecast Q4 charter revenue based on current Apollo.io pipeline'),
+            action: () =>
+                setPromptInEditor(
+                    'Forecast Q4 charter revenue based on current Apollo.io pipeline'
+                ),
         },
     ];
 
@@ -357,7 +411,9 @@ export const CommandSearch = () => {
                             />
                             <div className="flex flex-col">
                                 <span>{action.name}</span>
-                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                                <span className="text-muted-foreground text-xs">
+                                    {action.description}
+                                </span>
                             </div>
                         </CommandItem>
                     ))}
@@ -373,11 +429,13 @@ export const CommandSearch = () => {
                             <action.icon
                                 size={14}
                                 strokeWidth="2"
-                                className="text-purple-600 flex-shrink-0"
+                                className="flex-shrink-0 text-purple-600"
                             />
                             <div className="flex flex-col">
                                 <span>{action.name}</span>
-                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                                <span className="text-muted-foreground text-xs">
+                                    {action.description}
+                                </span>
                             </div>
                         </CommandItem>
                     ))}
@@ -393,11 +451,13 @@ export const CommandSearch = () => {
                             <action.icon
                                 size={14}
                                 strokeWidth="2"
-                                className="text-orange-600 flex-shrink-0"
+                                className="flex-shrink-0 text-orange-600"
                             />
                             <div className="flex flex-col">
                                 <span>{action.name}</span>
-                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                                <span className="text-muted-foreground text-xs">
+                                    {action.description}
+                                </span>
                             </div>
                         </CommandItem>
                     ))}
@@ -413,11 +473,13 @@ export const CommandSearch = () => {
                             <action.icon
                                 size={14}
                                 strokeWidth="2"
-                                className="text-blue-600 flex-shrink-0"
+                                className="flex-shrink-0 text-blue-600"
                             />
                             <div className="flex flex-col">
                                 <span>{action.name}</span>
-                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                                <span className="text-muted-foreground text-xs">
+                                    {action.description}
+                                </span>
                             </div>
                         </CommandItem>
                     ))}
@@ -433,11 +495,13 @@ export const CommandSearch = () => {
                             <action.icon
                                 size={14}
                                 strokeWidth="2"
-                                className="text-green-600 flex-shrink-0"
+                                className="flex-shrink-0 text-green-600"
                             />
                             <div className="flex flex-col">
                                 <span>{action.name}</span>
-                                <span className="text-xs text-muted-foreground">{action.description}</span>
+                                <span className="text-muted-foreground text-xs">
+                                    {action.description}
+                                </span>
                             </div>
                         </CommandItem>
                     ))}

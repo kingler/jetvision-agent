@@ -50,7 +50,8 @@ e2e/
 
 ## Comprehensive Test Coverage
 
-### 1. Webhook Communication Tests (`webhook-communication.spec.ts`) 
+### 1. Webhook Communication Tests (`webhook-communication.spec.ts`)
+
 - **POST Request Structure**: JSON payload format, headers, authentication
 - **SSE Streaming**: Real-time Server-Sent Events response handling
 - **Error Scenarios**: Malformed requests, network failures, timeouts
@@ -59,6 +60,7 @@ e2e/
 - **Streaming Interruption**: Connection recovery and partial response handling
 
 ### 2. Session Management Tests (`session-management.spec.ts`)
+
 - **Session Creation**: Unique identifiers (sessionId, threadId, clientId)
 - **Persistence**: Cross-request context maintenance and storage
 - **Isolation**: Multi-tab, multi-user, and cross-browser session separation
@@ -67,6 +69,7 @@ e2e/
 - **Concurrency**: Rapid message submission without interference
 
 ### 3. Conversation Flow Tests (`conversation-flow.spec.ts`)
+
 - **Prompt Categories**: Jet Charter (jet-1 to jet-4), Apollo Campaign (apollo-1 to apollo-4)
 - **System Prompts**: Context-aware activation and category switching
 - **Travel Planning**: Multi-city (travel-1), weather routing (travel-2), industry patterns (travel-3)
@@ -75,14 +78,16 @@ e2e/
 - **Context Retention**: Multi-turn conversations with memory persistence
 
 ### 4. Chat UI Integration Tests (`chat-ui-integration.spec.ts`)
+
 - **Message Submission**: Input validation, form handling, rapid submission
-- **Real-time Streaming**: Progressive response display and UI state management  
+- **Real-time Streaming**: Progressive response display and UI state management
 - **Loading States**: Progress indicators, button states, user feedback
 - **Error Recovery**: User-friendly messages, retry mechanisms, state restoration
 - **Responsive Design**: Mobile viewport, accessibility compliance
 - **Performance**: Memory usage, scroll behavior, large conversation histories
 
 ### 5. Prompt-Based Scenarios Tests (`prompt-based-scenarios.spec.ts`)
+
 - **Specific Test Queries**: All 20 prompts from prompts.md with expected parameters
 - **Parameter Extraction**: Aircraft types, locations, dates, passenger counts
 - **Session Memory**: Context retention across multi-turn aviation conversations
@@ -90,6 +95,7 @@ e2e/
 - **Follow-up Questions**: Maintaining context for "show me pricing", "book it" scenarios
 
 ### 6. Performance & Timeout Tests (`performance-timeout.spec.ts`)
+
 - **Response Time Benchmarks**: < 5s target, < 2s ideal response times
 - **Timeout Scenarios**: Webhook, network, and processing timeout handling
 - **Load Testing**: Concurrent users, memory usage under load
@@ -98,6 +104,7 @@ e2e/
 - **Resource Management**: Memory leaks, database connection cleanup
 
 ### 2. N8N Workflow Integration (`n8n-workflows.spec.ts`)
+
 - **Webhook Connectivity**: Authentication, user context passing
 - **Response Processing**: Success handling, streaming, partial responses
 - **Error Handling**: Service failures, timeouts, malformed data
@@ -105,6 +112,7 @@ e2e/
 - **Business Logic**: Aviation query routing, context maintenance
 
 ### 3. Apollo.io Integration (`apollo-integration.spec.ts`)
+
 - **Lead Generation**: Executive assistant searches, industry filtering
 - **Campaign Management**: Performance metrics, targeting, optimization
 - **Contact Management**: Profile creation, enrichment, deduplication
@@ -112,6 +120,7 @@ e2e/
 - **Edge Cases**: Rate limits, API consistency
 
 ### 4. Avinode Integration (`avinode-integration.spec.ts`)
+
 - **Aircraft Search**: Availability, multi-type queries, radius searches
 - **Fleet Management**: Utilization metrics, performance analysis, maintenance
 - **Pricing and Quoting**: Charter quotes, cost breakdowns, operator comparison
@@ -119,6 +128,7 @@ e2e/
 - **Market Intelligence**: Trends analysis, route demand
 
 ### 5. Error Handling and Fallbacks (`error-handling.spec.ts`)
+
 - **N8N Service Failures**: Circuit breaker activation, recovery
 - **API Fallbacks**: Direct Apollo.io/Avinode API calls
 - **Network Issues**: Disconnection, slow connections, intermittent failures
@@ -127,6 +137,7 @@ e2e/
 - **Recovery**: Resilience, user-friendly errors, retry mechanisms
 
 ### 6. Authentication Flow (`authentication.spec.ts`)
+
 - **Login Process**: Clerk integration, user types, session persistence
 - **Permission Management**: Role-based access, Apollo.io/Avinode permissions
 - **Session Management**: Navigation, concurrent sessions, token refresh
@@ -134,6 +145,7 @@ e2e/
 - **Error Scenarios**: Service outages, corrupted data
 
 ### 7. Performance and Reliability (`performance.spec.ts`)
+
 - **Page Load Performance**: FCP, LCP, concurrent users
 - **N8N Response Times**: Apollo.io/Avinode workflow performance
 - **Memory Management**: Memory leaks, large payloads, DOM cleanup
@@ -143,22 +155,24 @@ e2e/
 ## Key Features Tested
 
 ### Aviation-Specific Workflows
+
 - **Apollo.io Lead Generation**:
-  - "Find executive assistants at Fortune 500 companies in California"
-  - Campaign performance metrics and optimization
-  - Aviation industry executive searches
+    - "Find executive assistants at Fortune 500 companies in California"
+    - Campaign performance metrics and optimization
+    - Aviation industry executive searches
 
 - **Avinode Aircraft Management**:
-  - "Search for Gulfstream G650 availability NYC to London"
-  - Fleet utilization metrics and reporting
-  - Charter pricing and booking workflows
+    - "Search for Gulfstream G650 availability NYC to London"
+    - Fleet utilization metrics and reporting
+    - Charter pricing and booking workflows
 
 - **System Integration**:
-  - Health checks and API connectivity
-  - N8N workflow status monitoring
-  - Error recovery and fallback mechanisms
+    - Health checks and API connectivity
+    - N8N workflow status monitoring
+    - Error recovery and fallback mechanisms
 
 ### Critical User Journeys
+
 1. **Executive Assistant Workflow**: Login → Search leads → Review results → Export data
 2. **Charter Booking Journey**: Search aircraft → Get quote → Review availability → Initiate booking
 3. **Campaign Management**: Create campaign → Monitor metrics → Optimize performance
@@ -167,17 +181,20 @@ e2e/
 ## Test Data and Mocking
 
 ### User Profiles
+
 - **Admin User**: Full system access, N8N management permissions
 - **Sales User**: Apollo.io access, lead generation capabilities
 - **Charter Ops User**: Avinode access, aircraft management
 - **Demo User**: Limited read-only access for trials
 
 ### Aviation Queries
+
 - **Apollo.io Queries**: 5 comprehensive scenarios covering lead generation and campaign management
 - **Avinode Queries**: 5 scenarios covering aircraft search, fleet management, and pricing
 - **System Queries**: Health checks, workflow monitoring, error recovery
 
 ### N8N Response Mocking
+
 - **Success Responses**: Realistic aviation data with proper formatting
 - **Error Responses**: Timeout, rate limiting, authentication failures
 - **Streaming Support**: Chunk-based responses with progress indicators
@@ -185,12 +202,14 @@ e2e/
 ## Running the Tests
 
 ### Prerequisites
+
 ```bash
 # Install Playwright browsers
 bun run test:e2e:install
 ```
 
 ### Test Commands
+
 ```bash
 # Run all E2E tests
 bun run test:e2e
@@ -212,6 +231,7 @@ bun run test:e2e:report
 ```
 
 ### Environment Setup
+
 ```bash
 # Ensure the development server is running
 bun run dev
@@ -223,17 +243,20 @@ bun run dev
 ## Test Configuration
 
 ### Browser Support
+
 - **Chromium**: Primary testing browser
 - **WebKit**: Safari compatibility testing
 - **Mobile Chrome**: Mobile responsiveness
 
 ### CI/CD Integration
+
 - Automatic retry on failures (2 retries in CI)
 - Parallel execution disabled in CI for stability
 - HTML, JUnit, and JSON reporters for comprehensive reporting
 - Screenshot and video capture on failures
 
 ### Performance Thresholds
+
 - **Page Load**: < 3 seconds
 - **N8N Response**: < 15 seconds (Apollo.io), < 20 seconds (Avinode)
 - **Success Rate**: > 95% for N8N integrations
@@ -242,24 +265,28 @@ bun run dev
 ## Key Testing Strategies
 
 ### 1. N8N Workflow Validation
+
 - Mock N8N webhook responses with realistic delays
 - Test streaming responses with progress indicators
 - Validate business logic for aviation-specific queries
 - Error simulation and recovery testing
 
 ### 2. Authentication Testing
+
 - Clerk integration with multiple user roles
 - Permission-based UI rendering
 - Session persistence and security
 - Mock authentication for consistent testing
 
 ### 3. Performance Monitoring
+
 - Real-time response time measurement
 - Memory leak detection
 - Concurrent user simulation
 - Scalability testing under load
 
 ### 4. Aviation Domain Validation
+
 - Industry-specific data formatting
 - Aircraft tail number validation (N123AB format)
 - Airport code recognition (KJFK format)
@@ -268,17 +295,20 @@ bun run dev
 ## Expected Outcomes
 
 ### Response Times
+
 - **N8N Workflows**: 5-15 seconds average response time
 - **Page Load**: < 3 seconds for complete application load
 - **Streaming**: First chunk within 3 seconds
 
 ### Reliability Metrics
+
 - **Success Rate**: >95% for N8N integrations
 - **Circuit Breaker**: Activation after 5 consecutive failures
 - **Fallback System**: Direct API fallback within 30 seconds
 - **Error Recovery**: Automatic retry with exponential backoff
 
 ### User Experience
+
 - Smooth chat interface with proper loading states
 - Aviation queries return properly formatted results
 - User-friendly error messages with recovery options
@@ -287,18 +317,21 @@ bun run dev
 ## Monitoring and Reporting
 
 ### Test Reports
+
 - **HTML Report**: Visual test results with screenshots
 - **JUnit XML**: CI/CD integration format
 - **JSON Report**: Detailed test execution data
 - **Coverage Report**: Test scenario coverage metrics
 
 ### Performance Metrics
+
 - Response time tracking over test runs
 - Memory usage monitoring
 - Error rate analysis
 - N8N workflow performance trends
 
 ### Failure Analysis
+
 - Screenshot capture on test failures
 - Video recordings for complex scenarios
 - Detailed error logs with correlation IDs
@@ -307,16 +340,19 @@ bun run dev
 ## Maintenance and Updates
 
 ### Test Data Updates
+
 - Aviation query scenarios should be updated quarterly
 - User profiles should reflect actual permission model
 - N8N response mocks should match production schemas
 
 ### Performance Baselines
+
 - Response time thresholds reviewed monthly
 - Memory usage limits adjusted based on production metrics
 - Success rate targets updated based on service reliability
 
 ### CI/CD Integration
+
 - Tests run on every pull request
 - Performance regression detection
 - Automated test result notifications
@@ -327,21 +363,22 @@ bun run dev
 ### Common Issues
 
 1. **Test Timeouts**
-   - Increase timeout values in playwright.config.ts
-   - Check if dev server is running
-   - Verify N8N webhook mocking is active
+    - Increase timeout values in playwright.config.ts
+    - Check if dev server is running
+    - Verify N8N webhook mocking is active
 
 2. **Authentication Failures**
-   - Ensure Clerk configuration is correct
-   - Verify user profile fixtures are valid
-   - Check session persistence logic
+    - Ensure Clerk configuration is correct
+    - Verify user profile fixtures are valid
+    - Check session persistence logic
 
 3. **N8N Mock Issues**
-   - Verify webhook route matching
-   - Check response data structure
-   - Ensure correlation IDs are unique
+    - Verify webhook route matching
+    - Check response data structure
+    - Ensure correlation IDs are unique
 
 ### Debug Commands
+
 ```bash
 # Run specific test with full output
 bun run test:e2e tests/chat-interface.spec.ts --headed --debug

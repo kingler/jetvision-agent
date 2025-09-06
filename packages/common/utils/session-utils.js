@@ -10,18 +10,18 @@
  * @returns {Object} Session object with token and metadata
  */
 export function createSession(userId, userData = {}) {
-  if (!userId) {
-    throw new Error('User ID is required to create a session');
-  }
-  
-  return {
-    id: `session_${Date.now()}_${userId}`,
-    userId,
-    userData,
-    createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString(),
-    active: true
-  };
+    if (!userId) {
+        throw new Error('User ID is required to create a session');
+    }
+
+    return {
+        id: `session_${Date.now()}_${userId}`,
+        userId,
+        userData,
+        createdAt: new Date().toISOString(),
+        lastActivity: new Date().toISOString(),
+        active: true,
+    };
 }
 
 /**
@@ -30,12 +30,12 @@ export function createSession(userId, userData = {}) {
  * @returns {boolean} True if session is valid
  */
 export function validateSession(token) {
-  if (!token || typeof token !== 'string') {
-    return false;
-  }
-  
-  // Simple validation - in real implementation would check against store
-  return token.startsWith('session_') && token.length > 20;
+    if (!token || typeof token !== 'string') {
+        return false;
+    }
+
+    // Simple validation - in real implementation would check against store
+    return token.startsWith('session_') && token.length > 20;
 }
 
 /**
@@ -44,18 +44,18 @@ export function validateSession(token) {
  * @returns {Object} Updated session object
  */
 export function updateSessionActivity(session) {
-  if (!session || !session.id) {
-    throw new Error('Valid session object is required');
-  }
-  
-  return {
-    ...session,
-    lastActivity: new Date().toISOString()
-  };
+    if (!session || !session.id) {
+        throw new Error('Valid session object is required');
+    }
+
+    return {
+        ...session,
+        lastActivity: new Date().toISOString(),
+    };
 }
 
 export default {
-  createSession,
-  validateSession,
-  updateSessionActivity
+    createSession,
+    validateSession,
+    updateSessionActivity,
 };

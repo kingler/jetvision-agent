@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui';
-import { 
+import {
     MapPinIcon,
     CalendarIcon,
     ClockIcon,
     UserGroupIcon,
-    ArrowsRightLeftIcon
+    ArrowsRightLeftIcon,
 } from '@heroicons/react/24/outline';
 import type { BookingData } from './booking-wizard';
 
@@ -38,8 +38,8 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
         onUpdate({
             departure: {
                 ...data.departure,
-                [field]: value
-            } as BookingData['departure']
+                [field]: value,
+            } as BookingData['departure'],
         });
     };
 
@@ -47,8 +47,8 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
         onUpdate({
             arrival: {
                 ...data.arrival,
-                [field]: value
-            } as BookingData['arrival']
+                [field]: value,
+            } as BookingData['arrival'],
         });
     };
 
@@ -62,7 +62,7 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
         <div className="space-y-6">
             {/* Trip Type */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <label className="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Trip Type
                 </label>
                 <div className="flex space-x-4">
@@ -84,10 +84,10 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
             </div>
 
             {/* Route Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Departure */}
                 <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         From
                     </label>
                     <div className="relative">
@@ -96,22 +96,27 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                             type="text"
                             placeholder="Departure airport"
                             value={data.departure?.airport || ''}
-                            onChange={(e) => handleDepartureChange('airport', e.target.value)}
+                            onChange={e => handleDepartureChange('airport', e.target.value)}
                             onFocus={() => setShowDepartureSearch(true)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                         {showDepartureSearch && (
-                            <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg">
-                                {popularAirports.map((airport) => (
+                            <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800">
+                                {popularAirports.map(airport => (
                                     <button
                                         key={airport.code}
-                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
+                                        className="w-full px-4 py-3 text-left first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                                         onClick={() => {
-                                            handleDepartureChange('airport', `${airport.code} - ${airport.name}`);
+                                            handleDepartureChange(
+                                                'airport',
+                                                `${airport.code} - ${airport.name}`
+                                            );
                                             setShowDepartureSearch(false);
                                         }}
                                     >
-                                        <div className="font-medium">{airport.code} - {airport.city}</div>
+                                        <div className="font-medium">
+                                            {airport.code} - {airport.city}
+                                        </div>
                                         <div className="text-sm text-gray-500">{airport.name}</div>
                                     </button>
                                 ))}
@@ -122,7 +127,7 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
 
                 {/* Arrival */}
                 <div className="relative">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             To
                         </label>
@@ -130,7 +135,7 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                             variant="ghost"
                             size="sm"
                             onClick={swapAirports}
-                            className="p-1 h-auto"
+                            className="h-auto p-1"
                         >
                             <ArrowsRightLeftIcon className="h-4 w-4" />
                         </Button>
@@ -141,22 +146,27 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                             type="text"
                             placeholder="Arrival airport"
                             value={data.arrival?.airport || ''}
-                            onChange={(e) => handleArrivalChange('airport', e.target.value)}
+                            onChange={e => handleArrivalChange('airport', e.target.value)}
                             onFocus={() => setShowArrivalSearch(true)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                         {showArrivalSearch && (
-                            <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg">
-                                {popularAirports.map((airport) => (
+                            <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800">
+                                {popularAirports.map(airport => (
                                     <button
                                         key={airport.code}
-                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
+                                        className="w-full px-4 py-3 text-left first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                                         onClick={() => {
-                                            handleArrivalChange('airport', `${airport.code} - ${airport.name}`);
+                                            handleArrivalChange(
+                                                'airport',
+                                                `${airport.code} - ${airport.name}`
+                                            );
                                             setShowArrivalSearch(false);
                                         }}
                                     >
-                                        <div className="font-medium">{airport.code} - {airport.city}</div>
+                                        <div className="font-medium">
+                                            {airport.code} - {airport.city}
+                                        </div>
                                         <div className="text-sm text-gray-500">{airport.name}</div>
                                     </button>
                                 ))}
@@ -167,9 +177,9 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
             </div>
 
             {/* Date and Time */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Departure Date
                     </label>
                     <div className="relative">
@@ -177,15 +187,15 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                         <input
                             type="date"
                             value={data.departure?.date || ''}
-                            onChange={(e) => handleDepartureChange('date', e.target.value)}
+                            onChange={e => handleDepartureChange('date', e.target.value)}
                             min={new Date().toISOString().split('T')[0]}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Departure Time
                     </label>
                     <div className="relative">
@@ -193,24 +203,24 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                         <input
                             type="time"
                             value={data.departure?.time || ''}
-                            onChange={(e) => handleDepartureChange('time', e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={e => handleDepartureChange('time', e.target.value)}
+                            className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Passengers
                     </label>
                     <div className="relative">
                         <UserGroupIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                         <select
                             value={data.passengers || 1}
-                            onChange={(e) => onUpdate({ passengers: parseInt(e.target.value) })}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                            onChange={e => onUpdate({ passengers: parseInt(e.target.value) })}
+                            className="w-full appearance-none rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         >
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((num) => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(num => (
                                 <option key={num} value={num}>
                                     {num} {num === 1 ? 'Passenger' : 'Passengers'}
                                 </option>
@@ -222,13 +232,13 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
 
             {/* Return Flight (if round trip) */}
             {data.tripType === 'round-trip' && (
-                <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <div className="border-t border-gray-200 pt-6 dark:border-gray-600">
+                    <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
                         Return Flight
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Return Date
                             </label>
                             <div className="relative">
@@ -236,15 +246,18 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                                 <input
                                     type="date"
                                     value={data.arrival?.date || ''}
-                                    onChange={(e) => handleArrivalChange('date', e.target.value)}
-                                    min={data.departure?.date || new Date().toISOString().split('T')[0]}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    onChange={e => handleArrivalChange('date', e.target.value)}
+                                    min={
+                                        data.departure?.date ||
+                                        new Date().toISOString().split('T')[0]
+                                    }
+                                    className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Return Time
                             </label>
                             <div className="relative">
@@ -252,8 +265,8 @@ export function FlightDetailsStep({ data, onUpdate }: FlightDetailsStepProps) {
                                 <input
                                     type="time"
                                     value={data.arrival?.time || ''}
-                                    onChange={(e) => handleArrivalChange('time', e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    onChange={e => handleArrivalChange('time', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                                 />
                             </div>
                         </div>

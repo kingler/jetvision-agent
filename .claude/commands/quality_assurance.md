@@ -42,4 +42,4 @@ Perform security vulnerability scanning on $PATH.
 Check for common security issues like injection vulnerabilities, authentication flaws, and data exposure.
 Evaluate dependencies for known vulnerabilities.
 Provide security remediation recommendations with examples.
-``` 
+```

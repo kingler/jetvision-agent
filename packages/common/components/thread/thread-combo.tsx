@@ -14,16 +14,21 @@ export function Thread() {
         useShallow(state => state.getCurrentThreadItem(currentThreadId))
     );
     const isGenerating = useChatStore(useShallow(state => state.isGenerating));
-    
+
     // Filter out duplicates between previous and current items
     const filteredPreviousItems = useMemo(() => {
         if (!currentThreadItem) return previousThreadItems;
-        
+
         return previousThreadItems.filter(item => item.id !== currentThreadItem.id);
     }, [previousThreadItems, currentThreadItem]);
-    
-    console.log('[Thread] Rendering - Previous items:', filteredPreviousItems.length, 'Current item:', currentThreadItem?.id);
-    
+
+    console.log(
+        '[Thread] Rendering - Previous items:',
+        filteredPreviousItems.length,
+        'Current item:',
+        currentThreadItem?.id
+    );
+
     const memoizedPreviousThreadItems = useMemo(() => {
         return filteredPreviousItems.map(threadItem => (
             <div key={threadItem.id}>

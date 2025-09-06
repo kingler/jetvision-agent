@@ -9,8 +9,8 @@ export const apolloMCPConfig: MCPServersConfig = {
     proxyEndpoint: process.env.MCP_PROXY_ENDPOINT || '/api/mcp/proxy',
     mcpServers: {
         'apollo-io': process.env.APOLLO_MCP_SERVER_URL || 'http://localhost:3001/apollo',
-        'avinode': process.env.AVAINODE_MCP_SERVER_URL || 'http://localhost:3002/avinode',
-    }
+        avinode: process.env.AVAINODE_MCP_SERVER_URL || 'http://localhost:3002/avinode',
+    },
 };
 
 /**
@@ -34,7 +34,7 @@ export const apolloToolDefinitions = {
         description: 'Monitor prospects who changed jobs in the last 30 days',
         category: 'lead-discovery',
     },
-    
+
     // Campaign Management
     'launch-campaign': {
         name: 'launch-campaign',
@@ -51,7 +51,7 @@ export const apolloToolDefinitions = {
         description: 'Manage automated email sequences for prospects',
         category: 'campaign',
     },
-    
+
     // Performance Analytics
     'response-rates': {
         name: 'response-rates',
@@ -68,7 +68,7 @@ export const apolloToolDefinitions = {
         description: 'Analyze ROI by lead source and campaign',
         category: 'analytics',
     },
-    
+
     // Aviation-Specific Tools
     'empty-leg-prospects': {
         name: 'empty-leg-prospects',
@@ -96,47 +96,47 @@ export const apolloCommandMappings = {
     'how many conversions': 'track-conversions',
     'conversion rate': 'track-conversions',
     'show conversions': 'track-conversions',
-    
+
     // Response Rates
     'response rates': 'response-rates',
     'email performance': 'response-rates',
     'open rates': 'response-rates',
-    
+
     // Lead Discovery
     'find executive assistants': 'search-executive-assistants',
     'executive assistant': 'search-executive-assistants',
     'find EA': 'search-executive-assistants',
-    
+
     // Funding & Growth
     'raised funding': 'find-funding-companies',
     'new funding': 'find-funding-companies',
     'recently funded': 'find-funding-companies',
-    
+
     // Job Changes
     'job changes': 'job-change-alerts',
     'changed jobs': 'job-change-alerts',
     'new position': 'job-change-alerts',
-    
+
     // Campaign Launch
     'launch campaign': 'launch-campaign',
     'start campaign': 'launch-campaign',
     'kick off campaign': 'launch-campaign',
-    
+
     // Cost Analysis
     'cost per lead': 'cost-per-lead',
-    'CPL': 'cost-per-lead',
+    CPL: 'cost-per-lead',
     'lead cost': 'cost-per-lead',
-    
+
     // ROI
-    'ROI': 'roi-analysis',
+    ROI: 'roi-analysis',
     'return on investment': 'roi-analysis',
     'lead source ROI': 'roi-analysis',
-    
+
     // Aviation Specific
     'empty leg': 'empty-leg-prospects',
     'empty legs': 'empty-leg-prospects',
     'repositioning flights': 'empty-leg-prospects',
-    
+
     // Event Targeting
     'conference attendees': 'event-travel-targeting',
     'event travel': 'event-travel-targeting',

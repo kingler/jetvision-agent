@@ -27,7 +27,7 @@ const FallbackTextarea: FC<{
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.focus();
-            
+
             // Create a mock editor object for compatibility
             const mockEditor = {
                 getText: () => value,
@@ -45,7 +45,7 @@ const FallbackTextarea: FC<{
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (isGenerating) return;
-        
+
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             if (value.trim()) {
@@ -64,7 +64,8 @@ const FallbackTextarea: FC<{
         // Auto-resize textarea
         const textarea = e.target;
         textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, parseInt(maxHeight || '300px')) + 'px';
+        textarea.style.height =
+            Math.min(textarea.scrollHeight, parseInt(maxHeight || '300px')) + 'px';
     };
 
     return (
@@ -74,12 +75,14 @@ const FallbackTextarea: FC<{
                 value={value}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                placeholder={placeholder || 'Ask about executive travel, jet charter, or Apollo.io campaigns'}
+                placeholder={
+                    placeholder || 'Ask about executive travel, jet charter, or Apollo.io campaigns'
+                }
                 disabled={isGenerating}
                 className={cn(
-                    'resize-none w-full min-h-[120px] p-3 text-sm bg-transparent border-none outline-none focus:outline-none',
-                    'placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed',
-                    'overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent',
+                    'min-h-[120px] w-full resize-none border-none bg-transparent p-3 text-sm outline-none focus:outline-none',
+                    'placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+                    'scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent overflow-y-auto',
                     className
                 )}
                 style={{
@@ -147,12 +150,14 @@ export const ChatEditor: FC<TChatEditor> = ({
     if (loadingTimer && !editor && !isInitialized) {
         return (
             <Flex className="flex-1">
-                <div className={cn(
-                    'min-h-[120px] w-full p-3 flex items-center justify-center text-muted-foreground',
-                    className
-                )}>
+                <div
+                    className={cn(
+                        'text-muted-foreground flex min-h-[120px] w-full items-center justify-center p-3',
+                        className
+                    )}
+                >
                     <div className="flex items-center space-x-2">
-                        <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
                         <span>Loading editor...</span>
                     </div>
                 </div>
@@ -174,7 +179,7 @@ export const ChatEditor: FC<TChatEditor> = ({
     );
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (isGenerating) return;
+        if (isGenerating || !editor) return;
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             const text = editor.getText().trim();

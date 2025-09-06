@@ -19,7 +19,7 @@ Compare the efficiency of the 3 <solution>s for each <issue>. Analyze factors su
 - The time and resources needed to implement the solution
 - The potential impact of the solution on the overall response
 - The probability that the solution will successfully resolve the issue
-Discuss this comparion within <efficiency_comparison> tags.
+  Discuss this comparion within <efficiency_comparison> tags.
 
 ## Step 4
 

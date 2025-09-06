@@ -22,35 +22,42 @@ Emergency Path:  Offline Response (Service status + guidance)
 ## 🔧 Core Components
 
 ### 1. **Resilient Provider** (`jetvision-resilient-provider.ts`)
+
 - Main provider implementing intelligent fallback hierarchy
 - Circuit breaker integration for fault tolerance
 - Real-time health monitoring and metrics
 
 ### 2. **Circuit Breaker System** (`circuit-breaker.ts`)
+
 - Prevents cascading failures
 - Automatic service recovery detection
 - Configurable failure thresholds and recovery timeouts
 
 ### 3. **Multi-Tier Caching** (`cache-manager.ts`)
+
 - Different TTL strategies for different data types
 - Stale-while-revalidate support
 - Comprehensive cache metrics
 
 ### 4. **Direct API Clients**
+
 - **Apollo.io** (`apollo-direct-client.ts`): Lead generation, campaign management
 - **Avinode** (`avinode-direct-client.ts`): Aircraft search, fleet management, booking
 
 ### 5. **Service Monitor** (`service-monitor.ts`)
+
 - Real-time health monitoring
 - Automated alerting and recovery
 - Performance metrics tracking
 
 ### 6. **Integration Logger** (`integration-logger.ts`)
+
 - Comprehensive debugging capabilities
 - Request flow tracking
 - Performance analytics
 
 ### 7. **Data Sync Manager** (`data-sync-manager.ts`)
+
 - Conflict resolution between data sources
 - Data consistency validation
 - Synchronization strategies
@@ -67,14 +74,14 @@ const system = initializeJetVisionSystem(PRODUCTION_CONFIG);
 
 // Or development setup
 const system = initializeJetVisionSystem({
-  n8nWebhookUrl: 'https://n8n.vividwalls.blog/webhook/jetvision-agent',
-  n8nApiKey: process.env.N8N_API_KEY,
-  apolloApiKey: process.env.APOLLO_API_KEY,
-  avinodeApiKey: process.env.AVAINODE_API_KEY,
-  llmApiKey: process.env.OPENAI_API_KEY,
-  enableFallback: true,
-  enableCaching: true,
-  enableMonitoring: true
+    n8nWebhookUrl: 'https://n8n.vividwalls.blog/webhook/jetvision-agent',
+    n8nApiKey: process.env.N8N_API_KEY,
+    apolloApiKey: process.env.APOLLO_API_KEY,
+    avinodeApiKey: process.env.AVAINODE_API_KEY,
+    llmApiKey: process.env.OPENAI_API_KEY,
+    enableFallback: true,
+    enableCaching: true,
+    enableMonitoring: true,
 });
 ```
 
@@ -88,8 +95,8 @@ const provider = system.provider.jetVisionAgent();
 import { generateText } from 'ai';
 
 const result = await generateText({
-  model: provider,
-  prompt: 'Find executive assistants in tech companies'
+    model: provider,
+    prompt: 'Find executive assistants in tech companies',
 });
 ```
 
@@ -107,7 +114,7 @@ console.log('Success rate:', metrics.successRate);
 // View service health dashboard
 import { ServiceHealthDashboard } from '@/packages/common/components/jetvision/ServiceHealthDashboard';
 
-<ServiceHealthDashboard 
+<ServiceHealthDashboard
   autoRefresh={true}
   refreshInterval={10000}
   onServiceAction={(service, action) => {
@@ -139,22 +146,22 @@ OPENAI_API_KEY=your_openai_api_key
 
 ```typescript
 const customConfig = {
-  // Circuit Breaker Settings
-  n8nTimeout: 15000,
-  
-  // Fallback Thresholds
-  maxRetries: 3,
-  
-  // Monitoring
-  healthCheckInterval: 60000,
-  enableServiceMonitoring: true,
-  
-  // Caching
-  enableCaching: true,
-  cacheMaxEntries: 10000,
-  
-  // Logging
-  logLevel: 'INFO' as const
+    // Circuit Breaker Settings
+    n8nTimeout: 15000,
+
+    // Fallback Thresholds
+    maxRetries: 3,
+
+    // Monitoring
+    healthCheckInterval: 60000,
+    enableServiceMonitoring: true,
+
+    // Caching
+    enableCaching: true,
+    cacheMaxEntries: 10000,
+
+    // Logging
+    logLevel: 'INFO' as const,
 };
 ```
 
@@ -163,6 +170,7 @@ const customConfig = {
 ### Service Health Dashboard
 
 The system includes a comprehensive React dashboard showing:
+
 - Real-time service status
 - Circuit breaker states
 - Performance metrics
@@ -199,18 +207,21 @@ system.circuitBreakerManager.resetAll();
 ## 🔄 Fallback Scenarios
 
 ### 1. N8N Primary Failure
+
 ```
 Query: "Find executive assistants in tech companies"
 N8N fails → Apollo.io direct API → Returns lead data with "via direct API" notice
 ```
 
 ### 2. All APIs Fail
+
 ```
 All services down → Cache layer → Returns stale data with warning
 Cache empty → Emergency response with service status and next steps
 ```
 
 ### 3. Partial Service Degradation
+
 ```
 N8N slow (>5s) → Circuit breaker opens → Direct APIs handle requests
 N8N recovers → Circuit breaker closes → Traffic gradually returns to N8N
@@ -237,8 +248,8 @@ system.circuitBreakerManager.getCircuitBreaker('n8n-primary').forceOpen();
 
 // Test fallback behavior
 const result = await provider.doGenerate({
-  prompt: { messages: [{ role: 'user', content: [{ type: 'text', text: 'test query' }] }] },
-  mode: { type: 'regular' }
+    prompt: { messages: [{ role: 'user', content: [{ type: 'text', text: 'test query' }] }] },
+    mode: { type: 'regular' },
 });
 
 console.log('Fallback result:', result);
@@ -247,6 +258,7 @@ console.log('Fallback result:', result);
 ## 🚨 Production Readiness Checklist
 
 ### Pre-Deployment
+
 - [ ] All environment variables configured
 - [ ] N8N workflows activated and tested
 - [ ] Apollo.io and Avinode API keys validated
@@ -256,6 +268,7 @@ console.log('Fallback result:', result);
 - [ ] Health dashboard deployed and accessible
 
 ### Post-Deployment
+
 - [ ] Monitor initial traffic distribution
 - [ ] Verify fallback scenarios work under real load
 - [ ] Check cache hit rates and performance
@@ -266,12 +279,14 @@ console.log('Fallback result:', result);
 ## 📈 Performance Expectations
 
 ### Targets
+
 - **99.9% Availability**: Zero downtime even when primary N8N fails
 - **<2s Additional Latency**: Fallback adds minimal delay
 - **>80% Cache Hit Rate**: Reduces external API calls
 - **<5% Error Rate**: Across all integration points
 
 ### Monitoring Metrics
+
 - Response times per service
 - Circuit breaker state changes
 - Cache hit/miss ratios
@@ -291,6 +306,7 @@ console.log('Fallback result:', result);
 ### Common Issues
 
 #### N8N Webhook Not Responding
+
 ```
 Check: N8N workflow is active and webhook URL is correct
 Fallback: Requests automatically route to direct APIs
@@ -298,6 +314,7 @@ Recovery: Monitor circuit breaker for automatic recovery
 ```
 
 #### High Response Times
+
 ```
 Check: Circuit breaker thresholds may need adjustment
 Cache: Increase TTL for frequently accessed data
@@ -305,6 +322,7 @@ Monitor: Review service health dashboard for bottlenecks
 ```
 
 #### Data Inconsistencies
+
 ```
 Check: Data sync manager conflict resolution
 Validate: Source data validation rules
@@ -329,6 +347,7 @@ console.log(JSON.stringify(report, null, 2));
 ## 🤝 Contributing
 
 When adding new integrations:
+
 1. Create new direct client following existing patterns
 2. Add circuit breaker configuration
 3. Implement appropriate caching strategy
@@ -339,6 +358,7 @@ When adding new integrations:
 ## 📚 API Reference
 
 ### Core Classes
+
 - `JetVisionResilientProvider`: Main provider with fallback hierarchy
 - `CircuitBreaker`: Fault tolerance for individual services
 - `CacheManager`: Multi-tier caching with TTL management
@@ -346,6 +366,7 @@ When adding new integrations:
 - `DataSyncManager`: Data consistency and conflict resolution
 
 ### Integration Clients
+
 - `ApolloDirectClient`: Direct Apollo.io API integration
 - `AvinodeDirectClient`: Direct Avinode API integration
 
@@ -354,6 +375,7 @@ For detailed API documentation, see the TypeScript interfaces in each module.
 ## 📞 Support
 
 For Fortune 500 deployment support:
+
 - Review service health dashboard at `/admin/system-health`
 - Export logs for analysis: `system.integrationLogger.exportLogs()`
 - Monitor circuit breaker patterns for optimization opportunities
@@ -362,4 +384,4 @@ For Fortune 500 deployment support:
 ---
 
 **Built for mission-critical reliability** 🚀  
-*Ensuring zero downtime for Fortune 500 private aviation services*
+_Ensuring zero downtime for Fortune 500 private aviation services_

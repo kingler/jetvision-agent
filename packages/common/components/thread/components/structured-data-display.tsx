@@ -15,18 +15,22 @@ interface StructuredDataDisplayProps {
     };
 }
 
-export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ data, type, metadata }) => {
+export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({
+    data,
+    type,
+    metadata,
+}) => {
     // If no structured data, return null
     if (!data) return null;
-    
+
     // Auto-detect type if not provided
     const dataType = type || detectDataType(data);
-    
+
     return (
         <div className="w-full space-y-3">
             {/* Metadata Badge */}
             {metadata && metadata.source === 'n8n' && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
                     <IconNetwork className="h-3 w-3" />
                     <span>Powered by n8n workflow</span>
                     {metadata.executionId && (
@@ -36,7 +40,7 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
                     )}
                 </div>
             )}
-            
+
             {/* Apollo Data Display */}
             {(dataType?.startsWith('apollo') || dataType === 'people_search') && (
                 <ApolloDataDisplay
@@ -46,9 +50,11 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
                     actions={data.actions}
                 />
             )}
-            
+
             {/* Avinode Data Display */}
-            {(dataType === 'aircraft_search' || dataType === 'booking_quote' || dataType === 'fleet_status') && (
+            {(dataType === 'aircraft_search' ||
+                dataType === 'booking_quote' ||
+                dataType === 'fleet_status') && (
                 <AvinodeDataDisplay
                     type={dataType as any}
                     data={data.data || data}
@@ -56,23 +62,21 @@ export const StructuredDataDisplay: React.FC<StructuredDataDisplayProps> = ({ da
                     recommendations={data.recommendations}
                 />
             )}
-            
+
             {/* Generic Structured Data Display */}
-            {!dataType?.startsWith('apollo') && 
-             dataType !== 'people_search' &&
-             !['aircraft_search', 'booking_quote', 'fleet_status'].includes(dataType || '') && 
-             data.data && (
-                <GenericDataDisplay data={data.data} type={dataType} />
-            )}
+            {!dataType?.startsWith('apollo') &&
+                dataType !== 'people_search' &&
+                !['aircraft_search', 'booking_quote', 'fleet_status'].includes(dataType || '') &&
+                data.data && <GenericDataDisplay data={data.data} type={dataType} />}
         </div>
     );
 };
 
 const GenericDataDisplay: React.FC<{ data: any; type?: string }> = ({ data, type }) => {
     return (
-        <div className="mt-4 p-4 rounded-lg border bg-gray-50 dark:bg-gray-900/50">
-            <div className="flex items-center gap-2 mb-3">
-                <IconDatabase className="h-4 w-4 text-muted-foreground" />
+        <div className="mt-4 rounded-lg border bg-gray-50 p-4 dark:bg-gray-900/50">
+            <div className="mb-3 flex items-center gap-2">
+                <IconDatabase className="text-muted-foreground h-4 w-4" />
                 <span className="text-sm font-medium">
                     {type ? formatTypeName(type) : 'Structured Data'}
                 </span>
@@ -81,7 +85,7 @@ const GenericDataDisplay: React.FC<{ data: any; type?: string }> = ({ data, type
                 {Object.entries(data).map(([key, value]) => (
                     <div key={key} className="flex justify-between text-sm">
                         <span className="text-muted-foreground">{formatKey(key)}</span>
-                        <span className="font-medium text-right max-w-[60%]">
+                        <span className="max-w-[60%] text-right font-medium">
                             {formatValue(value)}
                         </span>
                     </div>
@@ -94,21 +98,21 @@ const GenericDataDisplay: React.FC<{ data: any; type?: string }> = ({ data, type
 // Helper function to detect data type
 export function detectDataType(data: any): string | null {
     if (!data) return null;
-    
+
     // Check if type is explicitly provided
     if (data.type) return data.type;
-    
+
     // Check for Apollo patterns
     if (data.people || (data.data && data.data.people)) return 'people_search';
     if (data.leads || (data.data && data.data.leads)) return 'apollo_leads';
     if (data.campaign || (data.data && data.data.campaign)) return 'apollo_campaign';
     if (data.enrichment || (data.data && data.data.enrichment)) return 'apollo_enrichment';
-    
+
     // Check for Avinode patterns
     if (data.aircraft || (data.data && data.data.aircraft)) return 'aircraft_search';
     if (data.quote || (data.data && data.data.quote)) return 'booking_quote';
     if (data.fleet || (data.data && data.data.fleet)) return 'fleet_status';
-    
+
     return 'generic';
 }
 

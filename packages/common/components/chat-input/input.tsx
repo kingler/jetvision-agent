@@ -1,15 +1,20 @@
 'use client';
 import { useAuth, useUser } from '@clerk/nextjs';
-import {
-    ImageAttachment,
-    ImageDropzoneRoot,
-} from '@repo/common/components';
+import { ImageAttachment, ImageDropzoneRoot } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
 import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState, useCallback, useMemo } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    forwardRef,
+    useImperativeHandle,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
@@ -33,11 +38,11 @@ const scrollToChatInput = (element: HTMLElement) => {
     // Calculate optimal scroll position (not at the very top)
     const elementRect = element.getBoundingClientRect();
     const absoluteElementTop = elementRect.top + window.pageYOffset;
-    const middle = absoluteElementTop - (window.innerHeight / 3); // Position at 1/3 from top
+    const middle = absoluteElementTop - window.innerHeight / 3; // Position at 1/3 from top
 
     window.scrollTo({
         top: Math.max(0, middle),
-        behavior: 'smooth'
+        behavior: 'smooth',
     });
 };
 
@@ -46,15 +51,14 @@ export interface ChatInputRef {
     scrollIntoView: () => void;
 }
 
-export const ChatInput = forwardRef<ChatInputRef, {
-    showGreeting?: boolean;
-    showBottomBar?: boolean;
-    isFollowUp?: boolean;
-}>(({
-    showGreeting = true,
-    showBottomBar = true,
-    isFollowUp = false,
-}, ref) => {
+export const ChatInput = forwardRef<
+    ChatInputRef,
+    {
+        showGreeting?: boolean;
+        showBottomBar?: boolean;
+        isFollowUp?: boolean;
+    }
+>(({ showGreeting = true, showBottomBar = true, isFollowUp = false }, ref) => {
     const { isSignedIn } = useAuth();
     const chatInputRef = useRef<HTMLDivElement>(null);
 
@@ -64,20 +68,25 @@ export const ChatInput = forwardRef<ChatInputRef, {
             if (chatInputRef.current) {
                 scrollToChatInput(chatInputRef.current);
             }
-        }
+        },
     }));
 
     const { threadId: currentThreadId } = useParams();
     const { editor, isInitialized } = useChatEditor({
-        placeholder: isFollowUp ? 'Ask a follow-up question about your flight' : 'Ask about executive travel, jet charter, or Apollo.io campaigns',
+        placeholder: isFollowUp
+            ? 'Ask a follow-up question about your flight'
+            : 'Ask about executive travel, jet charter, or Apollo.io campaigns',
         onInit: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
                 // Clear the draft on page reload to prevent stale content
                 const draftMessage = window.localStorage.getItem('draft-message');
                 // Only load draft if it's not the placeholder text
-                if (draftMessage && 
-                    draftMessage !== 'Ask about executive travel, jet charter, or Apollo.io campaigns' &&
-                    draftMessage !== 'Ask a follow-up question about your flight') {
+                if (
+                    draftMessage &&
+                    draftMessage !==
+                        'Ask about executive travel, jet charter, or Apollo.io campaigns' &&
+                    draftMessage !== 'Ask a follow-up question about your flight'
+                ) {
                     editor.commands.setContent(draftMessage);
                 } else {
                     // Clear any stale draft
@@ -89,9 +98,11 @@ export const ChatInput = forwardRef<ChatInputRef, {
             if (typeof window !== 'undefined' && !isFollowUp) {
                 const text = editor.getText();
                 // Only save to localStorage if it's actual user content
-                if (text && 
+                if (
+                    text &&
                     text !== 'Ask about executive travel, jet charter, or Apollo.io campaigns' &&
-                    text !== 'Ask a follow-up question about your flight') {
+                    text !== 'Ask a follow-up question about your flight'
+                ) {
                     window.localStorage.setItem('draft-message', text);
                 } else {
                     // Remove draft if it's empty or placeholder
@@ -114,13 +125,13 @@ export const ChatInput = forwardRef<ChatInputRef, {
     const imageAttachment = useChatStore(state => state.imageAttachment);
     const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
     const stopGeneration = useChatStore(state => state.stopGeneration);
-    
+
     const hasTextInput = !!editor?.getText();
-    
+
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
-    
+
     // Handle prompt selection from prompt cards
     // const handlePromptSelect = useCallback((prompt: PromptCard) => {
     //     if (editor && editor.commands) {
@@ -128,228 +139,260 @@ export const ChatInput = forwardRef<ChatInputRef, {
     //         editor.commands.focus('end');
     //     }
     // }, [editor]);
-    
+
     // Add loading state for send button
     const [isSending, setIsSending] = useState(false);
-    
+
     // Edit functionality state
     const [isEditingLast, setIsEditingLast] = useState(false);
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-    
+
     // Routing decision state
     const [lastRoutingDecision, setLastRoutingDecision] = useState<RoutingDecision | null>(null);
-    
+
     // Create debounced and deduplicated sendMessage function
-    const sendMessageCore = useCallback(async (customPrompt?: string, parameters?: Record<string, any>) => {
-        const performanceStart = performance.now();
-        console.log('[SendMessage] Starting - isSignedIn:', isSignedIn, 'chatMode:', chatMode, 'timestamp:', new Date().toISOString());
-        
-        // Prevent multiple concurrent sends
-        if (isSending) {
-            console.log('[SendMessage] Already sending, ignoring request');
-            return;
-        }
-        
-        // Get the current text from the editor
-        const currentText = editor?.getText()?.trim();
-        console.log('[SendMessage] Current editor text:', currentText, 'Custom prompt:', customPrompt);
-        
-        if (
-            !isSignedIn &&
-            !!ChatModeConfig[chatMode as keyof typeof ChatModeConfig]?.isAuthRequired
-        ) {
-            console.log('[SendMessage] Redirecting to sign-in');
-            push('/sign-in');
-            return;
-        }
-        
-        if (!currentText && !customPrompt) {
-            console.log('[SendMessage] No text to send - aborting');
-            return;
-        }
-        
-        console.log('[SendMessage] Setting isGenerating to true');
-        // Show immediate loading feedback with batched state updates
-        batchStateUpdates([
-            () => setIsGenerating(true),
-            () => setIsSending(true)
-        ]);
-        
-        // Create optimistic UI update for immediate feedback
-        const optimisticItemId = uuidv4();
+    const sendMessageCore = useCallback(
+        async (customPrompt?: string, parameters?: Record<string, any>) => {
+            const performanceStart = performance.now();
+            console.log(
+                '[SendMessage] Starting - isSignedIn:',
+                isSignedIn,
+                'chatMode:',
+                chatMode,
+                'timestamp:',
+                new Date().toISOString()
+            );
 
-        let threadId = currentThreadId?.toString();
-
-        if (!threadId) {
-            const optimisticId = uuidv4();
-            push(`/chat/${optimisticId}`);
-            createThread(optimisticId, {
-                title: editor?.getText(),
-            });
-            threadId = optimisticId;
-        }
-
-        // Get the message text - ensure it's never undefined
-        const messageText = customPrompt || currentText || '';
-        
-        // Get previous messages for context from the store state (avoid async call during render)
-        const storeThreadItems = getStoreState().threadItems || [];
-        const threadItems = currentThreadId ? storeThreadItems.filter(item => item.threadId === currentThreadId.toString()) : [];
-        const previousMessages = threadItems
-            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-            .slice(-5) // Last 5 messages
-            .map(item => ({
-                role: 'user',
-                content: item.query
-            }));
-
-        // Route the message using the routing system
-        const routingDecision = routeMessage(messageText, chatMode, {
-            threadId: threadId,
-            previousMessages
-        });
-        
-        setLastRoutingDecision(routingDecision);
-        
-        console.log('[SendMessage] Routing decision:', {
-            strategy: routingDecision.routingStrategy,
-            useOpenAI: routingDecision.useOpenAI,
-            useN8N: routingDecision.useN8N,
-            reasoning: routingDecision.reasoning
-        });
-        
-        // Create optimistic thread item for immediate visual feedback
-        const optimisticThreadItem = {
-            id: optimisticItemId,
-            threadId: threadId,
-            query: messageText,
-            status: 'PENDING' as const,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            mode: 'jetvision-agent' as any,
-            answer: undefined,
-            sources: [],
-        };
-        
-        createThreadItem(optimisticThreadItem);
-        
-        // Clear input immediately for better UX - batch these operations
-        batchStateUpdates([
-            () => {
-                window.localStorage.removeItem('draft-message');
-                if (editor && editor.commands) {
-                    editor.commands.clearContent();
-                }
-                clearImageAttachment();
+            // Prevent multiple concurrent sends
+            if (isSending) {
+                console.log('[SendMessage] Already sending, ignoring request');
+                return;
             }
-        ]);
-        
-        // Smooth scroll to bottom after a brief delay to allow DOM update
-        setTimeout(() => {
-            window.scrollTo({
-                top: document.documentElement.scrollHeight,
-                behavior: 'smooth'
-            });
-        }, 100);
-        
-        // Retrieve stored parameters if not provided directly
-        let promptParams = parameters;
-        if (!promptParams) {
-            const storedParams = sessionStorage.getItem('promptParameters');
-            if (storedParams) {
-                promptParams = JSON.parse(storedParams);
-                sessionStorage.removeItem('promptParameters'); // Clean up after use
+
+            // Get the current text from the editor
+            const currentText = editor?.getText()?.trim();
+            console.log(
+                '[SendMessage] Current editor text:',
+                currentText,
+                'Custom prompt:',
+                customPrompt
+            );
+
+            if (
+                !isSignedIn &&
+                !!ChatModeConfig[chatMode as keyof typeof ChatModeConfig]?.isAuthRequired
+            ) {
+                console.log('[SendMessage] Redirecting to sign-in');
+                push('/sign-in');
+                return;
             }
-        }
-        
-        // Create structured JSON payload based on routing decision
-        const jsonPayload = routingDecision.useN8N 
-            ? routingDecision.instructions.n8nPayload || {
-                prompt: messageText,
-                message: messageText,
+
+            if (!currentText && !customPrompt) {
+                console.log('[SendMessage] No text to send - aborting');
+                return;
+            }
+
+            console.log('[SendMessage] Setting isGenerating to true');
+            // Show immediate loading feedback with batched state updates
+            batchStateUpdates([() => setIsGenerating(true), () => setIsSending(true)]);
+
+            // Create optimistic UI update for immediate feedback
+            const optimisticItemId = uuidv4();
+
+            let threadId = currentThreadId?.toString();
+
+            if (!threadId) {
+                const optimisticId = uuidv4();
+                push(`/chat/${optimisticId}`);
+                createThread(optimisticId, {
+                    title: editor?.getText() || 'New Thread',
+                });
+                threadId = optimisticId;
+            }
+
+            // Get the message text - ensure it's never undefined
+            const messageText = customPrompt || currentText || '';
+
+            // Get previous messages for context from the store state (avoid async call during render)
+            const storeThreadItems = getStoreState().threadItems || [];
+            const threadItems = currentThreadId
+                ? storeThreadItems.filter(item => item.threadId === currentThreadId.toString())
+                : [];
+            const previousMessages = threadItems
+                .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+                .slice(-5) // Last 5 messages
+                .map(item => ({
+                    role: 'user',
+                    content: item.query,
+                }));
+
+            // Route the message using the routing system
+            const routingDecision = routeMessage(messageText, chatMode, {
                 threadId: threadId,
-                threadItemId: optimisticItemId,
-                context: {
-                    source: 'openai-frontend-agent',
-                    timestamp: new Date().toISOString(),
-                    useWebSearch: useWebSearch,
-                    hasImageAttachment: !!imageAttachment?.base64,
-                    parameters: promptParams || {},
-                    chatMode: chatMode,
-                },
-                routing: {
-                    strategy: routingDecision.routingStrategy,
-                    reasoning: routingDecision.reasoning,
-                    aviationClassification: routingDecision.aviationContext?.classification
-                },
-                intent: detectIntent(messageText),
-                expectedOutput: {
-                    format: 'structured',
-                    includeVisualization: messageText.toLowerCase().includes('chart') || messageText.toLowerCase().includes('graph'),
-                    includeRecommendations: true
-                }
-            }
-            : {
-                prompt: routingDecision.instructions.openaiPrompt || messageText,
-                message: messageText,
+                previousMessages,
+            });
+
+            setLastRoutingDecision(routingDecision);
+
+            console.log('[SendMessage] Routing decision:', {
+                strategy: routingDecision.routingStrategy,
+                useOpenAI: routingDecision.useOpenAI,
+                useN8N: routingDecision.useN8N,
+                reasoning: routingDecision.reasoning,
+            });
+
+            // Create optimistic thread item for immediate visual feedback
+            const optimisticThreadItem = {
+                id: optimisticItemId,
                 threadId: threadId,
-                threadItemId: optimisticItemId,
-                context: {
-                    source: 'openai-direct',
-                    timestamp: new Date().toISOString(),
-                    useWebSearch: useWebSearch,
-                    chatMode: chatMode,
-                    routing: routingDecision
-                }
+                query: messageText,
+                status: 'PENDING' as const,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                mode: 'jetvision-agent' as any,
+                answer: undefined,
+                sources: [],
             };
-        
-        // Log the structured payload for debugging
-        console.log('Sending structured JSON to n8n:', jsonPayload);
-        
-        // Create FormData with the structured JSON
-        const formData = new FormData();
-        formData.append('query', JSON.stringify(jsonPayload));
-        imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
 
-        try {
-            const submitStart = performance.now();
-            console.log('[SendMessage] Submitting to handleSubmit - elapsed:', (submitStart - performanceStart).toFixed(2) + 'ms');
-            
-            await handleSubmit({
-                formData,
-                newThreadId: threadId,
-                existingThreadItemId: optimisticItemId, // Pass the same ID to prevent duplicates
-                messages: previousMessages.map((msg, index) => ({
-                    id: `msg-${index}`,
-                    threadId: threadId,
-                    query: msg.content,
-                    status: 'COMPLETED' as const,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    mode: chatMode as any,
-                    answer: undefined,
-                    sources: []
-                })),
-                useWebSearch,
-                useN8n: routingDecision.useN8N, // Use routing decision
-            });
-            
-            const totalTime = performance.now() - performanceStart;
-            console.log('[SendMessage] Successfully completed - total time:', totalTime.toFixed(2) + 'ms');
-            
-        } catch (error) {
-            const totalTime = performance.now() - performanceStart;
-            console.error('[SendMessage] Error after', totalTime.toFixed(2) + 'ms:', error);
-            
-            // Reset loading states on error
+            createThreadItem(optimisticThreadItem);
+
+            // Clear input immediately for better UX - batch these operations
             batchStateUpdates([
-                () => setIsGenerating(false),
-                () => setIsSending(false)
+                () => {
+                    window.localStorage.removeItem('draft-message');
+                    if (editor && editor.commands) {
+                        editor.commands.clearContent();
+                    }
+                    clearImageAttachment();
+                },
             ]);
-        } finally {
-            setIsSending(false);
-        }
-    }, [isSignedIn, chatMode, editor, currentThreadId, getThreadItems, handleSubmit, useWebSearch, imageAttachment, createThread, createThreadItem, clearImageAttachment, setIsGenerating, isSending]);
+
+            // Smooth scroll to bottom after a brief delay to allow DOM update
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth',
+                });
+            }, 100);
+
+            // Retrieve stored parameters if not provided directly
+            let promptParams = parameters;
+            if (!promptParams) {
+                const storedParams = sessionStorage.getItem('promptParameters');
+                if (storedParams) {
+                    promptParams = JSON.parse(storedParams);
+                    sessionStorage.removeItem('promptParameters'); // Clean up after use
+                }
+            }
+
+            // Create structured JSON payload based on routing decision
+            const jsonPayload = routingDecision.useN8N
+                ? routingDecision.instructions.n8nPayload || {
+                      prompt: messageText,
+                      message: messageText,
+                      threadId: threadId,
+                      threadItemId: optimisticItemId,
+                      context: {
+                          source: 'openai-frontend-agent',
+                          timestamp: new Date().toISOString(),
+                          useWebSearch: useWebSearch,
+                          hasImageAttachment: !!imageAttachment?.base64,
+                          parameters: promptParams || {},
+                          chatMode: chatMode,
+                      },
+                      routing: {
+                          strategy: routingDecision.routingStrategy,
+                          reasoning: routingDecision.reasoning,
+                          aviationClassification: routingDecision.aviationContext?.classification,
+                      },
+                      intent: detectIntent(messageText),
+                      expectedOutput: {
+                          format: 'structured',
+                          includeVisualization:
+                              messageText.toLowerCase().includes('chart') ||
+                              messageText.toLowerCase().includes('graph'),
+                          includeRecommendations: true,
+                      },
+                  }
+                : {
+                      prompt: routingDecision.instructions.openaiPrompt || messageText,
+                      message: messageText,
+                      threadId: threadId,
+                      threadItemId: optimisticItemId,
+                      context: {
+                          source: 'openai-direct',
+                          timestamp: new Date().toISOString(),
+                          useWebSearch: useWebSearch,
+                          chatMode: chatMode,
+                          routing: routingDecision,
+                      },
+                  };
+
+            // Log the structured payload for debugging
+            console.log('Sending structured JSON to n8n:', jsonPayload);
+
+            // Create FormData with the structured JSON
+            const formData = new FormData();
+            formData.append('query', JSON.stringify(jsonPayload));
+            imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
+
+            try {
+                const submitStart = performance.now();
+                console.log(
+                    '[SendMessage] Submitting to handleSubmit - elapsed:',
+                    (submitStart - performanceStart).toFixed(2) + 'ms'
+                );
+
+                await handleSubmit({
+                    formData,
+                    newThreadId: threadId,
+                    existingThreadItemId: optimisticItemId, // Pass the same ID to prevent duplicates
+                    messages: previousMessages.map((msg, index) => ({
+                        id: `msg-${index}`,
+                        threadId: threadId,
+                        query: msg.content,
+                        status: 'COMPLETED' as const,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        mode: chatMode as any,
+                        answer: undefined,
+                        sources: [],
+                    })),
+                    useWebSearch,
+                    useN8n: routingDecision.useN8N, // Use routing decision
+                });
+
+                const totalTime = performance.now() - performanceStart;
+                console.log(
+                    '[SendMessage] Successfully completed - total time:',
+                    totalTime.toFixed(2) + 'ms'
+                );
+            } catch (error) {
+                const totalTime = performance.now() - performanceStart;
+                console.error('[SendMessage] Error after', totalTime.toFixed(2) + 'ms:', error);
+
+                // Reset loading states on error
+                batchStateUpdates([() => setIsGenerating(false), () => setIsSending(false)]);
+            } finally {
+                setIsSending(false);
+            }
+        },
+        [
+            isSignedIn,
+            chatMode,
+            editor,
+            currentThreadId,
+            getThreadItems,
+            handleSubmit,
+            useWebSearch,
+            imageAttachment,
+            createThread,
+            createThreadItem,
+            clearImageAttachment,
+            setIsGenerating,
+            isSending,
+        ]
+    );
 
     // Create debounced and deduplicated version of sendMessage
     const sendMessage = useMemo(() => {
@@ -360,7 +403,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
         };
         return deduplicate(
             asyncWrapper,
-            (customPrompt, parameters) => `${customPrompt || editor?.getText()?.trim() || ''}-${JSON.stringify(parameters || {})}`,
+            (customPrompt, parameters) =>
+                `${customPrompt || editor?.getText()?.trim() || ''}-${JSON.stringify(parameters || {})}`,
             1000
         );
     }, [sendMessageCore, editor]);
@@ -368,18 +412,20 @@ export const ChatInput = forwardRef<ChatInputRef, {
     // Edit functionality
     const handleEditLastMessage = useCallback(async () => {
         if (!currentThreadId) return;
-        
+
         // Get the last user message from the thread from store state (avoid async call)
         const storeThreadItems = getStoreState().threadItems || [];
-        const threadItems = storeThreadItems.filter(item => item.threadId === currentThreadId.toString());
+        const threadItems = storeThreadItems.filter(
+            item => item.threadId === currentThreadId.toString()
+        );
         const lastUserMessage = (threadItems || [])
             .filter(item => item.query) // Only user messages
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-            
+
         if (lastUserMessage && editor) {
             setIsEditingLast(true);
             setEditingMessageId(lastUserMessage.id);
-            
+
             // Populate editor with the last message
             editor.commands.setContent(lastUserMessage.query);
             editor.commands.focus('end');
@@ -387,16 +433,16 @@ export const ChatInput = forwardRef<ChatInputRef, {
     }, [currentThreadId, getThreadItems, editor]);
 
     const threadItems = useChatStore(useShallow(state => state?.threadItems || []));
-    
+
     const canEditLast = useCallback(() => {
         if (!currentThreadId || isGenerating) return false;
-        
+
         if (!Array.isArray(threadItems)) return false;
-        
+
         const lastUserMessage = (threadItems || [])
             .filter(item => item.query && item.threadId === currentThreadId.toString())
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-            
+
         return !!lastUserMessage;
     }, [currentThreadId, isGenerating, threadItems]);
 
@@ -424,7 +470,8 @@ export const ChatInput = forwardRef<ChatInputRef, {
                             transition={{ duration: 0.15 }}
                             className="flex w-full flex-shrink-0 overflow-hidden rounded-lg"
                         >
-                            {(editor?.isEditable && isInitialized) || (!editor && !isInitialized) ? (
+                            {(editor?.isEditable && isInitialized) ||
+                            (!editor && !isInitialized) ? (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -517,14 +564,14 @@ export const ChatInput = forwardRef<ChatInputRef, {
                 className={cn(
                     'w-full',
                     currentThreadId
-                        ? 'sticky bottom-0 z-10 bg-secondary border-t border-border'
-                        : 'flex flex-col h-full overflow-y-auto'
+                        ? 'bg-secondary border-border sticky bottom-0 z-10 border-t'
+                        : 'flex h-full flex-col overflow-y-auto'
                 )}
             >
                 {!currentThreadId ? (
-                    <div className="flex flex-col min-h-full">
+                    <div className="flex min-h-full flex-col">
                         {/* Centered Chat Section */}
-                        <div className="flex flex-col items-center justify-center flex-1 min-h-[60vh]">
+                        <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center">
                             <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-8">
                                 <Flex
                                     items="start"
@@ -547,13 +594,13 @@ export const ChatInput = forwardRef<ChatInputRef, {
                                 </Flex>
                             </div>
                         </div>
-                        
+
                         {/* Scrollable Prompts Section */}
                         {showGreeting && (
-                            <div className="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 py-8 pb-20">
-                                <div className="max-w-6xl mx-auto px-8">
+                            <div className="border-t border-gray-200 bg-gray-50 py-8 pb-20 dark:border-gray-800 dark:bg-gray-950">
+                                <div className="mx-auto max-w-6xl px-8">
                                     <div className="mb-6">
-                                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                                        <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
                                             Quick Start Prompts
                                         </h2>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -579,12 +626,11 @@ export const ChatInput = forwardRef<ChatInputRef, {
 
 ChatInput.displayName = 'ChatInput';
 
-
 type AnimatedTitlesProps = {
     titles?: string[];
 };
 
-const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
+const AnimatedTitles = ({}: AnimatedTitlesProps) => {
     const [greeting, setGreeting] = React.useState<string>('');
     const { user, isLoaded } = useUser();
 
@@ -638,7 +684,7 @@ const AnimatedTitles = ({ }: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent whitespace-pre-line"
+                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 whitespace-pre-line bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
                 >
                     {greeting}
                 </motion.h1>

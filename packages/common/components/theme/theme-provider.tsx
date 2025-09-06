@@ -41,7 +41,9 @@ export function ThemeProvider({
     useEffect(() => {
         const updateResolvedTheme = () => {
             if (theme === 'system') {
-                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light';
                 setResolvedTheme(systemTheme);
             } else {
                 setResolvedTheme(theme);
@@ -63,12 +65,12 @@ export function ThemeProvider({
         const root = window.document.documentElement;
         root.classList.remove('light', 'dark');
         root.classList.add(resolvedTheme);
-        
+
         // Update meta theme-color for mobile browsers
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
             metaThemeColor.setAttribute(
-                'content', 
+                'content',
                 resolvedTheme === 'dark' ? '#0f172a' : '#ffffff'
             );
         }
@@ -96,11 +98,7 @@ export function ThemeProvider({
         toggleTheme,
     };
 
-    return (
-        <ThemeContext.Provider value={value}>
-            {children}
-        </ThemeContext.Provider>
-    );
+    return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

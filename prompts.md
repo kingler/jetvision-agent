@@ -12,22 +12,22 @@
 - **Prompt:** Check aircraft availability for Miami to New York tomorrow
 - **Full Prompt:**  
   As a JetVision fleet operations specialist, search for available aircraft for tomorrow's flight from Miami International Airport (MIA) to New York area airports (JFK, LGA, or TEB).  
-  Query the Avinode marketplace to identify:  
-  1. Available aircraft types and tail numbers  
-  2. Seating capacity and cabin configurations  
-  3. Operator information and safety ratings  
-  4. Estimated flight times and fuel stops if required  
-  5. Hourly rates and total trip costs  
-  Filter results by: Light jets (4-7 passengers), Mid-size jets (6-9 passengers), and Heavy jets (9-16 passengers).  
-  Include empty leg opportunities if available.  
-  Format the response as a structured comparison table with recommendations based on passenger count and budget requirements.
+  Query the Avinode marketplace to identify:
+    1. Available aircraft types and tail numbers
+    2. Seating capacity and cabin configurations
+    3. Operator information and safety ratings
+    4. Estimated flight times and fuel stops if required
+    5. Hourly rates and total trip costs  
+       Filter results by: Light jets (4-7 passengers), Mid-size jets (6-9 passengers), and Heavy jets (9-16 passengers).  
+       Include empty leg opportunities if available.  
+       Format the response as a structured comparison table with recommendations based on passenger count and budget requirements.
 - **Description:** Check real-time fleet availability for specific routes
-- **Parameters:**  
-  - Departure: `MIA`  
-  - Arrival: `['JFK', 'LGA', 'TEB']`  
-  - Date: `tomorrow`  
-  - Passenger Count: `null`  
-  - Aircraft Categories: `['light', 'midsize', 'heavy']`
+- **Parameters:**
+    - Departure: `MIA`
+    - Arrival: `['JFK', 'LGA', 'TEB']`
+    - Date: `tomorrow`
+    - Passenger Count: `null`
+    - Aircraft Categories: `['light', 'midsize', 'heavy']`
 
 ---
 
@@ -39,22 +39,22 @@
 - **Prompt:** Find empty leg opportunities for this weekend
 - **Full Prompt:**  
   As a JetVision charter optimization specialist, search the Avinode marketplace for empty leg (repositioning) flights available this weekend (Friday through Sunday).  
-  Identify opportunities with:  
-  1. Origin and destination airports with city pairs  
-  2. Aircraft type, operator, and tail number  
-  3. Available dates and flexible time windows  
-  4. Standard retail price vs. empty leg discount percentage  
-  5. Passenger capacity and baggage allowance  
-  Focus on popular routes: Northeast Corridor (BOS-DCA), Florida routes (MIA-TEB), West Coast (LAX-SFO), and Texas Triangle (DAL-HOU-AUS).  
-  Calculate potential savings for clients and highlight opportunities with 40% or greater discounts.  
-  Include last-minute availability and one-way options.  
-  Provide recommendations ranked by discount percentage and route popularity.
+  Identify opportunities with:
+    1. Origin and destination airports with city pairs
+    2. Aircraft type, operator, and tail number
+    3. Available dates and flexible time windows
+    4. Standard retail price vs. empty leg discount percentage
+    5. Passenger capacity and baggage allowance  
+       Focus on popular routes: Northeast Corridor (BOS-DCA), Florida routes (MIA-TEB), West Coast (LAX-SFO), and Texas Triangle (DAL-HOU-AUS).  
+       Calculate potential savings for clients and highlight opportunities with 40% or greater discounts.  
+       Include last-minute availability and one-way options.  
+       Provide recommendations ranked by discount percentage and route popularity.
 - **Description:** Find discounted repositioning flights and save costs
-- **Parameters:**  
-  - Date Range: `this_weekend`  
-  - Min Discount: `40`  
-  - Routes: `['popular', 'northeast', 'florida', 'westcoast', 'texas']`  
-  - Sort By: `discount_percentage`
+- **Parameters:**
+    - Date Range: `this_weekend`
+    - Min Discount: `40`
+    - Routes: `['popular', 'northeast', 'florida', 'westcoast', 'texas']`
+    - Sort By: `discount_percentage`
 
 ---
 
@@ -66,20 +66,20 @@
 - **Prompt:** Analyze fleet utilization metrics for this month
 - **Full Prompt:**  
   As a JetVision fleet analytics specialist, generate a comprehensive utilization report for the current month.  
-  Analyze:  
-  1. Overall fleet utilization percentage (flight hours / available hours)  
-  2. Individual aircraft performance metrics by tail number  
-  3. Revenue per flight hour by aircraft category  
-  4. Maintenance downtime and AOG (Aircraft on Ground) incidents  
-  5. Peak utilization days and underutilized periods  
-  Compare against: Previous month metrics, Same month last year, and Industry benchmarks (target: 85% for charter operations).  
-  Identify optimization opportunities including: Aircraft requiring remarketing, Routes with consistent demand, Pricing adjustments for underutilized aircraft, and Maintenance scheduling improvements.  
-  Present findings with visualizations showing daily utilization heat maps and revenue trends.
+  Analyze:
+    1. Overall fleet utilization percentage (flight hours / available hours)
+    2. Individual aircraft performance metrics by tail number
+    3. Revenue per flight hour by aircraft category
+    4. Maintenance downtime and AOG (Aircraft on Ground) incidents
+    5. Peak utilization days and underutilized periods  
+       Compare against: Previous month metrics, Same month last year, and Industry benchmarks (target: 85% for charter operations).  
+       Identify optimization opportunities including: Aircraft requiring remarketing, Routes with consistent demand, Pricing adjustments for underutilized aircraft, and Maintenance scheduling improvements.  
+       Present findings with visualizations showing daily utilization heat maps and revenue trends.
 - **Description:** Monitor aircraft usage metrics and optimization
-- **Parameters:**  
-  - Period: `current_month`  
-  - Metrics: `['utilization_rate', 'revenue_per_hour', 'downtime', 'aog']`  
-  - Benchmarks: `{ target: 85, comparison: ['previous_month', 'year_over_year'] }`
+- **Parameters:**
+    - Period: `current_month`
+    - Metrics: `['utilization_rate', 'revenue_per_hour', 'downtime', 'aog']`
+    - Benchmarks: `{ target: 85, comparison: ['previous_month', 'year_over_year'] }`
 
 ---
 
@@ -91,23 +91,23 @@
 - **Prompt:** Search heavy jets for 12 passengers to London Tuesday
 - **Full Prompt:**  
   As a JetVision international charter specialist, search for heavy jet aircraft capable of transatlantic flight for 12 passengers departing next Tuesday to London (preferably Farnborough or Luton for business aviation).  
-  Requirements:  
-  1. Aircraft with 6,000+ nm range for nonstop transatlantic capability  
-  2. Cabin configuration for 12-14 passengers with sleeping arrangements  
-  3. Full galley and lavatory facilities for 8+ hour flight  
-  4. WiFi and productivity amenities for business travelers  
-  5. Customs and immigration handling at both ends  
-  Preferred aircraft types: Gulfstream G650/G550, Bombardier Global 6000/7500, Dassault Falcon 7X/8X.  
-  Include: Operator safety ratings and international experience, Catering options and special meal accommodations, Ground transportation and FBO services, Total trip cost including fuel surcharges and international fees.  
-  Provide 3-5 options ranked by aircraft age and passenger comfort.
+  Requirements:
+    1. Aircraft with 6,000+ nm range for nonstop transatlantic capability
+    2. Cabin configuration for 12-14 passengers with sleeping arrangements
+    3. Full galley and lavatory facilities for 8+ hour flight
+    4. WiFi and productivity amenities for business travelers
+    5. Customs and immigration handling at both ends  
+       Preferred aircraft types: Gulfstream G650/G550, Bombardier Global 6000/7500, Dassault Falcon 7X/8X.  
+       Include: Operator safety ratings and international experience, Catering options and special meal accommodations, Ground transportation and FBO services, Total trip cost including fuel surcharges and international fees.  
+       Provide 3-5 options ranked by aircraft age and passenger comfort.
 - **Description:** Search for specific aircraft types by passenger count
-- **Parameters:**  
-  - Passenger Count: `12`  
-  - Destination: `London`  
-  - Preferred Airports: `['Farnborough', 'Luton']`  
-  - Date: `next_tuesday`  
-  - Aircraft Types: `['Gulfstream G650', 'Gulfstream G550', 'Global 6000', 'Global 7500', 'Falcon 7X', 'Falcon 8X']`  
-  - Requirements: `['transatlantic_range', 'wifi', 'sleeping_config']`
+- **Parameters:**
+    - Passenger Count: `12`
+    - Destination: `London`
+    - Preferred Airports: `['Farnborough', 'Luton']`
+    - Date: `next_tuesday`
+    - Aircraft Types: `['Gulfstream G650', 'Gulfstream G550', 'Global 6000', 'Global 7500', 'Falcon 7X', 'Falcon 8X']`
+    - Requirements: `['transatlantic_range', 'wifi', 'sleeping_config']`
 
 ---
 
@@ -121,22 +121,22 @@
 - **Prompt:** Analyze prospect to booking conversions this week
 - **Full Prompt:**  
   As a JetVision sales analytics specialist, analyze this week's conversion funnel from Apollo.io prospects to confirmed charter bookings.  
-  Track:  
-  1. Total prospects engaged via Apollo campaigns  
-  2. Email open rates and click-through rates by campaign  
-  3. Meeting/call conversion rate from email engagement  
-  4. Quote requests generated from meetings  
-  5. Confirmed bookings with revenue attribution  
-  Segment analysis by: Industry vertical (Finance, Tech, Entertainment, Healthcare), Company size (SMB, Mid-market, Enterprise), Decision maker role (C-suite, EA, Travel Manager), Campaign type (Cold outreach, Nurture, Win-back).  
-  Calculate: Cost per acquisition from Apollo spend, Average deal size by segment, Time to conversion (first touch to booking), and ROI by campaign.  
-  Compare to previous week and monthly averages.  
-  Identify top-performing messages and sequences for scaling.
+  Track:
+    1. Total prospects engaged via Apollo campaigns
+    2. Email open rates and click-through rates by campaign
+    3. Meeting/call conversion rate from email engagement
+    4. Quote requests generated from meetings
+    5. Confirmed bookings with revenue attribution  
+       Segment analysis by: Industry vertical (Finance, Tech, Entertainment, Healthcare), Company size (SMB, Mid-market, Enterprise), Decision maker role (C-suite, EA, Travel Manager), Campaign type (Cold outreach, Nurture, Win-back).  
+       Calculate: Cost per acquisition from Apollo spend, Average deal size by segment, Time to conversion (first touch to booking), and ROI by campaign.  
+       Compare to previous week and monthly averages.  
+       Identify top-performing messages and sequences for scaling.
 - **Description:** Track conversion metrics from campaigns to bookings
-- **Parameters:**  
-  - Timeframe: `current_week`  
-  - Metrics: `['open_rate', 'ctr', 'meeting_rate', 'quote_rate', 'booking_rate']`  
-  - Segments: `['industry', 'company_size', 'role', 'campaign_type']`  
-  - Calculations: `['cpa', 'deal_size', 'conversion_time', 'roi']`
+- **Parameters:**
+    - Timeframe: `current_week`
+    - Metrics: `['open_rate', 'ctr', 'meeting_rate', 'quote_rate', 'booking_rate']`
+    - Segments: `['industry', 'company_size', 'role', 'campaign_type']`
+    - Calculations: `['cpa', 'deal_size', 'conversion_time', 'roi']`
 
 ---
 
@@ -148,22 +148,22 @@
 - **Prompt:** Identify top engaged executive assistants from campaigns
 - **Full Prompt:**  
   As a JetVision relationship intelligence specialist, identify and analyze the most engaged executive assistants from our Apollo.io email campaigns.  
-  Report on:  
-  1. Top 50 EAs by email engagement score (opens, clicks, replies)  
-  2. Their executives' travel patterns and company profiles  
-  3. Content topics that drove highest engagement (safety, convenience, time-saving, cost)  
-  4. Optimal send times and follow-up cadence for EAs  
-  5. Reply sentiment and specific questions/objections raised  
-  Enrich data with: Company revenue and employee count, Industry and headquarters location, Previous charter usage or competitor services, Executive's role and travel frequency estimates.  
-  Create prioritized outreach list with: Personalized talking points per EA, Recommended next actions (call, demo, executive introduction), Custom content suggestions based on engagement patterns.  
-  Flag warm leads showing buying signals for immediate sales follow-up.
+  Report on:
+    1. Top 50 EAs by email engagement score (opens, clicks, replies)
+    2. Their executives' travel patterns and company profiles
+    3. Content topics that drove highest engagement (safety, convenience, time-saving, cost)
+    4. Optimal send times and follow-up cadence for EAs
+    5. Reply sentiment and specific questions/objections raised  
+       Enrich data with: Company revenue and employee count, Industry and headquarters location, Previous charter usage or competitor services, Executive's role and travel frequency estimates.  
+       Create prioritized outreach list with: Personalized talking points per EA, Recommended next actions (call, demo, executive introduction), Custom content suggestions based on engagement patterns.  
+       Flag warm leads showing buying signals for immediate sales follow-up.
 - **Description:** Analyze engagement patterns for executive assistants
-- **Parameters:**  
-  - Role: `executive_assistant`  
-  - Limit: `50`  
-  - Engagement Metrics: `['opens', 'clicks', 'replies', 'forwards']`  
-  - Enrichment: `['company_data', 'executive_profile', 'travel_patterns']`  
-  - Analysis: `['content_performance', 'timing_optimization', 'sentiment']`
+- **Parameters:**
+    - Role: `executive_assistant`
+    - Limit: `50`
+    - Engagement Metrics: `['opens', 'clicks', 'replies', 'forwards']`
+    - Enrichment: `['company_data', 'executive_profile', 'travel_patterns']`
+    - Analysis: `['content_performance', 'timing_optimization', 'sentiment']`
 
 ---
 
@@ -175,22 +175,22 @@
 - **Prompt:** Analyze finance sector campaign performance metrics
 - **Full Prompt:**  
   As a JetVision vertical marketing specialist, provide comprehensive performance analysis of all finance industry campaigns in Apollo.io.  
-  Analyze:  
-  1. Response rates by finance subsector (Investment Banking, Private Equity, Hedge Funds, Venture Capital, Family Offices)  
-  2. Message performance by value proposition (time savings, privacy, productivity, deal-making)  
-  3. Title-based response variations (MD, Partner, CFO, COO, EA)  
-  4. Geographic performance (NYC, SF, Chicago, London)  
-  5. Seasonal patterns and earnings season impacts  
-  Benchmark against: Overall JetVision campaign average, Industry-specific benchmarks from Apollo, and Competitor messaging strategies.  
-  Identify: Top 3 performing subject lines and email templates, Most effective CTAs for finance professionals, Optimal campaign timing around market hours, and Common objections requiring sales enablement.  
-  Recommend campaign optimizations and A/B test priorities for next quarter.
+  Analyze:
+    1. Response rates by finance subsector (Investment Banking, Private Equity, Hedge Funds, Venture Capital, Family Offices)
+    2. Message performance by value proposition (time savings, privacy, productivity, deal-making)
+    3. Title-based response variations (MD, Partner, CFO, COO, EA)
+    4. Geographic performance (NYC, SF, Chicago, London)
+    5. Seasonal patterns and earnings season impacts  
+       Benchmark against: Overall JetVision campaign average, Industry-specific benchmarks from Apollo, and Competitor messaging strategies.  
+       Identify: Top 3 performing subject lines and email templates, Most effective CTAs for finance professionals, Optimal campaign timing around market hours, and Common objections requiring sales enablement.  
+       Recommend campaign optimizations and A/B test priorities for next quarter.
 - **Description:** Industry-specific campaign performance metrics
-- **Parameters:**  
-  - Industry: `finance`  
-  - Subsectors: `['investment_banking', 'private_equity', 'hedge_funds', 'venture_capital', 'family_offices']`  
-  - Metrics: `['response_rate', 'open_rate', 'meeting_rate', 'conversion_rate']`  
-  - Geographic: `['NYC', 'SF', 'Chicago', 'London']`  
-  - Analysis: `['message_performance', 'timing', 'objections']`
+- **Parameters:**
+    - Industry: `finance`
+    - Subsectors: `['investment_banking', 'private_equity', 'hedge_funds', 'venture_capital', 'family_offices']`
+    - Metrics: `['response_rate', 'open_rate', 'meeting_rate', 'conversion_rate']`
+    - Geographic: `['NYC', 'SF', 'Chicago', 'London']`
+    - Analysis: `['message_performance', 'timing', 'objections']`
 
 ---
 
@@ -202,28 +202,28 @@
 - **Prompt:** Design VIP campaign for top 100 qualified prospects
 - **Full Prompt:**  
   As a JetVision strategic accounts specialist, design and configure a high-touch VIP campaign in Apollo.io for our top 100 qualified prospects.  
-  Campaign strategy:  
-  1. Identify prospects using scoring criteria (company revenue >$500M, C-suite or EA role, high email engagement, competitor usage)  
-  2. Create personalized multi-channel sequence (email, LinkedIn, direct mail)  
-  3. Develop exclusive VIP offers (complimentary first flight, white-glove onboarding, dedicated account management)  
-  4. Design premium content assets (personalized travel analysis, ROI calculator, executive travel guide)  
-  5. Configure advanced tracking and alerts for sales team  
-  Sequence structure:  
-  - Day 1: Personalized introduction with company research  
-  - Day 3: Value proposition with peer success stories  
-  - Day 7: Exclusive VIP program invitation  
-  - Day 10: Executive assistant resources and support materials  
-  - Day 14: Calendly link for executive briefing  
-  Include dynamic personalization tokens and behavioral triggers.  
-  Set up real-time Slack notifications for opens and clicks.
+  Campaign strategy:
+    1. Identify prospects using scoring criteria (company revenue >$500M, C-suite or EA role, high email engagement, competitor usage)
+    2. Create personalized multi-channel sequence (email, LinkedIn, direct mail)
+    3. Develop exclusive VIP offers (complimentary first flight, white-glove onboarding, dedicated account management)
+    4. Design premium content assets (personalized travel analysis, ROI calculator, executive travel guide)
+    5. Configure advanced tracking and alerts for sales team  
+       Sequence structure:
+    - Day 1: Personalized introduction with company research
+    - Day 3: Value proposition with peer success stories
+    - Day 7: Exclusive VIP program invitation
+    - Day 10: Executive assistant resources and support materials
+    - Day 14: Calendly link for executive briefing  
+      Include dynamic personalization tokens and behavioral triggers.  
+      Set up real-time Slack notifications for opens and clicks.
 - **Description:** Launch targeted campaigns for high-value leads
-- **Parameters:**  
-  - Campaign Type: `vip`  
-  - Prospect Count: `100`  
-  - Scoring: `{ minRevenue: 500000000, roles: ['c_suite', 'ea'], engagement: 'high' }`  
-  - Channels: `['email', 'linkedin', 'direct_mail']`  
-  - Offers: `['complimentary_flight', 'white_glove_onboarding', 'dedicated_account']`  
-  - Sequence: `{ days: 14, touchpoints: 5, personalization: 'advanced' }`
+- **Parameters:**
+    - Campaign Type: `vip`
+    - Prospect Count: `100`
+    - Scoring: `{ minRevenue: 500000000, roles: ['c_suite', 'ea'], engagement: 'high' }`
+    - Channels: `['email', 'linkedin', 'direct_mail']`
+    - Offers: `['complimentary_flight', 'white_glove_onboarding', 'dedicated_account']`
+    - Sequence: `{ days: 14, touchpoints: 5, personalization: 'advanced' }`
 
 ---
 
@@ -237,22 +237,22 @@
 - **Prompt:** Plan tech executive roadshow across 5 cities
 - **Full Prompt:**  
   As a JetVision travel logistics coordinator, plan a comprehensive multi-city roadshow for a technology executive client.  
-  Itinerary requirements:  
-  1. 5 cities over 7 days (suggested: SF, Seattle, Austin, NYC, Boston)  
-  2. Morning arrival for afternoon meetings, evening departure when possible  
-  3. Preferred FBOs with conference facilities and quick customs  
-  4. Ground transportation with secure, tech-equipped vehicles  
-  5. Contingency plans for weather or mechanical delays  
-  For each city provide: Optimal aircraft positioning and crew scheduling, FBO selection with amenities and services, Hotel recommendations near meeting venues, Local handlers and concierge services, Time zone optimization and jet lag mitigation.  
-  Include: Catering preferences and dietary restrictions, In-flight WiFi and presentation capabilities, Baggage and equipment logistics, Cost breakdown with bundled savings.  
-  Generate master itinerary with mobile app integration and real-time updates.
+  Itinerary requirements:
+    1. 5 cities over 7 days (suggested: SF, Seattle, Austin, NYC, Boston)
+    2. Morning arrival for afternoon meetings, evening departure when possible
+    3. Preferred FBOs with conference facilities and quick customs
+    4. Ground transportation with secure, tech-equipped vehicles
+    5. Contingency plans for weather or mechanical delays  
+       For each city provide: Optimal aircraft positioning and crew scheduling, FBO selection with amenities and services, Hotel recommendations near meeting venues, Local handlers and concierge services, Time zone optimization and jet lag mitigation.  
+       Include: Catering preferences and dietary restrictions, In-flight WiFi and presentation capabilities, Baggage and equipment logistics, Cost breakdown with bundled savings.  
+       Generate master itinerary with mobile app integration and real-time updates.
 - **Description:** Complex itinerary management across multiple cities
-- **Parameters:**  
-  - Cities: `['San Francisco', 'Seattle', 'Austin', 'New York', 'Boston']`  
-  - Duration: `7_days`  
-  - Requirements: `['morning_arrival', 'fbo_conference', 'ground_transport']`  
-  - Services: `['catering', 'wifi', 'concierge', 'hotels']`  
-  - Optimization: `['crew_scheduling', 'positioning', 'timezone']`
+- **Parameters:**
+    - Cities: `['San Francisco', 'Seattle', 'Austin', 'New York', 'Boston']`
+    - Duration: `7_days`
+    - Requirements: `['morning_arrival', 'fbo_conference', 'ground_transport']`
+    - Services: `['catering', 'wifi', 'concierge', 'hotels']`
+    - Optimization: `['crew_scheduling', 'positioning', 'timezone']`
 
 ---
 
@@ -264,26 +264,26 @@
 - **Prompt:** Optimize routes to avoid weather delays this week
 - **Full Prompt:**  
   As a JetVision flight operations specialist, analyze weather patterns and recommend optimal routing strategies for this week's scheduled flights.  
-  Weather analysis:  
-  1. Current and forecasted conditions at major hubs  
-  2. Frontal systems, thunderstorms, and winter weather threats  
-  3. Turbulence forecasts and ride quality predictions  
-  4. Alternate airport selection for weather diversions  
-  5. Deicing requirements and ground stop probabilities  
-  Route optimization: Primary and alternate routing options, Fuel planning with weather contingencies, Departure time adjustments to avoid weather, Technical stops for weather avoidance, and Cabin altitude optimization for passenger comfort.  
-  Provide specific recommendations for:  
-  - East Coast operations (nor'easter impact)  
-  - Midwest connections (thunderstorm activity)  
-  - Mountain airports (wind and visibility)  
-  - West Coast (marine layer and fog)  
-  Include confidence levels and update triggers for route changes.
+  Weather analysis:
+    1. Current and forecasted conditions at major hubs
+    2. Frontal systems, thunderstorms, and winter weather threats
+    3. Turbulence forecasts and ride quality predictions
+    4. Alternate airport selection for weather diversions
+    5. Deicing requirements and ground stop probabilities  
+       Route optimization: Primary and alternate routing options, Fuel planning with weather contingencies, Departure time adjustments to avoid weather, Technical stops for weather avoidance, and Cabin altitude optimization for passenger comfort.  
+       Provide specific recommendations for:
+    - East Coast operations (nor'easter impact)
+    - Midwest connections (thunderstorm activity)
+    - Mountain airports (wind and visibility)
+    - West Coast (marine layer and fog)  
+      Include confidence levels and update triggers for route changes.
 - **Description:** Weather-optimized routing for minimal disruption
-- **Parameters:**  
-  - Timeframe: `this_week`  
-  - Analysis: `['current_conditions', 'forecasts', 'turbulence', 'alternates']`  
-  - Regions: `['east_coast', 'midwest', 'mountain', 'west_coast']`  
-  - Factors: `['fronts', 'thunderstorms', 'winter_weather', 'visibility']`  
-  - Outputs: `['primary_routes', 'alternates', 'timing', 'confidence']`
+- **Parameters:**
+    - Timeframe: `this_week`
+    - Analysis: `['current_conditions', 'forecasts', 'turbulence', 'alternates']`
+    - Regions: `['east_coast', 'midwest', 'mountain', 'west_coast']`
+    - Factors: `['fronts', 'thunderstorms', 'winter_weather', 'visibility']`
+    - Outputs: `['primary_routes', 'alternates', 'timing', 'confidence']`
 
 ---
 
@@ -295,27 +295,27 @@
 - **Prompt:** Analyze entertainment industry seasonal travel trends
 - **Full Prompt:**  
   As a JetVision market intelligence analyst, provide comprehensive analysis of seasonal travel patterns for the entertainment industry.  
-  Analyze historical data for:  
-  1. Peak travel periods (award seasons, festivals, production schedules)  
-  2. Popular routes (LA-NYC, LA-Cannes, NYC-London, LA-Toronto)  
-  3. Aircraft preferences by entertainment segment (studio executives, talent, production crews)  
-  4. Booking lead times and last-minute surge patterns  
-  5. Group travel vs. individual executive movements  
-  Seasonal insights:  
-  - Award season surge (January-March): Golden Globes, Sundance, Oscars  
-  - Festival circuit (May-September): Cannes, Venice, TIFF, Toronto  
-  - Production windows: Summer blockbusters, fall prestige, pilot season  
-  - Holiday lulls and opportunity periods  
-  Predictive analytics: Upcoming demand spikes based on production schedules, Pricing optimization recommendations, Fleet positioning strategies, and Partnership opportunities with studios and agencies.  
-  Create actionable recommendations for sales and operations teams.
+  Analyze historical data for:
+    1. Peak travel periods (award seasons, festivals, production schedules)
+    2. Popular routes (LA-NYC, LA-Cannes, NYC-London, LA-Toronto)
+    3. Aircraft preferences by entertainment segment (studio executives, talent, production crews)
+    4. Booking lead times and last-minute surge patterns
+    5. Group travel vs. individual executive movements  
+       Seasonal insights:
+    - Award season surge (January-March): Golden Globes, Sundance, Oscars
+    - Festival circuit (May-September): Cannes, Venice, TIFF, Toronto
+    - Production windows: Summer blockbusters, fall prestige, pilot season
+    - Holiday lulls and opportunity periods  
+      Predictive analytics: Upcoming demand spikes based on production schedules, Pricing optimization recommendations, Fleet positioning strategies, and Partnership opportunities with studios and agencies.  
+      Create actionable recommendations for sales and operations teams.
 - **Description:** Analyze travel trends by industry and season
-- **Parameters:**  
-  - Industry: `entertainment`  
-  - Timeframe: `seasonal`  
-  - Events: `['awards', 'festivals', 'production']`  
-  - Routes: `['LA-NYC', 'LA-Cannes', 'NYC-London', 'LA-Toronto']`  
-  - Analysis: `['peak_periods', 'aircraft_preferences', 'lead_times', 'group_travel']`  
-  - Predictions: `['demand_spikes', 'pricing', 'positioning']`
+- **Parameters:**
+    - Industry: `entertainment`
+    - Timeframe: `seasonal`
+    - Events: `['awards', 'festivals', 'production']`
+    - Routes: `['LA-NYC', 'LA-Cannes', 'NYC-London', 'LA-Toronto']`
+    - Analysis: `['peak_periods', 'aircraft_preferences', 'lead_times', 'group_travel']`
+    - Predictions: `['demand_spikes', 'pricing', 'positioning']`
 
 ---
 
@@ -327,27 +327,27 @@
 - **Prompt:** Arrange complete ground transportation for tomorrow's flights
 - **Full Prompt:**  
   As a JetVision concierge services coordinator, arrange comprehensive ground transportation for tomorrow's charter flights.  
-  Service requirements:  
-  1. Luxury vehicle selection matching passenger count and preferences  
-  2. Professional chauffeurs with security clearance and confidentiality agreements  
-  3. Real-time flight tracking for adjusted pickup times  
-  4. Multiple pickup/drop-off points if required  
-  5. Luggage handling and special cargo accommodations  
-  For each flight leg provide:  
-  - Origin transport: Hotel/residence to FBO timing and route  
-  - FBO meet-and-greet with escort to aircraft  
-  - Destination transport: Planeside pickup to final destination  
-  - Backup vehicles for group splits or changes  
-  - Communication protocols with crew and dispatch  
-  Special considerations: Executive security requirements, Media discretion for high-profile clients, Pet transportation arrangements, Medical equipment or mobility assistance, and International customs and immigration escort.  
-  Confirm all arrangements with 24/7 contact numbers.
+  Service requirements:
+    1. Luxury vehicle selection matching passenger count and preferences
+    2. Professional chauffeurs with security clearance and confidentiality agreements
+    3. Real-time flight tracking for adjusted pickup times
+    4. Multiple pickup/drop-off points if required
+    5. Luggage handling and special cargo accommodations  
+       For each flight leg provide:
+    - Origin transport: Hotel/residence to FBO timing and route
+    - FBO meet-and-greet with escort to aircraft
+    - Destination transport: Planeside pickup to final destination
+    - Backup vehicles for group splits or changes
+    - Communication protocols with crew and dispatch  
+      Special considerations: Executive security requirements, Media discretion for high-profile clients, Pet transportation arrangements, Medical equipment or mobility assistance, and International customs and immigration escort.  
+      Confirm all arrangements with 24/7 contact numbers.
 - **Description:** End-to-end travel coordination including ground
-- **Parameters:**  
-  - Date: `tomorrow`  
-  - Services: `['luxury_vehicles', 'chauffeurs', 'meet_greet', 'luggage']`  
-  - Coordination: `['flight_tracking', 'pickup_timing', 'backup_vehicles']`  
-  - Special: `['security', 'pets', 'medical', 'vip_handling']`  
-  - Confirmation: `['24_7_contact', 'communication_protocol']`
+- **Parameters:**
+    - Date: `tomorrow`
+    - Services: `['luxury_vehicles', 'chauffeurs', 'meet_greet', 'luggage']`
+    - Coordination: `['flight_tracking', 'pickup_timing', 'backup_vehicles']`
+    - Special: `['security', 'pets', 'medical', 'vip_handling']`
+    - Confirmation: `['24_7_contact', 'communication_protocol']`
 
 ---
 
@@ -361,24 +361,24 @@
 - **Prompt:** Find executive assistants at NYC private equity firms
 - **Full Prompt:**  
   As a JetVision lead generation specialist, use Apollo.io to identify and qualify 20 executive assistants at New York City private equity firms.  
-  Search criteria:  
-  1. Private equity firms with $1B+ AUM in Manhattan  
-  2. Executive assistants supporting Partners, MDs, or C-suite  
-  3. Tenure of 6+ months for relationship stability  
-  4. Direct email and LinkedIn profiles available  
-  5. No recent outreach in past 90 days  
-  Enrichment requirements: Executive they support and their travel frequency, Firm's portfolio companies and geographic spread, Current travel management solution if identifiable, Previous engagement with JetVision content, and Social media activity indicating travel coordination.  
-  Scoring factors: Firm prestige and deal activity level, International office locations requiring travel, Executive's board positions requiring travel, EA's seniority and decision-making authority.  
-  Export list with personalized email templates based on firm focus and recent deals.
+  Search criteria:
+    1. Private equity firms with $1B+ AUM in Manhattan
+    2. Executive assistants supporting Partners, MDs, or C-suite
+    3. Tenure of 6+ months for relationship stability
+    4. Direct email and LinkedIn profiles available
+    5. No recent outreach in past 90 days  
+       Enrichment requirements: Executive they support and their travel frequency, Firm's portfolio companies and geographic spread, Current travel management solution if identifiable, Previous engagement with JetVision content, and Social media activity indicating travel coordination.  
+       Scoring factors: Firm prestige and deal activity level, International office locations requiring travel, Executive's board positions requiring travel, EA's seniority and decision-making authority.  
+       Export list with personalized email templates based on firm focus and recent deals.
 - **Description:** Target high-value segments in private equity
-- **Parameters:**  
-  - Location: `New York City`  
-  - Industry: `private_equity`  
-  - Minimum AUM: `1000000000`  
-  - Role: `executive_assistant`  
-  - Supporting: `['Partner', 'MD', 'C-suite']`  
-  - Count: `20`  
-  - Filters: `['tenure_6m+', 'no_recent_outreach', 'email_available']`
+- **Parameters:**
+    - Location: `New York City`
+    - Industry: `private_equity`
+    - Minimum AUM: `1000000000`
+    - Role: `executive_assistant`
+    - Supporting: `['Partner', 'MD', 'C-suite']`
+    - Count: `20`
+    - Filters: `['tenure_6m+', 'no_recent_outreach', 'email_available']`
 
 ---
 
@@ -390,76 +390,77 @@
 - **Prompt:** Track job changes in target accounts last 30 days
 - **Full Prompt:**  
   As a JetVision trigger-based marketing specialist, identify all job changes in our target market over the past 30 days using Apollo.io's intent data.  
-  Monitor for:  
-  1. New executives joining target companies (VP+ level)  
-  2. Executive assistants changing roles or companies  
-  3. Travel managers or procurement leads in new positions  
-  4. Promotions to decision-making roles  
-  5. Executives moving from commercial to private aviation companies  
-    {
-        id: 'jet-1',
-        category: 'charter',
-        title: 'Aircraft Availability',
-        prompt: 'Check aircraft availability for Miami to New York tomorrow',
-        fullPrompt: 'As a JetVision fleet operations specialist, search for available aircraft for tomorrow\'s flight from Miami International Airport (MIA) to New York area airports (JFK, LGA, or TEB). Query the Avinode marketplace to identify: 1) Available aircraft types and tail numbers, 2) Seating capacity and cabin configurations, 3) Operator information and safety ratings, 4) Estimated flight times and fuel stops if required, 5) Hourly rates and total trip costs. Filter results by: Light jets (4-7 passengers), Mid-size jets (6-9 passengers), and Heavy jets (9-16 passengers). Include empty leg opportunities if available. Format the response as a structured comparison table with recommendations based on passenger count and budget requirements.',
-        description: 'Check real-time fleet availability for specific routes',
-        icon: IconPlane,
-        parameters: {
-            departure: 'MIA',
-            arrival: ['JFK', 'LGA', 'TEB'],
-            date: 'tomorrow',
-            passengerCount: null,
-            aircraftCategories: ['light', 'midsize', 'heavy']
-        }
-    },
-    {
-        id: 'jet-2',
-        category: 'charter',
-        title: 'Empty Legs',
-        prompt: 'Find empty leg opportunities for this weekend',
-        fullPrompt: 'As a JetVision charter optimization specialist, search the Avinode marketplace for empty leg (repositioning) flights available this weekend (Friday through Sunday). Identify opportunities with: 1) Origin and destination airports with city pairs, 2) Aircraft type, operator, and tail number, 3) Available dates and flexible time windows, 4) Standard retail price vs. empty leg discount percentage, 5) Passenger capacity and baggage allowance. Focus on popular routes: Northeast Corridor (BOS-DCA), Florida routes (MIA-TEB), West Coast (LAX-SFO), and Texas Triangle (DAL-HOU-AUS). Calculate potential savings for clients and highlight opportunities with 40% or greater discounts. Include last-minute availability and one-way options. Provide recommendations ranked by discount percentage and route popularity.',
-        description: 'Find discounted repositioning flights and save costs',
-        icon: IconPlane,
-        parameters: {
-            dateRange: 'this_weekend',
-            minDiscount: 40,
-            routes: ['popular', 'northeast', 'florida', 'westcoast', 'texas'],
-            sortBy: 'discount_percentage'
-        }
-    },
-    {
-        id: 'jet-3',
-        category: 'charter',
-        title: 'Fleet Utilization',
-        prompt: 'Analyze fleet utilization metrics for this month',
-        fullPrompt: 'As a JetVision fleet analytics specialist, generate a comprehensive utilization report for the current month. Analyze: 1) Overall fleet utilization percentage (flight hours / available hours), 2) Individual aircraft performance metrics by tail number, 3) Revenue per flight hour by aircraft category, 4) Maintenance downtime and AOG (Aircraft on Ground) incidents, 5) Peak utilization days and underutilized periods. Compare against: Previous month metrics, Same month last year, and Industry benchmarks (target: 85% for charter operations). Identify optimization opportunities including: Aircraft requiring remarketing, Routes with consistent demand, Pricing adjustments for underutilized aircraft, and Maintenance scheduling improvements. Present findings with visualizations showing daily utilization heat maps and revenue trends.',
-        description: 'Monitor aircraft usage metrics and optimization',
-        icon: IconPlane,
-        parameters: {
-            period: 'current_month',
-            metrics: ['utilization_rate', 'revenue_per_hour', 'downtime', 'aog'],
-            benchmarks: { target: 85, comparison: ['previous_month', 'year_over_year'] }
-        }
-    },
-    {
-        id: 'jet-4',
-        category: 'charter',
-        title: 'Heavy Jet Search',
-        prompt: 'Search heavy jets for 12 passengers to London Tuesday',
-        fullPrompt: 'As a JetVision international charter specialist, search for heavy jet aircraft capable of transatlantic flight for 12 passengers departing next Tuesday to London (preferably Farnborough or Luton for business aviation). Requirements: 1) Aircraft with 6,000+ nm range for nonstop transatlantic capability, 2) Cabin configuration for 12-14 passengers with sleeping arrangements, 3) Full galley and lavatory facilities for 8+ hour flight, 4) WiFi and productivity amenities for business travelers, 5) Customs and immigration handling at both ends. Preferred aircraft types: Gulfstream G650/G550, Bombardier Global 6000/7500, Dassault Falcon 7X/8X. Include: Operator safety ratings and international experience, Catering options and special meal accommodations, Ground transportation and FBO services, Total trip cost including fuel surcharges and international fees. Provide 3-5 options ranked by aircraft age and passenger comfort.',
-        description: 'Search for specific aircraft types by passenger count',
-        icon: IconPlane,
-        parameters: {
-            passengerCount: 12,
-            destination: 'London',
-            preferredAirports: ['Farnborough', 'Luton'],
-            date: 'next_tuesday',
-            aircraftTypes: ['Gulfstream G650', 'Gulfstream G550', 'Global 6000', 'Global 7500', 'Falcon 7X', 'Falcon 8X'],
-            requirements: ['transatlantic_range', 'wifi', 'sleeping_config']
-        }
-    },
+  Monitor for:
+    1. New executives joining target companies (VP+ level)
+    2. Executive assistants changing roles or companies
+    3. Travel managers or procurement leads in new positions
+    4. Promotions to decision-making roles
+    5. Executives moving from commercial to private aviation companies  
+       {
+       id: 'jet-1',
+       category: 'charter',
+       title: 'Aircraft Availability',
+       prompt: 'Check aircraft availability for Miami to New York tomorrow',
+       fullPrompt: 'As a JetVision fleet operations specialist, search for available aircraft for tomorrow\'s flight from Miami International Airport (MIA) to New York area airports (JFK, LGA, or TEB). Query the Avinode marketplace to identify: 1) Available aircraft types and tail numbers, 2) Seating capacity and cabin configurations, 3) Operator information and safety ratings, 4) Estimated flight times and fuel stops if required, 5) Hourly rates and total trip costs. Filter results by: Light jets (4-7 passengers), Mid-size jets (6-9 passengers), and Heavy jets (9-16 passengers). Include empty leg opportunities if available. Format the response as a structured comparison table with recommendations based on passenger count and budget requirements.',
+       description: 'Check real-time fleet availability for specific routes',
+       icon: IconPlane,
+       parameters: {
+       departure: 'MIA',
+       arrival: ['JFK', 'LGA', 'TEB'],
+       date: 'tomorrow',
+       passengerCount: null,
+       aircraftCategories: ['light', 'midsize', 'heavy']
+       }
+       },
+       {
+       id: 'jet-2',
+       category: 'charter',
+       title: 'Empty Legs',
+       prompt: 'Find empty leg opportunities for this weekend',
+       fullPrompt: 'As a JetVision charter optimization specialist, search the Avinode marketplace for empty leg (repositioning) flights available this weekend (Friday through Sunday). Identify opportunities with: 1) Origin and destination airports with city pairs, 2) Aircraft type, operator, and tail number, 3) Available dates and flexible time windows, 4) Standard retail price vs. empty leg discount percentage, 5) Passenger capacity and baggage allowance. Focus on popular routes: Northeast Corridor (BOS-DCA), Florida routes (MIA-TEB), West Coast (LAX-SFO), and Texas Triangle (DAL-HOU-AUS). Calculate potential savings for clients and highlight opportunities with 40% or greater discounts. Include last-minute availability and one-way options. Provide recommendations ranked by discount percentage and route popularity.',
+       description: 'Find discounted repositioning flights and save costs',
+       icon: IconPlane,
+       parameters: {
+       dateRange: 'this_weekend',
+       minDiscount: 40,
+       routes: ['popular', 'northeast', 'florida', 'westcoast', 'texas'],
+       sortBy: 'discount_percentage'
+       }
+       },
+       {
+       id: 'jet-3',
+       category: 'charter',
+       title: 'Fleet Utilization',
+       prompt: 'Analyze fleet utilization metrics for this month',
+       fullPrompt: 'As a JetVision fleet analytics specialist, generate a comprehensive utilization report for the current month. Analyze: 1) Overall fleet utilization percentage (flight hours / available hours), 2) Individual aircraft performance metrics by tail number, 3) Revenue per flight hour by aircraft category, 4) Maintenance downtime and AOG (Aircraft on Ground) incidents, 5) Peak utilization days and underutilized periods. Compare against: Previous month metrics, Same month last year, and Industry benchmarks (target: 85% for charter operations). Identify optimization opportunities including: Aircraft requiring remarketing, Routes with consistent demand, Pricing adjustments for underutilized aircraft, and Maintenance scheduling improvements. Present findings with visualizations showing daily utilization heat maps and revenue trends.',
+       description: 'Monitor aircraft usage metrics and optimization',
+       icon: IconPlane,
+       parameters: {
+       period: 'current_month',
+       metrics: ['utilization_rate', 'revenue_per_hour', 'downtime', 'aog'],
+       benchmarks: { target: 85, comparison: ['previous_month', 'year_over_year'] }
+       }
+       },
+       {
+       id: 'jet-4',
+       category: 'charter',
+       title: 'Heavy Jet Search',
+       prompt: 'Search heavy jets for 12 passengers to London Tuesday',
+       fullPrompt: 'As a JetVision international charter specialist, search for heavy jet aircraft capable of transatlantic flight for 12 passengers departing next Tuesday to London (preferably Farnborough or Luton for business aviation). Requirements: 1) Aircraft with 6,000+ nm range for nonstop transatlantic capability, 2) Cabin configuration for 12-14 passengers with sleeping arrangements, 3) Full galley and lavatory facilities for 8+ hour flight, 4) WiFi and productivity amenities for business travelers, 5) Customs and immigration handling at both ends. Preferred aircraft types: Gulfstream G650/G550, Bombardier Global 6000/7500, Dassault Falcon 7X/8X. Include: Operator safety ratings and international experience, Catering options and special meal accommodations, Ground transportation and FBO services, Total trip cost including fuel surcharges and international fees. Provide 3-5 options ranked by aircraft age and passenger comfort.',
+       description: 'Search for specific aircraft types by passenger count',
+       icon: IconPlane,
+       parameters: {
+       passengerCount: 12,
+       destination: 'London',
+       preferredAirports: ['Farnborough', 'Luton'],
+       date: 'next_tuesday',
+       aircraftTypes: ['Gulfstream G650', 'Gulfstream G550', 'Global 6000', 'Global 7500', 'Falcon 7X', 'Falcon 8X'],
+       requirements: ['transatlantic_range', 'wifi', 'sleeping_config']
+       }
+       },
 
- ## Apollo Campaign Management (4 cards)
+## Apollo Campaign Management (4 cards)
+
     {
         id: 'apollo-1',
         category: 'apollo',
@@ -525,7 +526,8 @@
         }
     },
 
-  ## Travel Planning & Coordination (4 cards)
+## Travel Planning & Coordination (4 cards)
+
     {
         id: 'travel-1',
         category: 'travel',
@@ -592,7 +594,8 @@
         }
     },
 
-  ## Lead Generation & Targeting (4 cards)
+## Lead Generation & Targeting (4 cards)
+
     {
         id: 'lead-1',
         category: 'leads',
@@ -666,7 +669,8 @@
         }
     },
 
- ## Analytics & Insights (4 cards)
+## Analytics & Insights (4 cards)
+
     {
         id: 'analytics-1',
         category: 'analytics',
@@ -731,4 +735,5 @@
             delivery: ['email', 'slack', 'dashboard']
         }
     },
+
 ];

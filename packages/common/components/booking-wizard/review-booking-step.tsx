@@ -1,6 +1,6 @@
 'use client';
 
-import { 
+import {
     MapPinIcon,
     CalendarIcon,
     ClockIcon,
@@ -8,7 +8,7 @@ import {
     PaperAirplaneIcon,
     CurrencyDollarIcon,
     EnvelopeIcon,
-    PhoneIcon
+    PhoneIcon,
 } from '@heroicons/react/24/outline';
 import type { BookingData } from './booking-wizard';
 
@@ -22,7 +22,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
-            minimumFractionDigits: 0
+            minimumFractionDigits: 0,
         }).format(amount);
     };
 
@@ -31,7 +31,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
         });
     };
 
@@ -39,7 +39,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
         return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
         });
     };
 
@@ -54,17 +54,17 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
     return (
         <div className="space-y-6">
             {/* Flight Summary */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+            <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+                <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                    <PaperAirplaneIcon className="mr-2 h-5 w-5" />
                     Flight Details
                 </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     {/* Departure */}
                     <div className="space-y-2">
                         <div className="flex items-center text-gray-600 dark:text-gray-400">
-                            <MapPinIcon className="h-4 w-4 mr-2" />
+                            <MapPinIcon className="mr-2 h-4 w-4" />
                             <span className="text-sm font-medium">Departure</span>
                         </div>
                         <div className="pl-6">
@@ -72,7 +72,8 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                                 {data.departure.airport}
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {formatDate(data.departure.date)} at {formatTime(data.departure.time)}
+                                {formatDate(data.departure.date)} at{' '}
+                                {formatTime(data.departure.time)}
                             </div>
                         </div>
                     </div>
@@ -80,7 +81,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                     {/* Arrival */}
                     <div className="space-y-2">
                         <div className="flex items-center text-gray-600 dark:text-gray-400">
-                            <MapPinIcon className="h-4 w-4 mr-2" />
+                            <MapPinIcon className="mr-2 h-4 w-4" />
                             <span className="text-sm font-medium">Arrival</span>
                         </div>
                         <div className="pl-6">
@@ -96,8 +97,8 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
 
                 {/* Return Flight (if applicable) */}
                 {data.tripType === 'round-trip' && data.arrival.date && (
-                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-                        <div className="flex items-center text-gray-600 dark:text-gray-400 mb-3">
+                    <div className="mt-6 border-t border-gray-200 pt-6 dark:border-gray-600">
+                        <div className="mb-3 flex items-center text-gray-600 dark:text-gray-400">
                             <span className="text-sm font-medium">Return Flight</span>
                         </div>
                         <div className="pl-6">
@@ -105,7 +106,8 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                                 {data.arrival.airport} → {data.departure.airport}
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {formatDate(data.arrival.date)} at {formatTime(data.arrival.time || '09:00')}
+                                {formatDate(data.arrival.date)} at{' '}
+                                {formatTime(data.arrival.time || '09:00')}
                             </div>
                         </div>
                     </div>
@@ -114,22 +116,19 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                 {/* Trip Info */}
                 <div className="mt-6 flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center">
-                        <UserGroupIcon className="h-4 w-4 mr-1" />
+                        <UserGroupIcon className="mr-1 h-4 w-4" />
                         {data.passengers} passenger{data.passengers > 1 ? 's' : ''}
                     </div>
                     <div className="flex items-center">
-                        <ClockIcon className="h-4 w-4 mr-1" />
-                        ~{estimatedHours}h flight
+                        <ClockIcon className="mr-1 h-4 w-4" />~{estimatedHours}h flight
                     </div>
-                    <div className="capitalize">
-                        {data.tripType.replace('-', ' ')}
-                    </div>
+                    <div className="capitalize">{data.tripType.replace('-', ' ')}</div>
                 </div>
             </div>
 
             {/* Aircraft Details */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                     Selected Aircraft
                 </h3>
                 {data.selectedAircraft && (
@@ -153,34 +152,34 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
             </div>
 
             {/* Passenger Information */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                     Contact Information
                 </h3>
-                
+
                 <div className="space-y-3">
                     <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-24">
+                        <span className="w-24 text-sm font-medium text-gray-600 dark:text-gray-400">
                             Name:
                         </span>
                         <span className="text-gray-900 dark:text-white">
                             {data.primaryContact.name}
                         </span>
                     </div>
-                    
+
                     <div className="flex items-center">
-                        <EnvelopeIcon className="h-4 w-4 text-gray-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-24">
+                        <EnvelopeIcon className="mr-2 h-4 w-4 text-gray-400" />
+                        <span className="w-24 text-sm font-medium text-gray-600 dark:text-gray-400">
                             Email:
                         </span>
                         <span className="text-gray-900 dark:text-white">
                             {data.primaryContact.email}
                         </span>
                     </div>
-                    
+
                     <div className="flex items-center">
-                        <PhoneIcon className="h-4 w-4 text-gray-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-24">
+                        <PhoneIcon className="mr-2 h-4 w-4 text-gray-400" />
+                        <span className="w-24 text-sm font-medium text-gray-600 dark:text-gray-400">
                             Phone:
                         </span>
                         <span className="text-gray-900 dark:text-white">
@@ -190,8 +189,8 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                 </div>
 
                 {data.passengerList && data.passengerList.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+                        <div className="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             Additional Passengers:
                         </div>
                         <div className="space-y-1">
@@ -207,15 +206,15 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
 
             {/* Special Requests */}
             {(data.specialRequests || data.cateringRequests || data.groundTransportation) && (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+                    <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                         Special Requests
                     </h3>
-                    
+
                     <div className="space-y-3">
                         {data.specialRequests && (
                             <div>
-                                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                <div className="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">
                                     Special Accommodations:
                                 </div>
                                 <div className="text-sm text-gray-900 dark:text-white">
@@ -223,10 +222,10 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                                 </div>
                             </div>
                         )}
-                        
+
                         {data.cateringRequests && (
                             <div>
-                                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                <div className="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">
                                     Catering Preferences:
                                 </div>
                                 <div className="text-sm text-gray-900 dark:text-white">
@@ -234,7 +233,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                                 </div>
                             </div>
                         )}
-                        
+
                         {data.groundTransportation && (
                             <div className="text-sm text-gray-900 dark:text-white">
                                 ✓ Ground transportation requested
@@ -245,30 +244,30 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
             )}
 
             {/* Cost Breakdown */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <CurrencyDollarIcon className="h-5 w-5 mr-2" />
+            <div className="rounded-lg bg-blue-50 p-6 dark:bg-blue-900/20">
+                <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                    <CurrencyDollarIcon className="mr-2 h-5 w-5" />
                     Cost Estimate
                 </h3>
-                
+
                 <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">
                             Flight time ({estimatedHours}h × {formatCurrency(hourlyRate)}/h)
                         </span>
-                        <span className="text-gray-900 dark:text-white font-medium">
+                        <span className="font-medium text-gray-900 dark:text-white">
                             {formatCurrency(flightCost)}
                         </span>
                     </div>
-                    
+
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">Taxes & fees</span>
-                        <span className="text-gray-900 dark:text-white font-medium">
+                        <span className="font-medium text-gray-900 dark:text-white">
                             {formatCurrency(taxes + fees)}
                         </span>
                     </div>
-                    
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+
+                    <div className="border-t border-gray-200 pt-3 dark:border-gray-600">
                         <div className="flex justify-between">
                             <span className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Total Estimate
@@ -277,7 +276,7 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
                                 {formatCurrency(totalCost)}
                             </span>
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="mt-1 text-xs text-gray-500">
                             *Final cost may vary based on actual flight time and additional services
                         </div>
                     </div>
@@ -285,11 +284,11 @@ export function ReviewBookingStep({ data }: ReviewBookingStepProps) {
             </div>
 
             {/* Terms Notice */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+            <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
                 <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                    <strong>Important:</strong> By completing this booking, you agree to our terms and conditions. 
-                    A deposit may be required to confirm your reservation. Our team will contact you within 
-                    24 hours to finalize the details and arrange payment.
+                    <strong>Important:</strong> By completing this booking, you agree to our terms
+                    and conditions. A deposit may be required to confirm your reservation. Our team
+                    will contact you within 24 hours to finalize the details and arrange payment.
                 </div>
             </div>
         </div>

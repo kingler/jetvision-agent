@@ -119,11 +119,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                           },
                       }
                     : eventType === 'status' && eventData.statusData
-                    ? {
-                          n8nWorkflowStatus: eventData.statusData,
-                          status: eventData.statusData.status === 'error' ? 'ERROR' : 'PENDING'
-                      }
-                    : { [eventType]: eventData[eventType] }),
+                      ? {
+                            n8nWorkflowStatus: eventData.statusData,
+                            status: eventData.statusData.status === 'error' ? 'ERROR' : 'PENDING',
+                        }
+                      : { [eventType]: eventData[eventType] }),
             };
 
             threadItemMap.set(threadItemId, updatedItem);
@@ -157,11 +157,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                         // Calculate execution time if we have a start time
                         const threadItem = threadItemMap.get(data.threadItemId);
                         if (threadItem && threadItem.createdAt) {
-                            const executionTime = Date.now() - new Date(threadItem.createdAt).getTime();
+                            const executionTime =
+                                Date.now() - new Date(threadItem.createdAt).getTime();
                             updateThreadItem(data.threadId || '', {
                                 id: data.threadItemId,
                                 executionTime,
-                                status: 'COMPLETED'
+                                status: 'COMPLETED',
                             });
                         }
                         threadItemMap.delete(data.threadItemId);
@@ -191,15 +192,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
             try {
                 // Check if n8n webhook is configured and should be used
-                const useN8nWebhook = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL && body.useN8n !== false;
+                const useN8nWebhook =
+                    process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL && body.useN8n !== false;
                 const endpoint = useN8nWebhook ? '/api/n8n-webhook' : '/api/completion';
-                
+
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         ...body,
-                        message: body.query || body.prompt || ''
+                        message: body.query || body.prompt || '',
                     }),
                     credentials: 'include',
                     cache: 'no-store',
@@ -264,13 +266,21 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
                                 try {
                                     const data = JSON.parse(dataMatch[1]);
-                                    
+
                                     // Debug logging for message flow
-                                    console.log('[DEBUG] Processing event:', currentEvent, 'Thread:', data?.threadId);
+                                    console.log(
+                                        '[DEBUG] Processing event:',
+                                        currentEvent,
+                                        'Thread:',
+                                        data?.threadId
+                                    );
                                     if (currentEvent === 'answer' && data?.answer) {
-                                        console.log('[DEBUG] Answer received:', data.answer.text?.substring(0, 100));
+                                        console.log(
+                                            '[DEBUG] Answer received:',
+                                            data.answer.text?.substring(0, 100)
+                                        );
                                     }
-                                    
+
                                     if (
                                         EVENT_TYPES.includes(currentEvent) &&
                                         data?.threadId &&
@@ -292,16 +302,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     } else if (currentEvent === 'done' && data.type === 'done') {
                                         setIsGenerating(false);
                                         const streamDuration = performance.now() - streamStartTime;
-                                        
+
                                         // Store execution time in thread item
                                         if (data.threadItemId) {
                                             updateThreadItem(body.threadId, {
                                                 id: data.threadItemId,
                                                 executionTime: streamDuration,
-                                                status: 'COMPLETED'
+                                                status: 'COMPLETED',
                                             });
                                         }
-                                        
+
                                         console.log(
                                             'done event received',
                                             eventCount,

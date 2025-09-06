@@ -111,7 +111,9 @@ export const TableOfMessages = () => {
                                                     className={cn(
                                                         'text-muted-foreground/50 hover:text-foreground group h-auto min-h-7 w-full max-w-full cursor-pointer justify-start overflow-hidden whitespace-normal py-2 pr-8 text-left text-sm leading-relaxed',
                                                         isActive && 'text-foreground',
-                                                        isExpanded ? 'line-clamp-none' : 'line-clamp-3'
+                                                        isExpanded
+                                                            ? 'line-clamp-none'
+                                                            : 'line-clamp-3'
                                                     )}
                                                 >
                                                     {displayText}
@@ -124,7 +126,7 @@ export const TableOfMessages = () => {
                                                         }}
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="absolute right-1 top-1 h-6 w-6 p-0 text-xs text-muted-foreground/70 hover:text-foreground"
+                                                        className="text-muted-foreground/70 hover:text-foreground absolute right-1 top-1 h-6 w-6 p-0 text-xs"
                                                     >
                                                         {isExpanded ? '−' : '⋯'}
                                                     </Button>

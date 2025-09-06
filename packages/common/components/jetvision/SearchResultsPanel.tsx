@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { cn, Skeleton } from '@repo/ui';
-import { 
+import {
     IconX,
     IconExternalLink,
     IconUser,
@@ -13,7 +13,7 @@ import {
     IconCurrencyDollar,
     IconChevronRight,
     IconDatabase,
-    IconRefresh
+    IconRefresh,
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -38,7 +38,10 @@ interface SearchResultsPanelProps {
     className?: string;
 }
 
-const ResultCard: React.FC<{ result: SearchResult; onClick?: () => void }> = ({ result, onClick }) => {
+const ResultCard: React.FC<{ result: SearchResult; onClick?: () => void }> = ({
+    result,
+    onClick,
+}) => {
     const getIcon = () => {
         switch (result.type) {
             case 'contact':
@@ -66,48 +69,57 @@ const ResultCard: React.FC<{ result: SearchResult; onClick?: () => void }> = ({ 
         >
             <button
                 onClick={onClick}
-                className="w-full rounded-lg border border-border bg-card p-4 text-left transition-all hover:border-brand/50 hover:shadow-md"
+                className="border-border bg-card hover:border-brand/50 w-full rounded-lg border p-4 text-left transition-all hover:shadow-md"
             >
                 <div className="flex items-start gap-3">
-                    <div className="rounded-md bg-secondary p-2 group-hover:bg-brand/10">
+                    <div className="bg-secondary group-hover:bg-brand/10 rounded-md p-2">
                         <Icon size={18} className="text-muted-foreground group-hover:text-brand" />
                     </div>
                     <div className="flex-1 space-y-1">
-                        <h4 className="font-medium text-foreground group-hover:text-brand">
+                        <h4 className="text-foreground group-hover:text-brand font-medium">
                             {result.title}
                         </h4>
                         {result.subtitle && (
-                            <p className="text-sm text-muted-foreground">{result.subtitle}</p>
+                            <p className="text-muted-foreground text-sm">{result.subtitle}</p>
                         )}
                         {result.metadata && (
                             <div className="mt-2 flex flex-wrap gap-2">
-                                {Object.entries(result.metadata).slice(0, 3).map(([key, value]) => (
-                                    <span
-                                        key={key}
-                                        className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1 text-xs"
-                                    >
-                                        <span className="text-muted-foreground">{key}:</span>
-                                        <span className="font-medium">{String(value)}</span>
-                                    </span>
-                                ))}
+                                {Object.entries(result.metadata)
+                                    .slice(0, 3)
+                                    .map(([key, value]) => (
+                                        <span
+                                            key={key}
+                                            className="bg-secondary inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs"
+                                        >
+                                            <span className="text-muted-foreground">{key}:</span>
+                                            <span className="font-medium">{String(value)}</span>
+                                        </span>
+                                    ))}
                             </div>
                         )}
                         {result.score && (
                             <div className="mt-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground">Match Score</span>
-                                    <div className="h-1.5 w-20 rounded-full bg-secondary">
-                                        <div 
-                                            className="h-full rounded-full bg-brand"
+                                    <span className="text-muted-foreground text-xs">
+                                        Match Score
+                                    </span>
+                                    <div className="bg-secondary h-1.5 w-20 rounded-full">
+                                        <div
+                                            className="bg-brand h-full rounded-full"
                                             style={{ width: `${result.score}%` }}
                                         />
                                     </div>
-                                    <span className="text-xs font-medium text-brand">{result.score}%</span>
+                                    <span className="text-brand text-xs font-medium">
+                                        {result.score}%
+                                    </span>
                                 </div>
                             </div>
                         )}
                     </div>
-                    <IconChevronRight size={16} className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                    <IconChevronRight
+                        size={16}
+                        className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                    />
                 </div>
             </button>
         </motion.div>
@@ -122,7 +134,7 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
     error,
     onRefresh,
     onSelectResult,
-    className
+    className,
 }) => {
     return (
         <AnimatePresence>
@@ -136,7 +148,7 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                         onClick={onClose}
                         className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
                     />
-                    
+
                     {/* Panel */}
                     <motion.div
                         initial={{ x: '100%' }}
@@ -144,19 +156,21 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
                         className={cn(
-                            "fixed right-0 top-0 z-50 h-full w-full bg-background shadow-xl lg:w-[420px]",
-                            "border-l border-border",
+                            'bg-background fixed right-0 top-0 z-50 h-full w-full shadow-xl lg:w-[420px]',
+                            'border-border border-l',
                             className
                         )}
                     >
                         <div className="flex h-full flex-col">
                             {/* Header */}
-                            <div className="flex items-center justify-between border-b border-border p-4">
+                            <div className="border-border flex items-center justify-between border-b p-4">
                                 <div className="flex items-center gap-2">
                                     <IconDatabase size={20} className="text-brand" />
-                                    <h3 className="font-semibold text-foreground">Search Results</h3>
+                                    <h3 className="text-foreground font-semibold">
+                                        Search Results
+                                    </h3>
                                     {results.length > 0 && !loading && (
-                                        <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
+                                        <span className="bg-brand/10 text-brand rounded-full px-2 py-0.5 text-xs font-medium">
                                             {results.length} found
                                         </span>
                                     )}
@@ -165,15 +179,18 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                                     {onRefresh && (
                                         <button
                                             onClick={onRefresh}
-                                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                                            className="text-muted-foreground hover:bg-secondary hover:text-foreground rounded-md p-1.5 transition-colors"
                                             disabled={loading}
                                         >
-                                            <IconRefresh size={18} className={cn(loading && "animate-spin")} />
+                                            <IconRefresh
+                                                size={18}
+                                                className={cn(loading && 'animate-spin')}
+                                            />
                                         </button>
                                     )}
                                     <button
                                         onClick={onClose}
-                                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                                        className="text-muted-foreground hover:bg-secondary hover:text-foreground rounded-md p-1.5 transition-colors"
                                     >
                                         <IconX size={18} />
                                     </button>
@@ -185,7 +202,10 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                                 {loading ? (
                                     <div className="space-y-3">
                                         {[...Array(5)].map((_, i) => (
-                                            <div key={i} className="rounded-lg border border-border bg-card p-4">
+                                            <div
+                                                key={i}
+                                                className="border-border bg-card rounded-lg border p-4"
+                                            >
                                                 <div className="flex items-start gap-3">
                                                     <Skeleton className="h-10 w-10 rounded-md" />
                                                     <div className="flex-1 space-y-2">
@@ -202,13 +222,13 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                                     </div>
                                 ) : error ? (
                                     <div className="flex h-full flex-col items-center justify-center text-center">
-                                        <div className="rounded-lg bg-destructive/10 p-4">
-                                            <p className="text-sm text-destructive">{error}</p>
+                                        <div className="bg-destructive/10 rounded-lg p-4">
+                                            <p className="text-destructive text-sm">{error}</p>
                                         </div>
                                         {onRefresh && (
                                             <button
                                                 onClick={onRefresh}
-                                                className="mt-4 rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand/90"
+                                                className="bg-brand text-brand-foreground hover:bg-brand/90 mt-4 rounded-md px-4 py-2 text-sm font-medium"
                                             >
                                                 Try Again
                                             </button>
@@ -216,14 +236,21 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
                                     </div>
                                 ) : results.length === 0 ? (
                                     <div className="flex h-full flex-col items-center justify-center text-center">
-                                        <IconDatabase size={48} className="text-muted-foreground/30" />
-                                        <p className="mt-2 text-sm text-muted-foreground">No results found</p>
-                                        <p className="mt-1 text-xs text-muted-foreground">Try adjusting your search query</p>
+                                        <IconDatabase
+                                            size={48}
+                                            className="text-muted-foreground/30"
+                                        />
+                                        <p className="text-muted-foreground mt-2 text-sm">
+                                            No results found
+                                        </p>
+                                        <p className="text-muted-foreground mt-1 text-xs">
+                                            Try adjusting your search query
+                                        </p>
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
                                         <AnimatePresence mode="popLayout">
-                                            {results.map((result) => (
+                                            {results.map(result => (
                                                 <ResultCard
                                                     key={result.id}
                                                     result={result}
@@ -237,10 +264,10 @@ export const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
 
                             {/* Footer */}
                             {results.length > 0 && !loading && !error && (
-                                <div className="border-t border-border p-4">
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <div className="border-border border-t p-4">
+                                    <div className="text-muted-foreground flex items-center justify-between text-xs">
                                         <span>Powered by n8n & JetVision Agent</span>
-                                        <button className="flex items-center gap-1 hover:text-brand">
+                                        <button className="hover:text-brand flex items-center gap-1">
                                             <span>View All</span>
                                             <IconExternalLink size={12} />
                                         </button>

@@ -53,7 +53,7 @@ export const Footer = () => {
     ];
 
     return (
-        <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div className="mx-auto max-w-7xl px-4 py-3">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
@@ -61,26 +61,29 @@ export const Footer = () => {
                     <div className="col-span-1">
                         <div className="mb-4 flex items-center gap-2">
                             <IconPlane size={24} className="text-brand" />
-                            <span className="text-lg font-bold text-foreground">JetVision</span>
+                            <span className="text-foreground text-lg font-bold">JetVision</span>
                         </div>
-                        <p className="mb-4 text-sm text-muted-foreground">
-                            20+ years of excellence in private aviation. Luxury travel redefined with Apollo.io intelligence.
+                        <p className="text-muted-foreground mb-4 text-sm">
+                            20+ years of excellence in private aviation. Luxury travel redefined
+                            with Apollo.io intelligence.
                         </p>
                         <div className="flex items-center gap-2">
                             <IconShieldCheck size={16} className="text-brand" />
-                            <span className="text-xs text-muted-foreground">ARG/US Platinum Rated</span>
+                            <span className="text-muted-foreground text-xs">
+                                ARG/US Platinum Rated
+                            </span>
                         </div>
                     </div>
 
                     {/* Services */}
                     <div className="col-span-1">
-                        <h4 className="mb-3 font-semibold text-foreground">Services</h4>
+                        <h4 className="text-foreground mb-3 font-semibold">Services</h4>
                         <div className="space-y-2">
                             {mainLinks.map(link => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="block text-sm text-muted-foreground hover:text-brand"
+                                    className="text-muted-foreground hover:text-brand block text-sm"
                                 >
                                     {link.label}
                                 </Link>
@@ -90,13 +93,13 @@ export const Footer = () => {
 
                     {/* Legal */}
                     <div className="col-span-1">
-                        <h4 className="mb-3 font-semibold text-foreground">Legal & Safety</h4>
+                        <h4 className="text-foreground mb-3 font-semibold">Legal & Safety</h4>
                         <div className="space-y-2">
                             {legalLinks.map(link => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="block text-sm text-muted-foreground hover:text-brand"
+                                    className="text-muted-foreground hover:text-brand block text-sm"
                                 >
                                     {link.label}
                                 </Link>
@@ -106,19 +109,19 @@ export const Footer = () => {
 
                     {/* Contact */}
                     <div className="col-span-1">
-                        <h4 className="mb-3 font-semibold text-foreground">24/7 Charter Desk</h4>
+                        <h4 className="text-foreground mb-3 font-semibold">24/7 Charter Desk</h4>
                         <div className="space-y-2">
                             {contactInfo.map(item => (
                                 <a
                                     key={item.href}
                                     href={item.href}
-                                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-brand"
+                                    className="text-muted-foreground hover:text-brand flex items-center gap-2 text-sm"
                                 >
                                     {item.icon && <item.icon size={14} />}
                                     {item.label}
                                 </a>
                             ))}
-                            <div className="mt-4 text-xs text-muted-foreground">
+                            <div className="text-muted-foreground mt-4 text-xs">
                                 Available 24 hours a day, 365 days a year
                             </div>
                         </div>
@@ -126,16 +129,17 @@ export const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="mt-8 border-t border-border pt-6">
+                <div className="border-border mt-8 border-t pt-6">
                     <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                        <div className="text-xs text-muted-foreground">
-                            © {new Date().getFullYear()} JetVision. All rights reserved. | Powered by Apollo.io Intelligence
+                        <div className="text-muted-foreground text-xs">
+                            © {new Date().getFullYear()} JetVision. All rights reserved. | Powered
+                            by Apollo.io Intelligence
                         </div>
                         <div className="flex items-center gap-4">
-                            <span className="text-xs text-muted-foreground">Member of:</span>
-                            <span className="text-xs font-semibold text-accent">NBAA</span>
-                            <span className="text-xs font-semibold text-accent">EBAA</span>
-                            <span className="text-xs font-semibold text-accent">AsBAA</span>
+                            <span className="text-muted-foreground text-xs">Member of:</span>
+                            <span className="text-accent text-xs font-semibold">NBAA</span>
+                            <span className="text-accent text-xs font-semibold">EBAA</span>
+                            <span className="text-accent text-xs font-semibold">AsBAA</span>
                         </div>
                     </div>
                 </div>

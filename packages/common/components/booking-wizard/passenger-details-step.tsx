@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Button } from '@repo/ui';
-import { 
+import {
     UserIcon,
     EnvelopeIcon,
     PhoneIcon,
     PlusIcon,
-    TrashIcon
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import type { BookingData } from './booking-wizard';
 
@@ -25,8 +25,8 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
         onUpdate({
             primaryContact: {
                 ...data.primaryContact!,
-                [field]: value
-            }
+                [field]: value,
+            },
         });
     };
 
@@ -34,7 +34,7 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
         const passengers = [...(data.passengerList || [])];
         passengers[index] = {
             ...passengers[index],
-            [field]: value
+            [field]: value,
         };
         onUpdate({ passengerList: passengers });
     };
@@ -55,7 +55,7 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
         onUpdate({
             specialRequests,
             cateringRequests,
-            groundTransportation: groundTransport
+            groundTransportation: groundTransport,
         });
     };
 
@@ -63,12 +63,12 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
         <div className="space-y-6">
             {/* Primary Contact */}
             <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
                     Primary Contact Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Full Name *
                         </label>
                         <div className="relative">
@@ -78,14 +78,14 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                                 required
                                 placeholder="John Doe"
                                 value={data.primaryContact?.name || ''}
-                                onChange={(e) => handlePrimaryContactChange('name', e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={e => handlePrimaryContactChange('name', e.target.value)}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Email Address *
                         </label>
                         <div className="relative">
@@ -95,14 +95,14 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                                 required
                                 placeholder="john@example.com"
                                 value={data.primaryContact?.email || ''}
-                                onChange={(e) => handlePrimaryContactChange('email', e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={e => handlePrimaryContactChange('email', e.target.value)}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                             />
                         </div>
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Phone Number *
                         </label>
                         <div className="relative">
@@ -112,8 +112,8 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                                 required
                                 placeholder="+1 (555) 123-4567"
                                 value={data.primaryContact?.phone || ''}
-                                onChange={(e) => handlePrimaryContactChange('phone', e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={e => handlePrimaryContactChange('phone', e.target.value)}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                             />
                         </div>
                     </div>
@@ -123,7 +123,7 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
             {/* Additional Passengers */}
             {(data.passengers || 1) > 1 && (
                 <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                             Additional Passengers ({(data.passengers || 1) - 1} more)
                         </h3>
@@ -133,15 +133,18 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                             onClick={addPassenger}
                             className="flex items-center"
                         >
-                            <PlusIcon className="h-4 w-4 mr-2" />
+                            <PlusIcon className="mr-2 h-4 w-4" />
                             Add Passenger
                         </Button>
                     </div>
 
                     <div className="space-y-4">
                         {(data.passengerList || []).map((passenger, index) => (
-                            <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                                <div className="flex items-center justify-between mb-3">
+                            <div
+                                key={index}
+                                className="rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                            >
+                                <div className="mb-3 flex items-center justify-between">
                                     <h4 className="font-medium text-gray-900 dark:text-white">
                                         Passenger {index + 2}
                                     </h4>
@@ -154,44 +157,58 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                                         <TrashIcon className="h-4 w-4" />
                                     </Button>
                                 </div>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Full Name
                                         </label>
                                         <input
                                             type="text"
                                             placeholder="Passenger name"
                                             value={passenger.name || ''}
-                                            onChange={(e) => handlePassengerChange(index, 'name', e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            onChange={e =>
+                                                handlePassengerChange(index, 'name', e.target.value)
+                                            }
+                                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                                         />
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Email (Optional)
                                         </label>
                                         <input
                                             type="email"
                                             placeholder="Email address"
                                             value={passenger.email || ''}
-                                            onChange={(e) => handlePassengerChange(index, 'email', e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            onChange={e =>
+                                                handlePassengerChange(
+                                                    index,
+                                                    'email',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                                         />
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Phone (Optional)
                                         </label>
                                         <input
                                             type="tel"
                                             placeholder="Phone number"
                                             value={passenger.phone || ''}
-                                            onChange={(e) => handlePassengerChange(index, 'phone', e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            onChange={e =>
+                                                handlePassengerChange(
+                                                    index,
+                                                    'phone',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                                         />
                                     </div>
                                 </div>
@@ -203,36 +220,36 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
 
             {/* Special Requests */}
             <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
                     Special Requests & Preferences
                 </h3>
-                
+
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Special Requests
                         </label>
                         <textarea
                             rows={3}
                             placeholder="Any special accommodations, accessibility requirements, or preferences..."
                             value={specialRequests}
-                            onChange={(e) => setSpecialRequests(e.target.value)}
+                            onChange={e => setSpecialRequests(e.target.value)}
                             onBlur={handleSpecialRequestsSubmit}
-                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Catering Preferences
                         </label>
                         <textarea
                             rows={2}
                             placeholder="Dietary restrictions, meal preferences, beverage requests..."
                             value={cateringRequests}
-                            onChange={(e) => setCateringRequests(e.target.value)}
+                            onChange={e => setCateringRequests(e.target.value)}
                             onBlur={handleSpecialRequestsSubmit}
-                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
                         />
                     </div>
 
@@ -241,13 +258,16 @@ export function PassengerDetailsStep({ data, onUpdate }: PassengerDetailsStepPro
                             type="checkbox"
                             id="ground-transport"
                             checked={groundTransport}
-                            onChange={(e) => {
+                            onChange={e => {
                                 setGroundTransport(e.target.checked);
                                 onUpdate({ groundTransportation: e.target.checked });
                             }}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
-                        <label htmlFor="ground-transport" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                        <label
+                            htmlFor="ground-transport"
+                            className="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                        >
                             Request ground transportation arrangement
                         </label>
                     </div>

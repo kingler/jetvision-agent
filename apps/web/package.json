@@ -158,6 +158,7 @@
     },
     "devDependencies": {
         "@cloudflare/next-on-pages": "^1.13.14",
+        "@playwright/test": "^1.55.0",
         "@repo/tailwind-config": "*",
         "@repo/typescript-config": "*",
         "@tailwindcss/typography": "^0.5.13",
