@@ -1,0 +1,464 @@
+{
+  "success": false,
+  "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.tiptap.ProseMirror').first()\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" translate=\"no\" contenteditable=\"true\" class=\"tiptap ProseMirror prose prose-sm max-w-none focus:outline-none\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"flex flex-col gap-2\">…</div> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"flex flex-col gap-2\">…</div> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  2 × retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m      - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <p class=\"text-base font-semibold\">AI-Powered Private Aviation Excellence</p> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  14 × retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex flex-col gap-2\">…</div> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex flex-col gap-2\">…</div> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <p class=\"text-base font-semibold\">AI-Powered Private Aviation Excellence</p> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <p class=\"text-base font-semibold\">AI-Powered Private Aviation Excellence</p> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"flex flex-col gap-2\">…</div> from <div role=\"dialog\" tabindex=\"-1\" data-state=\"open\" id=\"radix-:Rsisvecq:\" aria-labelledby=\"radix-:RsisvecqH1:\" aria-describedby=\"radix-:RsisvecqH2:\" class=\"bg-background border-hard data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=ope…>…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n",
+  "networkLogs": [
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:30.357Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:30.470Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client/handshake?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F&__clerk_api_version=2025-04-10&suffixed_cookies=false&__clerk_hs_reason=dev-browser-missing&format=nonce",
+      "timestamp": "2025-09-06T22:25:30.470Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client/handshake?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F&__clerk_api_version=2025-04-10&suffixed_cookies=false&__clerk_hs_reason=dev-browser-missing&format=nonce",
+      "timestamp": "2025-09-06T22:25:30.680Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/?__clerk_handshake=eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zMW5RVkdmZmxLTnRGUUxtbW1TY3VOQTdGbnUiLCJ0eXAiOiJKV1QifQ.eyJoYW5kc2hha2UiOlsiX19jbGllbnRfdWF0PTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsaWVudF91YXQ9MDsgUGF0aD0vOyBEb21haW49bG9jYWxob3N0OyBNYXgtQWdlPTMxNTM2MDAwMDsgU2VjdXJlOyBTYW1lU2l0ZT1Ob25lIiwiX19zZXNzaW9uPTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsZXJrX2RiX2p3dD1kdmJfMzJMUW1RYzEwbFAzR3lsdzZVbUdoN3EzNmJpOyBQYXRoPS87IEV4cGlyZXM9U3VuLCAwNiBTZXAgMjAyNiAyMjoyNTozMCBHTVQ7IFNlY3VyZTsgU2FtZVNpdGU9Tm9uZSJdfQ.FB4YrY5gR0HhVSdv6iPN9xBiyo4fBzAGDQQPMSGGhwaaKnC3lu65INXCKzeaxeDd8R3Bt9JiTgAPLPkqqykZFlRlt-OaLIsCtK5SxhlJzokKCgzADisOX5oEMiHcOR_RI1SLSNcZzHbkeeD73vqYw7Q3fO3fRNlTe-OqHCMudUSmIH2T9DVu3MxbdnorVXoqHs4x0ursl4dtAt6OxcTh_5d50G5fMOXbxITSc1jEXy0LheHyRsVeQ3zopoRkizvPxVPO5jbCRG-XM-Cah76eTZoY0TTDkgvVtECRVR99zq4hsbMx6cuFzbry5N7MDXHKNvQHYvA33N6h19cPcUr5Iw",
+      "timestamp": "2025-09-06T22:25:30.680Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "http://localhost:3000/?__clerk_handshake=eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zMW5RVkdmZmxLTnRGUUxtbW1TY3VOQTdGbnUiLCJ0eXAiOiJKV1QifQ.eyJoYW5kc2hha2UiOlsiX19jbGllbnRfdWF0PTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsaWVudF91YXQ9MDsgUGF0aD0vOyBEb21haW49bG9jYWxob3N0OyBNYXgtQWdlPTMxNTM2MDAwMDsgU2VjdXJlOyBTYW1lU2l0ZT1Ob25lIiwiX19zZXNzaW9uPTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsZXJrX2RiX2p3dD1kdmJfMzJMUW1RYzEwbFAzR3lsdzZVbUdoN3EzNmJpOyBQYXRoPS87IEV4cGlyZXM9U3VuLCAwNiBTZXAgMjAyNiAyMjoyNTozMCBHTVQ7IFNlY3VyZTsgU2FtZVNpdGU9Tm9uZSJdfQ.FB4YrY5gR0HhVSdv6iPN9xBiyo4fBzAGDQQPMSGGhwaaKnC3lu65INXCKzeaxeDd8R3Bt9JiTgAPLPkqqykZFlRlt-OaLIsCtK5SxhlJzokKCgzADisOX5oEMiHcOR_RI1SLSNcZzHbkeeD73vqYw7Q3fO3fRNlTe-OqHCMudUSmIH2T9DVu3MxbdnorVXoqHs4x0ursl4dtAt6OxcTh_5d50G5fMOXbxITSc1jEXy0LheHyRsVeQ3zopoRkizvPxVPO5jbCRG-XM-Cah76eTZoY0TTDkgvVtECRVR99zq4hsbMx6cuFzbry5N7MDXHKNvQHYvA33N6h19cPcUr5Iw",
+      "timestamp": "2025-09-06T22:25:30.987Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:30.987Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:31.726Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+      "timestamp": "2025-09-06T22:25:31.732Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/css/app/layout.css?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.732Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/css/app/page.css?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.732Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/webpack.js?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/main-app.js?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app-pages-internals.js",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app/page.js",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app/layout.js",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:25:31.733Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:25:31.804Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:25:31.804Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:25:31.853Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/css/app/page.css?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.883Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/css/app/layout.css?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.884Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+      "timestamp": "2025-09-06T22:25:31.885Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/webpack.js?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:31.898Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app-pages-internals.js",
+      "timestamp": "2025-09-06T22:25:31.919Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/main-app.js?v=1757197531282",
+      "timestamp": "2025-09-06T22:25:32.193Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app/page.js",
+      "timestamp": "2025-09-06T22:25:32.755Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app/layout.js",
+      "timestamp": "2025-09-06T22:25:32.951Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "blob:http://localhost:3000/dc86f280-0c1b-44b6-8e1e-72654943954c",
+      "timestamp": "2025-09-06T22:25:32.969Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/environment?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&_method=PATCH&__clerk_db_jwt=dvb_32LQmQc10lP3Gylw6UmGh7q36bi",
+      "timestamp": "2025-09-06T22:25:32.973Z",
+      "headers": {},
+      "postData": null
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&__clerk_db_jwt=dvb_32LQmQc10lP3Gylw6UmGh7q36bi",
+      "timestamp": "2025-09-06T22:25:32.973Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "blob:http://localhost:3000/dc86f280-0c1b-44b6-8e1e-72654943954c",
+      "timestamp": "2025-09-06T22:25:32.980Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/favicon.svg",
+      "timestamp": "2025-09-06T22:25:32.985Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.020Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.021Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.021Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.022Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.022Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.022Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.022Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.026Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:33.033Z",
+      "headers": {},
+      "postData": []
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/db-sync.worker.js",
+      "timestamp": "2025-09-06T22:25:33.075Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.087Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:25:33.087Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/environment?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&_method=PATCH&__clerk_db_jwt=dvb_32LQmQc10lP3Gylw6UmGh7q36bi",
+      "timestamp": "2025-09-06T22:25:33.098Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&__clerk_db_jwt=dvb_32LQmQc10lP3Gylw6UmGh7q36bi",
+      "timestamp": "2025-09-06T22:25:33.106Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/favicon.svg",
+      "timestamp": "2025-09-06T22:25:33.110Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "blob:http://localhost:3000/83f73821-1a5f-41c0-a2d3-6c20bb213cb9",
+      "timestamp": "2025-09-06T22:25:33.111Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/framework_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.112Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/vendors_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.112Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/ui-common_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.112Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "blob:http://localhost:3000/83f73821-1a5f-41c0-a2d3-6c20bb213cb9",
+      "timestamp": "2025-09-06T22:25:33.129Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/ui-common_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.163Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/vendors_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.163Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/framework_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.163Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/subscriptionDetails_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.173Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/subscriptionDetails_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:25:33.245Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:33.373Z",
+      "headers": {}
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:33.374Z",
+      "headers": {},
+      "postData": []
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.381Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:25:33.394Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.396Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.405Z",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:25:33.414Z",
+      "headers": {}
+    }
+  ]
+}

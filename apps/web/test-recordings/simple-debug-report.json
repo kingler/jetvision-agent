@@ -1,0 +1,786 @@
+{
+  "success": true,
+  "pageInfo": {
+    "title": "",
+    "url": "http://localhost:3000/",
+    "hasAuthError": true,
+    "interactiveElements": [
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 justify-center font-medium whitespace-nowrap focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-70 hover:bg-quaternary text-muted-foreground opacity-100 hover:text-foreground h-7 min-w-7 text-xs md:text-sm rounded-lg transition-all mr-2",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-background dark:border dark:border-border shadow-subtle-xs text-foreground opacity-100 hover:opacity-80 [&>svg]:text-foreground font-semibold h-8 px-3 text-xs md:text-xs rounded-lg relative w-full justify-center",
+        "placeholder": null,
+        "textContent": "New",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-background dark:border dark:border-border shadow-subtle-xs opacity-100 hover:opacity-80 [&>svg]:text-foreground font-semibold h-8 text-xs md:text-xs rounded-lg relative w-full text-muted-foreground justify-center px-2",
+        "placeholder": null,
+        "textContent": "SearchK",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 justify-center whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-background dark:border dark:border-border shadow-subtle-xs text-foreground opacity-100 hover:opacity-80 [&>svg]:text-foreground font-semibold h-8 px-3 text-xs md:text-xs rounded-lg",
+        "placeholder": null,
+        "textContent": "Settings",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 justify-center whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-foreground shadow-subtle-xs border-sky-600 text-background font-semibold hover:opacity-90 [&>svg]:text-background h-8 px-3 text-xs md:text-xs rounded-lg",
+        "placeholder": null,
+        "textContent": "Log in / Sign up",
+        "visible": true
+      },
+      {
+        "tag": "div",
+        "type": null,
+        "id": null,
+        "className": "tiptap ProseMirror prose prose-sm max-w-none focus:outline-none",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r0:",
+        "className": "inline-flex items-center gap-2 justify-center whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-tertiary dark:border dark:border-hard text-muted-foreground opacity-100 hover:opacity-80 [&>svg]:text-muted-foreground font-semibold h-7 px-2 text-xs md:text-xs rounded-lg",
+        "placeholder": null,
+        "textContent": "GPT-4o Mini",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center justify-center font-medium whitespace-nowrap transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-70 hover:bg-quaternary text-muted-foreground opacity-100 hover:text-foreground h-7 min-w-7 text-xs md:text-sm rounded-lg gap-2",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "input",
+        "type": "file",
+        "id": "image-attachment",
+        "className": "hidden",
+        "placeholder": null,
+        "textContent": null,
+        "visible": false
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 justify-center font-medium whitespace-nowrap transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-70 hover:bg-quaternary text-muted-foreground opacity-100 hover:text-foreground h-7 min-w-7 text-xs md:text-sm rounded-lg",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "inline-flex items-center gap-2 justify-center whitespace-nowrap transition-colors focus-visible:outline-none disabled:opacity-70 bg-tertiary dark:border dark:border-hard text-muted-foreground opacity-100 hover:opacity-80 [&>svg]:text-muted-foreground font-semibold h-7 min-w-7 text-xs md:text-sm rounded-lg",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "input",
+        "type": "file",
+        "id": null,
+        "className": null,
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r7:",
+        "className": "flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": "Actions",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": "Expand ",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Aircraft AvailabilityCheck aircraft availability f",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r9:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Empty LegsFind empty leg opportunities for this we",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rb:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Fleet UtilizationAnalyze fleet utilization metrics",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rd:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Heavy Jet SearchSearch heavy jets for 12 passenger",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rf:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Weekly ConversionsAnalyze prospect to booking conv",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rh:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "EA EngagementIdentify top engaged executive assist",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rj:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Finance CampaignsAnalyze finance sector campaign p",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rl:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "VIP CampaignDesign VIP campaign for top 100 qualif",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rn:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "PE AssistantsFind executive assistants at NYC priv",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rp:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Job ChangesTrack job changes in target accounts la",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rr:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Decision MakersMap decision makers at Fortune 500 ",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rt:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Web VisitorsIdentify high-intent visitors from pri",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:rv:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Conversion TrendsCompare conversion rates with las",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r11:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Campaign ROICalculate ROI by campaign type and ind",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r13:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Message PerformanceAnalyze top performing email te",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r15:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "id": null,
+        "className": "w-full rounded-lg p-4 text-left transition-all bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Executive BriefingGenerate comprehensive Monday ex",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "radix-:r17:",
+        "className": "flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+        "placeholder": null,
+        "textContent": null,
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": null,
+        "className": "ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-foreground/10 absolute right-4 top-4 z-[50] flex h-7 w-7 items-center justify-center rounded-lg opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "placeholder": null,
+        "textContent": "Close",
+        "visible": true
+      }
+    ],
+    "allText": "JetVision AgentNewSearchKPinnedNo pinned threadsSettingsLog in / Sign upJetVision Agent\nGood evening Kham Lam!GPT-4o MiniQuick Start PromptsSelect a prompt to get started or type your own questionCategory Filters7 of 7 categories shownActionsExpand Charter Operations4Apollo Campaigns4Lead Generation4Analytics4Custom0Travel Planning0People Search0Jet Charter OperationsFleet management and aircraft availabilityAircraft AvailabilityCheck aircraft availability for Miami to New York tomorrowEmpty Leg"
+  },
+  "chatElements": [],
+  "networkLogs": [
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:12:46.781Z"
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:12:46.861Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client/handshake?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F&__clerk_api_version=2025-04-10&suffixed_cookies=false&__clerk_hs_reason=dev-browser-missing&format=nonce",
+      "timestamp": "2025-09-06T22:12:46.861Z"
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client/handshake?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F&__clerk_api_version=2025-04-10&suffixed_cookies=false&__clerk_hs_reason=dev-browser-missing&format=nonce",
+      "timestamp": "2025-09-06T22:12:47.097Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/?__clerk_handshake=eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zMW5RVkdmZmxLTnRGUUxtbW1TY3VOQTdGbnUiLCJ0eXAiOiJKV1QifQ.eyJoYW5kc2hha2UiOlsiX19jbGllbnRfdWF0PTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsaWVudF91YXQ9MDsgUGF0aD0vOyBEb21haW49bG9jYWxob3N0OyBNYXgtQWdlPTMxNTM2MDAwMDsgU2VjdXJlOyBTYW1lU2l0ZT1Ob25lIiwiX19zZXNzaW9uPTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsZXJrX2RiX2p3dD1kdmJfMzJMUEVXb3NycnpjeUdVQzMxWkRWZXpqblNtOyBQYXRoPS87IEV4cGlyZXM9U3VuLCAwNiBTZXAgMjAyNiAyMjoxMjo0NyBHTVQ7IFNlY3VyZTsgU2FtZVNpdGU9Tm9uZSJdfQ.pJD3i8BF10Tk9B8Fhcw0ghnCTXVrh21BL4Y_ZKQ9wlKIF-F218JxmOANdEUxH6X6I0CMl7X417TOhdyA8TKzC-lVzvi-8jfp37WmG6L6OPpFTiSLz6rlYyzk8_ABNBJRz-dnlKtu5vr8BE8ygIkVxu-mZAmVK0GHhIDxwZUncesztiWWJWWEydoFyW-0PZP94ipYM3dDKmOIcjNJPi1KzPrh8CAjM4KZnupfizQYTGX3_o5ANeI7l93qD-kwJrlBxKQKxsQu3kP9RD7D02HvJ4kz9IPee17S8-WP-w_NGnFCBjf9ZDevF6o9ImO4zLMZXlKnpHrtoajwdlIf120VoQ",
+      "timestamp": "2025-09-06T22:12:47.097Z"
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "http://localhost:3000/?__clerk_handshake=eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zMW5RVkdmZmxLTnRGUUxtbW1TY3VOQTdGbnUiLCJ0eXAiOiJKV1QifQ.eyJoYW5kc2hha2UiOlsiX19jbGllbnRfdWF0PTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsaWVudF91YXQ9MDsgUGF0aD0vOyBEb21haW49bG9jYWxob3N0OyBNYXgtQWdlPTMxNTM2MDAwMDsgU2VjdXJlOyBTYW1lU2l0ZT1Ob25lIiwiX19zZXNzaW9uPTsgUGF0aD0vOyBFeHBpcmVzPVRodSwgMDEgSmFuIDE5NzAgMDA6MDA6MDAgR01UOyBTZWN1cmU7IFNhbWVTaXRlPU5vbmUiLCJfX2NsZXJrX2RiX2p3dD1kdmJfMzJMUEVXb3NycnpjeUdVQzMxWkRWZXpqblNtOyBQYXRoPS87IEV4cGlyZXM9U3VuLCAwNiBTZXAgMjAyNiAyMjoxMjo0NyBHTVQ7IFNlY3VyZTsgU2FtZVNpdGU9Tm9uZSJdfQ.pJD3i8BF10Tk9B8Fhcw0ghnCTXVrh21BL4Y_ZKQ9wlKIF-F218JxmOANdEUxH6X6I0CMl7X417TOhdyA8TKzC-lVzvi-8jfp37WmG6L6OPpFTiSLz6rlYyzk8_ABNBJRz-dnlKtu5vr8BE8ygIkVxu-mZAmVK0GHhIDxwZUncesztiWWJWWEydoFyW-0PZP94ipYM3dDKmOIcjNJPi1KzPrh8CAjM4KZnupfizQYTGX3_o5ANeI7l93qD-kwJrlBxKQKxsQu3kP9RD7D02HvJ4kz9IPee17S8-WP-w_NGnFCBjf9ZDevF6o9ImO4zLMZXlKnpHrtoajwdlIf120VoQ",
+      "timestamp": "2025-09-06T22:12:47.104Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:12:47.104Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:12:47.192Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+      "timestamp": "2025-09-06T22:12:47.199Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/css/app/layout.css?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.199Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/css/app/page.css?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.199Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/webpack.js?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.199Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/main-app.js?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.200Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app-pages-internals.js",
+      "timestamp": "2025-09-06T22:12:47.200Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app/page.js",
+      "timestamp": "2025-09-06T22:12:47.200Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/app/layout.js",
+      "timestamp": "2025-09-06T22:12:47.200Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:12:47.200Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/css/app/layout.css?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.213Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+      "timestamp": "2025-09-06T22:12:47.215Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/css/app/page.css?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.216Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/webpack.js?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.227Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app-pages-internals.js",
+      "timestamp": "2025-09-06T22:12:47.243Z"
+    },
+    {
+      "type": "response",
+      "status": 307,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:12:47.272Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:12:47.273Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/clerk.browser.js",
+      "timestamp": "2025-09-06T22:12:47.310Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/main-app.js?v=1757196767162",
+      "timestamp": "2025-09-06T22:12:47.871Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app/page.js",
+      "timestamp": "2025-09-06T22:12:48.360Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/app/layout.js",
+      "timestamp": "2025-09-06T22:12:48.541Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "blob:http://localhost:3000/eeee10c6-76f1-484c-abb7-9de57e53429e",
+      "timestamp": "2025-09-06T22:12:48.573Z"
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/environment?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&_method=PATCH&__clerk_db_jwt=dvb_32LPEWosrrzcyGUC31ZDVezjnSm",
+      "timestamp": "2025-09-06T22:12:48.576Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&__clerk_db_jwt=dvb_32LPEWosrrzcyGUC31ZDVezjnSm",
+      "timestamp": "2025-09-06T22:12:48.576Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "blob:http://localhost:3000/eeee10c6-76f1-484c-abb7-9de57e53429e",
+      "timestamp": "2025-09-06T22:12:48.583Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/favicon.svg",
+      "timestamp": "2025-09-06T22:12:48.588Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:12:48.624Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:12:48.625Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:12:48.626Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.626Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.626Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.626Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.626Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/api/messages/remaining",
+      "timestamp": "2025-09-06T22:12:48.628Z"
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-09-06T22:12:48.635Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/favicon.svg",
+      "timestamp": "2025-09-06T22:12:48.674Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://localhost:3000/db-sync.worker.js",
+      "timestamp": "2025-09-06T22:12:48.680Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/environment?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&_method=PATCH&__clerk_db_jwt=dvb_32LPEWosrrzcyGUC31ZDVezjnSm",
+      "timestamp": "2025-09-06T22:12:48.723Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.730Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/v1/client?__clerk_api_version=2025-04-10&_clerk_js_version=5.91.2&__clerk_db_jwt=dvb_32LPEWosrrzcyGUC31ZDVezjnSm",
+      "timestamp": "2025-09-06T22:12:48.737Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "blob:http://localhost:3000/c01a3b42-cdb1-4056-869e-77992c6d03a9",
+      "timestamp": "2025-09-06T22:12:48.737Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/framework_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.738Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/vendors_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.738Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/ui-common_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.738Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "blob:http://localhost:3000/c01a3b42-cdb1-4056-869e-77992c6d03a9",
+      "timestamp": "2025-09-06T22:12:48.750Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "http://localhost:3000/_next/static/chunks/_app-pages-browser_packages_ai_worker_worker_ts-_fd721.js",
+      "timestamp": "2025-09-06T22:12:48.771Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/vendors_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.787Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/framework_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.787Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/ui-common_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.788Z"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/subscriptionDetails_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.796Z"
+    },
+    {
+      "type": "response",
+      "status": 200,
+      "url": "https://neutral-muskox-24.clerk.accounts.dev/npm/@clerk/clerk-js@5.91.2/dist/subscriptionDetails_clerk.browser_db87d8_5.91.2.js",
+      "timestamp": "2025-09-06T22:12:48.841Z"
+    }
+  ],
+  "n8nLogs": 0
+}

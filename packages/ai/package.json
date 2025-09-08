@@ -11,7 +11,8 @@
         "./models": "./models.ts",
         "./tools": "./tools/index.ts",
         "./workflow": "./workflow/flow.ts",
-        "./worker": "./worker/index.ts"
+        "./worker": "./worker/index.ts",
+        "./services/prompt-enhancement": "./services/prompt-enhancement.ts"
     },
     "dependencies": {
         "@ai-sdk/anthropic": "^1.1.8",

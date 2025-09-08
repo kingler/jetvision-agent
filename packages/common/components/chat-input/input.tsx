@@ -1,7 +1,9 @@
 'use client';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { ImageAttachment, ImageDropzoneRoot } from '@repo/common/components';
-import { useImageAttachment } from '@repo/common/hooks';
+import { useImageAttachment, usePromptEnhancement } from '@repo/common/hooks';
+// Copilot integration would be added here when needed
+// import { useJetVisionCopilot } from '../../../apps/web/lib/copilot/jetvision-copilot';
 import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -26,7 +28,7 @@ import { routeMessage, type RoutingDecision } from '../../utils/agent-router';
 import { isAviationMessage } from '../../utils/aviation-classifier';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
-import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
+import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton, PromptEnhanceButton } from './chat-actions';
 // import { PromptCardsButton, PromptCard } from '../prompt-cards'; // Temporarily disabled for build
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
@@ -131,6 +133,59 @@ export const ChatInput = forwardRef<
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
     const chatMode = useChatStore(state => state.chatMode);
+
+    // Prompt enhancement functionality
+    const {
+        enhancedPrompt,
+        isEnhancing,
+        error: enhancementError,
+        lastEnhancementResult,
+        enhancePrompt,
+        clearEnhancement,
+        applyEnhancement,
+        revertToOriginal,
+    } = usePromptEnhancement(chatMode);
+
+    // Get enhancement state from store for UI
+    const promptEnhancementState = useChatStore(state => state.promptEnhancement);
+    const setEnhancementState = useChatStore(state => state.setEnhancementState);
+
+    // Handle prompt enhancement
+    const handlePromptEnhancement = useCallback(async () => {
+        const currentText = editor?.getText()?.trim();
+        if (!currentText) return;
+
+        try {
+            setEnhancementState({ isEnhancing: true, enhancementError: null });
+            
+            const result = await enhancePrompt(currentText, {
+                businessContext: 'general', // Could be dynamic based on message content
+                enhancementLevel: 'moderate',
+                includeDataRequests: true,
+                preserveOriginalTone: true,
+            });
+
+            // Apply enhancement to editor
+            if (editor && editor.commands && result.enhancedPrompt !== currentText) {
+                editor.commands.setContent(result.enhancedPrompt);
+                editor.commands.focus('end');
+            }
+
+            setEnhancementState({
+                isEnhancing: false,
+                enhancedPrompt: result.enhancedPrompt,
+                originalPrompt: result.originalPrompt,
+                lastEnhancementResult: result,
+            });
+
+        } catch (error) {
+            console.error('Enhancement failed:', error);
+            setEnhancementState({
+                isEnhancing: false,
+                enhancementError: error instanceof Error ? error.message : 'Enhancement failed',
+            });
+        }
+    }, [editor, enhancePrompt, setEnhancementState]);
 
     // Handle prompt selection from prompt cards
     // const handlePromptSelect = useCallback((prompt: PromptCard) => {
@@ -503,6 +558,11 @@ export const ChatInput = forwardRef<
                                                 {/* <AttachmentButton /> */}
                                                 {/* <PromptCardsButton onSelectPrompt={handlePromptSelect} /> */}
                                                 <WebSearchButton />
+                                                <PromptEnhanceButton
+                                                    onEnhance={handlePromptEnhancement}
+                                                    isEnhancing={promptEnhancementState.isEnhancing || isEnhancing}
+                                                    hasEnhancement={!!promptEnhancementState.enhancedPrompt}
+                                                />
                                                 {/* <ToolsMenu /> */}
                                                 <ImageUpload
                                                     id="image-attachment"

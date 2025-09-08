@@ -6,3 +6,4 @@ export * from './use-editor';
 export * from './use-image-attachment';
 export * from './use-text-selection';
 export * from './use-prompt-manager';
+export * from './use-prompt-enhancement';

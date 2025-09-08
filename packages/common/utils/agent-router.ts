@@ -16,11 +16,21 @@ export interface RoutingDecision {
     routingStrategy: 'openai-only' | 'n8n-only' | 'hybrid' | 'sequential';
     reasoning: string;
     aviationContext?: AviationContext;
+    apolloContext?: ApolloContext;
     instructions: {
         openaiPrompt?: string;
         n8nPayload?: Record<string, any>;
         followUpActions?: string[];
+        hybridMode?: 'apollo-insights' | 'aviation-data' | 'general-hybrid';
     };
+}
+
+export interface ApolloContext {
+    isApolloQuery: boolean;
+    apolloIntentType: 'people_search' | 'company_search' | 'campaign_analysis' | 'sequence_management' | 'lead_generation' | 'generic';
+    extractedParameters: Record<string, any>;
+    requiresDataFetch: boolean;
+    confidence: number;
 }
 
 /**
@@ -38,8 +48,16 @@ export function routeMessage(
     const aviationContext = getAviationContext(message);
     const config = ChatModeConfig[chatMode];
 
+    // Get Apollo classification for hybrid processing
+    const apolloContext = getApolloContext(message);
+
     // Check if aviation routing is enabled for this chat mode
     const isAviationRoutingEnabled = config?.isAviationRouted ?? true;
+
+    // Apollo hybrid routing logic
+    if (apolloContext.isApolloQuery && apolloContext.requiresDataFetch) {
+        return createApolloHybridRouting(message, chatMode, apolloContext, aviationContext, threadContext);
+    }
 
     if (aviationContext.shouldRoute && isAviationRoutingEnabled) {
         // Aviation-related message - route to n8n workflow
@@ -222,6 +240,158 @@ export function createSequentialRouting(
                 'Analyze with OpenAI first',
                 'Route to n8n if specialized aviation data needed',
                 'Provide combined response',
+            ],
+        },
+    };
+}
+
+/**
+ * Get Apollo context from message for hybrid processing
+ */
+export function getApolloContext(message: string): ApolloContext {
+    const lowerMessage = message.toLowerCase();
+    
+    // Apollo-specific keywords and patterns
+    const apolloKeywords = [
+        'executive assistant', 'ea', 'find people', 'search contacts', 'prospects',
+        'private equity', 'pe firms', 'managing director', 'apollo', 'lead generation',
+        'email sequence', 'campaign', 'outreach', 'linkedin', 'company search',
+        'organization', 'ceo', 'cfo', 'executives', 'decision makers', 'contacts'
+    ];
+
+    // Intent type detection
+    let apolloIntentType: ApolloContext['apolloIntentType'] = 'generic';
+    let confidence = 0;
+    let requiresDataFetch = false;
+    const extractedParameters: Record<string, any> = {};
+
+    // People search patterns
+    if (lowerMessage.includes('find') && (lowerMessage.includes('people') || lowerMessage.includes('contacts') || lowerMessage.includes('executive'))) {
+        apolloIntentType = 'people_search';
+        confidence = 0.8;
+        requiresDataFetch = true;
+        
+        // Extract parameters for people search
+        const titleMatches = lowerMessage.match(/(?:find|search for|looking for)\s+([^,\n]+?)(?:\s+at|\s+in|\s+from|\s+with|$)/i);
+        if (titleMatches && titleMatches[1]) {
+            extractedParameters.person_titles = [titleMatches[1].trim()];
+        }
+        
+        const locationMatches = lowerMessage.match(/(?:in|at|from|based in)\s+([\w\s]+?)(?:\s+|$)/gi);
+        if (locationMatches) {
+            extractedParameters.person_locations = locationMatches.map(match => 
+                match.replace(/^(in|at|from|based in)\s+/i, '').trim()
+            );
+        }
+    }
+    
+    // Company search patterns
+    else if (lowerMessage.includes('company') || lowerMessage.includes('organization') || lowerMessage.includes('firms')) {
+        apolloIntentType = 'company_search';
+        confidence = 0.7;
+        requiresDataFetch = true;
+        
+        // Extract company parameters
+        const sizeMatches = lowerMessage.match(/(\d+[\+\-\s\d]*)\s*(?:employees|people|staff)/i);
+        if (sizeMatches) {
+            extractedParameters.organization_num_employees_ranges = [sizeMatches[1].trim()];
+        }
+    }
+    
+    // Campaign/sequence patterns
+    else if (lowerMessage.includes('sequence') || lowerMessage.includes('campaign') || lowerMessage.includes('outreach')) {
+        apolloIntentType = 'sequence_management';
+        confidence = 0.6;
+        requiresDataFetch = true;
+    }
+    
+    // Lead generation patterns
+    else if (lowerMessage.includes('lead') || lowerMessage.includes('prospect')) {
+        apolloIntentType = 'lead_generation';
+        confidence = 0.7;
+        requiresDataFetch = true;
+    }
+
+    // Check for Apollo keywords to boost confidence
+    const keywordMatches = apolloKeywords.filter(keyword => lowerMessage.includes(keyword)).length;
+    confidence = Math.min(confidence + (keywordMatches * 0.1), 0.9);
+
+    return {
+        isApolloQuery: confidence > 0.3,
+        apolloIntentType,
+        extractedParameters,
+        requiresDataFetch: requiresDataFetch && confidence > 0.4,
+        confidence
+    };
+}
+
+/**
+ * Create Apollo hybrid routing for queries that need both data and commentary
+ */
+export function createApolloHybridRouting(
+    message: string,
+    chatMode: ChatMode,
+    apolloContext: ApolloContext,
+    aviationContext: AviationContext,
+    threadContext?: {
+        threadId?: string;
+        previousMessages?: Array<{ role: string; content: string }>;
+    }
+): RoutingDecision {
+    // Create Apollo-specific commentary prompt
+    const apolloCommentaryPrompt = `You are JetVision Agent, specializing in aviation lead generation and Apollo.io intelligence. You will receive Apollo.io data and provide expert commentary and insights.
+
+User Query: "${message}"
+Apollo Intent: ${apolloContext.apolloIntentType}
+Extracted Parameters: ${JSON.stringify(apolloContext.extractedParameters)}
+
+Your role:
+1. First, analyze the user's intent and optimize parameters for Apollo.io data retrieval
+2. After receiving Apollo data, provide intelligent commentary with:
+   - Executive summary of findings
+   - Key insights and patterns
+   - Aviation industry context
+   - Actionable recommendations
+   - Next steps for the user
+
+Maintain a conversational, expert tone while referencing specific data points from the results.`;
+
+    // Enhanced N8N payload with Apollo context
+    const n8nPayload = {
+        message,
+        chatMode,
+        threadId: threadContext?.threadId,
+        apolloContext: {
+            intentType: apolloContext.apolloIntentType,
+            parameters: apolloContext.extractedParameters,
+            confidence: apolloContext.confidence,
+        },
+        aviationContext: aviationContext.classification,
+        isHybridRequest: true,
+        hybridType: 'apollo-insights',
+        routing: {
+            source: 'apollo-hybrid-router',
+            timestamp: new Date().toISOString(),
+            model: chatMode,
+        },
+    };
+
+    return {
+        useOpenAI: true,
+        useN8N: true,
+        routingStrategy: 'hybrid',
+        reasoning: `Apollo query detected (${apolloContext.apolloIntentType}, confidence: ${apolloContext.confidence}) - using hybrid processing for data + commentary`,
+        aviationContext,
+        apolloContext,
+        instructions: {
+            openaiPrompt: apolloCommentaryPrompt,
+            n8nPayload,
+            hybridMode: 'apollo-insights',
+            followUpActions: [
+                'Extract and validate Apollo parameters',
+                'Fetch real data via Apollo MCP server',
+                'Generate intelligent commentary on results',
+                'Provide actionable next steps',
             ],
         },
     };

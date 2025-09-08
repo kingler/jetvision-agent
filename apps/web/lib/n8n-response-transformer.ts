@@ -4,8 +4,25 @@
  */
 
 export interface StructuredData {
-    type: 'apollo_leads' | 'people_search' | 'aircraft_search' | 'booking_data' | 'google_sheets' | 'general';
+    type: 'apollo_leads' | 'people_search' | 'aircraft_search' | 'booking_data' | 'google_sheets' | 'apollo_hybrid' | 'general';
     data: any;
+}
+
+export interface HybridResponseData {
+    commentary: {
+        analysis: string;
+        key_insights: string[];
+        recommendations: string[];
+        next_steps: string[];
+    };
+    apollo_data: {
+        leads?: any[];
+        organizations?: any[];
+        sequences?: any[];
+        metrics?: any;
+    };
+    source_query: string;
+    confidence_score: number;
 }
 
 export interface TransformedResponse {
@@ -35,6 +52,11 @@ export function transformN8nResponse(
     threadItemId: string
 ): TransformedResponse {
     try {
+        // Check if this is a hybrid response with both data and commentary
+        if (webhookData?.isHybridRequest || webhookData?.hybridType === 'apollo-insights') {
+            return transformHybridResponse(webhookData, threadId, threadItemId);
+        }
+
         // Extract the main response text from various possible field names
         const responseText = extractResponseText(webhookData);
 
@@ -53,8 +75,8 @@ export function transformN8nResponse(
             },
             sources: extractSources(webhookData),
             metadata: {
-                executionId: webhookData.executionId,
-                workflowId: webhookData.workflowId,
+                executionId: webhookData?.executionId,
+                workflowId: webhookData?.workflowId,
                 source: 'n8n',
                 timestamp: new Date().toISOString(),
                 originalData: webhookData,
@@ -84,9 +106,84 @@ export function transformN8nResponse(
 }
 
 /**
+ * Transform hybrid response combining OpenAI commentary with Apollo data
+ */
+export function transformHybridResponse(
+    webhookData: any,
+    threadId: string,
+    threadItemId: string
+): TransformedResponse {
+    try {
+        // Extract Apollo data from the response
+        const apolloData = extractApolloData(webhookData);
+        
+        // Extract or generate commentary (this would typically come from OpenAI)
+        const commentary = extractCommentary(webhookData);
+        
+        // Create combined narrative text
+        const combinedText = createHybridNarrative(commentary, apolloData, webhookData);
+        
+        // Create structured data for hybrid response
+        const structuredData: StructuredData = {
+            type: 'apollo_hybrid',
+            data: {
+                commentary,
+                apollo_data: apolloData,
+                source_query: webhookData.message || '',
+                confidence_score: webhookData.apolloContext?.confidence || 0.5,
+            } as HybridResponseData,
+        };
+
+        return {
+            id: threadItemId || `hybrid-${Date.now()}`,
+            threadId,
+            answer: {
+                text: combinedText,
+                structured: structuredData,
+            },
+            sources: extractSources(webhookData),
+            metadata: {
+                executionId: webhookData?.executionId,
+                workflowId: webhookData?.workflowId,
+                source: 'hybrid',
+                hybridType: webhookData.hybridType || 'apollo-insights',
+                apolloContext: webhookData.apolloContext,
+                timestamp: new Date().toISOString(),
+                originalData: webhookData,
+            },
+            status: 'COMPLETED',
+        };
+    } catch (error) {
+        console.error('Error transforming hybrid response:', error);
+        
+        // Create a basic error response instead of recursive call
+        return {
+            id: threadItemId || `hybrid-error-${Date.now()}`,
+            threadId,
+            answer: {
+                text: 'Error processing hybrid response. Please try again.',
+                structured: null,
+            },
+            sources: [],
+            metadata: {
+                source: 'hybrid',
+                error: error instanceof Error ? error.message : 'Unknown error',
+                timestamp: new Date().toISOString(),
+            },
+            status: 'ERROR' as const,
+        };
+    }
+}
+
+/**
  * Extract response text from various possible field names in webhook data
  */
 function extractResponseText(webhookData: any): string {
+    // Handle null/undefined webhookData
+    if (!webhookData) {
+        return 'No webhook data provided';
+    }
+
     // Handle array responses (common with n8n workflows)
     if (Array.isArray(webhookData)) {
         if (webhookData.length > 0) {
@@ -270,6 +367,178 @@ function formatAircraftResponse(data: any): string {
 }
 
 /**
+ * Extract Apollo data from webhook response
+ */
+function extractApolloData(webhookData: any): any {
+    // Try to find Apollo data in various response locations
+    if (webhookData.apollo_data) return webhookData.apollo_data;
+    if (webhookData.data?.apollo_data) return webhookData.data.apollo_data;
+    if (webhookData.response?.apollo_data) return webhookData.response.apollo_data;
+    
+    // Check for people search results in direct fields
+    if (webhookData.people) {
+        return { leads: webhookData.people };
+    }
+    
+    // Check for direct data array with leads (test case: { data: mockApolloLeads })
+    if (Array.isArray(webhookData.data) && webhookData.data.length > 0 && webhookData.data[0]?.name) {
+        return { leads: webhookData.data };
+    }
+    
+    // Check for organization search results
+    if (webhookData.organizations) {
+        return { organizations: webhookData.organizations };
+    }
+    
+    // Check for direct data array with organizations
+    if (Array.isArray(webhookData.data) && webhookData.data.length > 0 && webhookData.data[0]?.domain) {
+        return { organizations: webhookData.data };
+    }
+    
+    return {};
+}
+
+/**
+ * Extract commentary from OpenAI or generate fallback commentary
+ */
+function extractCommentary(webhookData: any): any {
+    const defaultCommentary = {
+        analysis: '',
+        key_insights: [],
+        recommendations: [],
+        next_steps: [],
+    };
+
+    // Try to extract commentary from response
+    if (webhookData.commentary) return { ...defaultCommentary, ...webhookData.commentary };
+    if (webhookData.data?.commentary) return { ...defaultCommentary, ...webhookData.data.commentary };
+    
+    // Generate basic commentary based on Apollo data
+    const apolloData = extractApolloData(webhookData);
+    
+    if (apolloData.leads?.length) {
+        return {
+            analysis: `Found ${apolloData.leads.length} potential prospects matching your search criteria.`,
+            key_insights: [
+                `Identified ${apolloData.leads.length} qualified contacts`,
+                'Data includes verified email addresses and LinkedIn profiles',
+                'Results span multiple organizations in your target market',
+            ],
+            recommendations: [
+                'Review contact profiles for best-fit prospects',
+                'Create targeted outreach sequences',
+                'Set up LinkedIn connection campaigns',
+            ],
+            next_steps: [
+                'Select top 10 prospects for immediate outreach',
+                'Create personalized email templates',
+                'Schedule follow-up activities',
+            ],
+        };
+    }
+    
+    if (apolloData.organizations?.length) {
+        return {
+            analysis: `Discovered ${apolloData.organizations.length} companies matching your search parameters.`,
+            key_insights: [
+                `Found ${apolloData.organizations.length} target organizations`,
+                'Companies include key decision-maker contact information',
+                'Results show growth indicators and technology usage',
+            ],
+            recommendations: [
+                'Analyze company growth signals',
+                'Map decision-making units',
+                'Prioritize by revenue and employee count',
+            ],
+            next_steps: [
+                'Research top companies for warm introduction opportunities',
+                'Create company-specific value propositions',
+                'Set up company growth alerts',
+            ],
+        };
+    }
+    
+    return defaultCommentary;
+}
+
+/**
+ * Create combined narrative text from commentary and data
+ */
+function createHybridNarrative(commentary: any, apolloData: any, webhookData: any): string {
+    let narrative = '';
+    
+    // Add analysis section
+    if (commentary.analysis) {
+        narrative += `🧠 **Intelligence Analysis**\n${commentary.analysis}\n\n`;
+    }
+    
+    // Add key insights
+    if (commentary.key_insights?.length) {
+        narrative += `**Key Insights:**\n`;
+        commentary.key_insights.forEach((insight: string) => {
+            narrative += `💡 ${insight}\n`;
+        });
+        narrative += '\n';
+    }
+    
+    // Add data summary
+    if (apolloData.leads?.length) {
+        narrative += `📊 **Apollo.io Results**\n`;
+        narrative += `Found ${apolloData.leads.length} qualified prospects:\n\n`;
+        
+        // Show first few results as preview
+        apolloData.leads.slice(0, 3).forEach((lead: any, index: number) => {
+            narrative += `**${index + 1}. ${lead.name || 'Unknown'}**\n`;
+            if (lead.title) narrative += `• ${lead.title}`;
+            if (lead.company) narrative += ` at ${lead.company}`;
+            narrative += '\n';
+        });
+        
+        if (apolloData.leads.length > 3) {
+            narrative += `\n*...and ${apolloData.leads.length - 3} more prospects*\n`;
+        }
+        narrative += '\n';
+    }
+    
+    if (apolloData.organizations?.length) {
+        narrative += `🏢 **Company Intelligence**\n`;
+        narrative += `Found ${apolloData.organizations.length} target organizations:\n\n`;
+        
+        apolloData.organizations.slice(0, 3).forEach((org: any, index: number) => {
+            narrative += `**${index + 1}. ${org.name || 'Unknown Company'}**\n`;
+            if (org.industry) narrative += `• Industry: ${org.industry}\n`;
+            if (org.employee_count) narrative += `• Employees: ${org.employee_count}\n`;
+            if (org.revenue) narrative += `• Revenue: ${org.revenue}\n`;
+            narrative += '\n';
+        });
+        
+        if (apolloData.organizations.length > 3) {
+            narrative += `*...and ${apolloData.organizations.length - 3} more companies*\n\n`;
+        }
+    }
+    
+    // Add recommendations
+    if (commentary.recommendations?.length) {
+        narrative += `🎯 **Recommended Actions**\n`;
+        commentary.recommendations.forEach((rec: string, index: number) => {
+            narrative += `${index + 1}. ${rec}\n`;
+        });
+        narrative += '\n';
+    }
+    
+    // Add next steps
+    if (commentary.next_steps?.length) {
+        narrative += `📋 **Next Steps**\n`;
+        commentary.next_steps.forEach((step: string, index: number) => {
+            narrative += `${index + 1}. ${step}\n`;
+        });
+        narrative += '\n';
+    }
+    
+    return narrative || 'Processing completed. Please review the structured data below.';
+}
+
+/**
  * Extract and identify structured data from response text
  */
 export function extractStructuredData(responseText: string): StructuredData | null {
@@ -277,16 +546,18 @@ export function extractStructuredData(responseText: string): StructuredData | nu
         return null;
     }
 
+    const trimmedText = responseText.trim();
+    
     // Try to parse JSON structured data first
-    const jsonMatch = responseText.match(/\{[^}]*"type"[^}]*\}/);
-    if (jsonMatch) {
+    if (trimmedText.startsWith('{') && trimmedText.includes('"type"')) {
         try {
-            const parsed = JSON.parse(jsonMatch[0]);
-            if (parsed.type && parsed.data) {
+            const parsed = JSON.parse(trimmedText);
+            if (parsed.type && parsed.data !== undefined) {
                 return parsed as StructuredData;
             }
         } catch {
-            // Not valid JSON, continue with pattern matching
+            // Invalid JSON that looks like it should be structured data - return null
+            return null;
         }
     }
 
@@ -321,18 +592,20 @@ export function extractStructuredData(responseText: string): StructuredData | nu
             type: 'people_search',
             data: {
                 people: extractPeopleSearchData(responseText),
-                source: 'apollo.io',
+                source: 'apollo',
                 timestamp: new Date().toISOString(),
             },
         };
     }
 
-    // Apollo.io lead data patterns (general leads)
+    // Apollo.io lead data patterns (general leads) - only if not JSON
     if (
-        lowerText.includes('executive assistant') ||
-        lowerText.includes('lead') ||
-        lowerText.includes('apollo') ||
-        (lowerText.includes('contact') && lowerText.includes('company'))
+        !trimmedText.startsWith('{') && (
+            lowerText.includes('executive assistant') ||
+            lowerText.includes('lead') ||
+            lowerText.includes('apollo') ||
+            (lowerText.includes('contact') && lowerText.includes('company'))
+        )
     ) {
         return {
             type: 'apollo_leads',
@@ -539,6 +812,10 @@ export function formatDisplayText(
 function extractSources(webhookData: any): any[] {
     const sources: any[] = [];
 
+    if (!webhookData) {
+        return sources;
+    }
+
     // Look for source information in the webhook data
     if (webhookData.sources && Array.isArray(webhookData.sources)) {
         return webhookData.sources;
@@ -548,7 +825,7 @@ function extractSources(webhookData: any): any[] {
     if (webhookData.response || webhookData.message) {
         const text = webhookData.response || webhookData.message;
 
-        if (text.toLowerCase().includes('apollo')) {
+        if (typeof text === 'string' && text.toLowerCase().includes('apollo')) {
             sources.push({
                 name: 'Apollo.io',
                 type: 'lead_database',
@@ -556,7 +833,7 @@ function extractSources(webhookData: any): any[] {
             });
         }
 
-        if (text.toLowerCase().includes('avinode')) {
+        if (typeof text === 'string' && text.toLowerCase().includes('avinode')) {
             sources.push({
                 name: 'Avinode',
                 type: 'aircraft_charter',

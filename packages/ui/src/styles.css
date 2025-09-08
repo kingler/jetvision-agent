@@ -42,16 +42,24 @@
         --accent: 40 15% 92%;
         --accent-foreground: 20 15% 10%;
 
+        /* Additional surface */
+        --quaternary: 25 12% 96%;
+        --quaternary-foreground: 25 12% 6%;
+
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;
 
         --border: 25 12% 86%;
         --soft: 25 12% 92%;
         --hard: 25 12% 85%;
-        --input: 25 12% 85%;
-        --ring: 20 15% 10%;
+        --input: 25 12% 100%;
+        --ring: 25 12% 10%;
 
         --radius: 0.5rem;
+
+        /* Shadow tokens */
+        --shadow-subtle-xs: 0 1px 1px hsl(0 0% 0% / 0.04), 0 1px 2px hsl(0 0% 0% / 0.04);
+        --shadow-subtle-sm: 0 1px 2px hsl(0 0% 0% / 0.06), 0 2px 4px hsl(0 0% 0% / 0.06);
     }
 
     /**

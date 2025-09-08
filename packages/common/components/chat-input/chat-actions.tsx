@@ -146,6 +146,46 @@ export const WebSearchButton = () => {
     );
 };
 
+export const PromptEnhanceButton = ({ 
+    onEnhance,
+    isEnhancing = false,
+    hasEnhancement = false
+}: { 
+    onEnhance: () => void;
+    isEnhancing?: boolean;
+    hasEnhancement?: boolean;
+}) => {
+    const editor = useChatStore(state => state.editor);
+    const hasTextInput = !!editor?.getText()?.trim();
+
+    // Don't show if there's no text input
+    if (!hasTextInput) return null;
+
+    return (
+        <Button
+            size="icon-sm"
+            tooltip={isEnhancing ? "Enhancing prompt..." : "Enhance Prompt"}
+            variant={hasEnhancement ? 'secondary' : 'ghost'}
+            className={cn(
+                'gap-2',
+                hasEnhancement && 'bg-purple-500/10 text-purple-500',
+                isEnhancing && 'animate-pulse'
+            )}
+            onClick={onEnhance}
+            disabled={isEnhancing || !hasTextInput}
+        >
+            <IconNorthStar
+                size={16}
+                strokeWidth={2}
+                className={cn(
+                    hasEnhancement ? '!text-purple-500' : 'text-muted-foreground',
+                    isEnhancing && 'animate-spin'
+                )}
+            />
+        </Button>
+    );
+};
+
 export const NewLineIndicator = () => {
     const editor = useChatStore(state => state.editor);
     const hasTextInput = !!editor?.getText();

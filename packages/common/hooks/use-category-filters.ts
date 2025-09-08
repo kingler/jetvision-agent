@@ -44,6 +44,7 @@ export const useCategoryFilters = (): UseCategoryFiltersReturn => {
                 setVisibleCategories({ ...DEFAULT_CATEGORIES, ...parsed });
             }
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Failed to load category filters:', error);
             // Fall back to defaults
             setVisibleCategories(DEFAULT_CATEGORIES);
@@ -55,6 +56,7 @@ export const useCategoryFilters = (): UseCategoryFiltersReturn => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Failed to save category filters:', error);
         }
     }, []);

@@ -10,6 +10,21 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { useAppStore } from './app.store';
 
+// Import enhancement types
+export interface PromptEnhancementState {
+    isEnhancing: boolean;
+    enhancedPrompt: string | null;
+    originalPrompt: string | null;
+    lastEnhancementResult: {
+        enhancedPrompt: string;
+        originalPrompt: string;
+        improvements: string[];
+        suggestedContext: string[];
+        estimatedTokens: number;
+    } | null;
+    enhancementError: string | null;
+}
+
 class ThreadDatabase extends Dexie {
     threads!: Table<Thread>;
     threadItems!: Table<ThreadItem>;
@@ -98,6 +113,8 @@ type State = {
         isAuthenticated: boolean;
         isFetched: boolean;
     };
+    // Prompt enhancement state
+    promptEnhancement: PromptEnhancementState;
 };
 
 type Actions = {
@@ -135,6 +152,11 @@ type Actions = {
     setCurrentSources: (sources: string[]) => void;
     setUseWebSearch: (useWebSearch: boolean) => void;
     setShowSuggestions: (showSuggestions: boolean) => void;
+    // Prompt enhancement actions
+    setEnhancementState: (state: Partial<PromptEnhancementState>) => void;
+    clearEnhancement: () => void;
+    applyEnhancement: (result: PromptEnhancementState['lastEnhancementResult']) => void;
+    revertToOriginal: () => void;
 };
 
 // Add these utility functions at the top level
@@ -487,6 +509,14 @@ export const useChatStore = create(
             isFetched: false,
         },
         showSuggestions: true,
+        // Initialize prompt enhancement state
+        promptEnhancement: {
+            isEnhancing: false,
+            enhancedPrompt: null,
+            originalPrompt: null,
+            lastEnhancementResult: null,
+            enhancementError: null,
+        },
 
         setCustomInstructions: (customInstructions: string) => {
             const existingConfig = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
@@ -1026,6 +1056,48 @@ export const useChatStore = create(
         getCurrentThread: () => {
             const state = get();
             return state.threads.find(t => t.id === state.currentThreadId) || null;
+        },
+
+        // Prompt enhancement actions
+        setEnhancementState: (newState: Partial<PromptEnhancementState>) => {
+            set(state => {
+                state.promptEnhancement = { ...state.promptEnhancement, ...newState };
+            });
+        },
+
+        clearEnhancement: () => {
+            set(state => {
+                state.promptEnhancement = {
+                    isEnhancing: false,
+                    enhancedPrompt: null,
+                    originalPrompt: null,
+                    lastEnhancementResult: null,
+                    enhancementError: null,
+                };
+            });
+        },
+
+        applyEnhancement: (result: PromptEnhancementState['lastEnhancementResult']) => {
+            if (!result) return;
+            
+            set(state => {
+                state.promptEnhancement = {
+                    ...state.promptEnhancement,
+                    lastEnhancementResult: result,
+                    enhancedPrompt: result.enhancedPrompt,
+                    originalPrompt: result.originalPrompt,
+                    enhancementError: null,
+                };
+            });
+        },
+
+        revertToOriginal: () => {
+            set(state => {
+                const { lastEnhancementResult } = state.promptEnhancement;
+                if (lastEnhancementResult) {
+                    state.promptEnhancement.enhancedPrompt = lastEnhancementResult.originalPrompt;
+                }
+            });
         },
     }))
 );

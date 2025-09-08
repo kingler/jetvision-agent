@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { RootProvider, ReactQueryProvider } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { TooltipProvider } from '@repo/ui';
+// import { JetVisionCopilotProvider } from '../lib/copilot/jetvision-copilot';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
