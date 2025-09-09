@@ -19,7 +19,7 @@ const N8N_CONFIG = {
         'https://n8n.vividwalls.blog/webhook/jetvision-agent',
     apiKey: process.env.N8N_API_KEY,
     apiUrl: process.env.N8N_API_URL || 'https://n8n.vividwalls.blog/api/v1',
-    timeout: 5000, // 5 seconds - reduced to trigger fallback quickly
+    timeout: 30000, // 30 seconds
     maxRetries: 3,
     pollingInterval: 2000, // 2 seconds
     maxPollingTime: 60000, // 60 seconds max wait
