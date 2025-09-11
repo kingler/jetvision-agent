@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - link "JetVision Agent" [ref=e7]:
+        - /url: /chat
+        - paragraph [ref=e9]: JetVision Agent
+      - button [ref=e10]:
+        - img [ref=e11]
+    - generic [ref=e14]:
+      - link "New" [ref=e15]:
+        - /url: /chat
+        - button "New" [ref=e16]:
+          - img [ref=e17]
+          - text: New
+      - button "Search K" [ref=e18]:
+        - img [ref=e19]
+        - text: Search
+        - generic [ref=e22]:
+          - img [ref=e24]
+          - generic [ref=e26]: K
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - img [ref=e30]
+        - text: Pinned
+      - paragraph [ref=e33]: No pinned threads
+    - generic [ref=e35]:
+      - button "Settings" [ref=e36]:
+        - img [ref=e37]
+        - text: Settings
+      - button "Log in / Sign up" [ref=e40]
+  - generic [ref=e47]:
+    - generic [ref=e50]:
+      - generic:
+        - generic:
+          - heading [level=1]
+      - generic [ref=e53]:
+        - generic [ref=e55]:
+          - generic [ref=e60]: Loading editor...
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - button "GPT-4o" [ref=e63]:
+                - generic [ref=e64]: GPT-4o
+                - img [ref=e65]
+              - button [ref=e67]:
+                - img [ref=e68]
+              - button "Choose File" [ref=e72]
+              - button [ref=e73]:
+                - img [ref=e74]
+            - button [disabled] [ref=e79]:
+              - img [ref=e80]
+        - button "Choose File" [ref=e83]
+    - generic [ref=e86]:
+      - heading "Quick Start Prompts" [level=2] [ref=e87]
+      - paragraph [ref=e88]: Select a prompt to get started or type your own question
+  - region "Notifications (F8)":
+    - list
+```

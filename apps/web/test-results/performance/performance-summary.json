@@ -1,0 +1,15 @@
+{
+  "summary": {
+    "totalRequests": 0,
+    "averageResponseTime": 0,
+    "successRate": 0,
+    "errorCount": 0,
+    "testDuration": 15144
+  },
+  "timestamp": "2025-09-09T19:20:33.274Z",
+  "environment": {
+    "nodeVersion": "v22.13.1",
+    "platform": "darwin",
+    "ciMode": false
+  }
+}

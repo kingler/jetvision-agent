@@ -39,7 +39,7 @@ export function transformN8nResponse(
         const responseText = extractResponseText(webhookData);
 
         // Try to extract structured data from the response
-        const structuredData = extractStructuredData(responseText);
+        const structuredData = extractStructuredData(responseText, webhookData);
 
         // Format the display text with appropriate headers and formatting
         const formattedText = formatDisplayText(responseText, structuredData);
@@ -53,8 +53,8 @@ export function transformN8nResponse(
             },
             sources: extractSources(webhookData),
             metadata: {
-                executionId: webhookData.executionId,
-                workflowId: webhookData.workflowId,
+                executionId: webhookData?.executionId,
+                workflowId: webhookData?.workflowId,
                 source: 'n8n',
                 timestamp: new Date().toISOString(),
                 originalData: webhookData,
@@ -87,6 +87,11 @@ export function transformN8nResponse(
  * Extract response text from various possible field names in webhook data
  */
 function extractResponseText(webhookData: any): string {
+    // Handle null or undefined webhookData
+    if (!webhookData) {
+        return 'No webhook data provided';
+    }
+
     // Handle array responses (common with n8n workflows)
     if (Array.isArray(webhookData)) {
         if (webhookData.length > 0) {
@@ -270,15 +275,32 @@ function formatAircraftResponse(data: any): string {
 }
 
 /**
- * Extract and identify structured data from response text
+ * Extract and identify structured data from response text or webhook data
  */
-export function extractStructuredData(responseText: string): StructuredData | null {
+export function extractStructuredData(responseText: string, webhookData?: any): StructuredData | null {
     if (!responseText || typeof responseText !== 'string') {
         return null;
     }
 
-    // Try to parse JSON structured data first
-    const jsonMatch = responseText.match(/\{[^}]*"type"[^}]*\}/);
+    // First check if webhookData contains Apollo results directly
+    if (webhookData?.apolloResults) {
+        return {
+            type: webhookData.apolloResults.type,
+            data: webhookData.apolloResults
+        };
+    }
+
+    if (webhookData?.structuredData) {
+        return webhookData.structuredData;
+    }
+
+    // Handle structured data passed directly from fallback system
+    if (webhookData?.structured) {
+        return webhookData.structured;
+    }
+
+    // Try to parse JSON structured data first - improved regex for nested objects
+    const jsonMatch = responseText.match(/\{[^{}]*"type"[^{}]*"data"\s*:\s*\{[^}]*\}[^}]*\}/);
     if (jsonMatch) {
         try {
             const parsed = JSON.parse(jsonMatch[0]);
@@ -389,22 +411,126 @@ export function extractStructuredData(responseText: string): StructuredData | nu
 function extractLeadData(text: string): any[] {
     const leads: any[] = [];
 
-    // Basic pattern matching for lead information
-    const nameMatches = text.match(/([A-Z][a-z]+ [A-Z][a-z]+)/g) || [];
-    const companyMatches = text.match(/at ([A-Z][a-zA-Z\s&,.-]+)/g) || [];
-    const emailMatches = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g) || [];
+    // First try to extract JSON array from the response
+    const jsonArrayMatch = text.match(/\[\s*{[\s\S]*?}\s*\]/);
+    if (jsonArrayMatch) {
+        try {
+            const parsedLeads = JSON.parse(jsonArrayMatch[0]);
+            if (Array.isArray(parsedLeads)) {
+                return parsedLeads.map(lead => ({
+                    name: lead.name || 'Unknown',
+                    title: lead.title || 'Executive',
+                    company: lead.company || lead.organization || 'Unknown Company',
+                    email: lead.email || null,
+                    phone: lead.phone || null,
+                    linkedinUrl: lead.linkedinUrl || lead.linkedin_url || null,
+                    location: lead.location || null,
+                    industry: lead.industry || null,
+                    size: lead.size || lead.company_size || null,
+                    score: lead.score || null,
+                    tags: lead.tags || [],
+                    source: 'apollo.io'
+                }));
+            }
+        } catch (error) {
+            console.log('Failed to parse JSON leads array:', error);
+        }
+    }
 
-    for (let i = 0; i < nameMatches.length; i++) {
+    // Fallback: Enhanced pattern matching for structured text format
+    const lines = text.split('\n');
+    let currentLead: any = null;
+
+    for (const line of lines) {
+        const trimmedLine = line.trim();
+        
+        // Look for lead indicators like bullet points or numbers
+        if (trimmedLine.match(/^[•\-\*\d+\.]/)) {
+            // If we have a current lead, save it
+            if (currentLead && currentLead.name) {
+                leads.push({
+                    ...currentLead,
+                    source: 'apollo.io'
+                });
+            }
+            
+            // Start a new lead
+            currentLead = {};
+            
+            // Extract name from the line
+            const nameMatch = trimmedLine.match(/([A-Z][a-z]+(?: [A-Z][a-z]+)+)/);
+            if (nameMatch) {
+                currentLead.name = nameMatch[1];
+            }
+            
+            // Extract title
+            const titleMatch = trimmedLine.match(/(CEO|CFO|CTO|VP|Vice President|Director|Manager|Assistant|President|Partner|Principal|Executive|Coordinator|Specialist)[^,]*/i);
+            if (titleMatch) {
+                currentLead.title = titleMatch[1];
+            }
+            
+            // Extract company
+            const companyMatch = trimmedLine.match(/(?:at|@)\s+([A-Z][a-zA-Z\s&,.-]+?)(?:\s*\(|$|,)/);
+            if (companyMatch) {
+                currentLead.company = companyMatch[1].trim();
+            }
+            
+            // Extract email
+            const emailMatch = trimmedLine.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+            if (emailMatch) {
+                currentLead.email = emailMatch[1];
+            }
+        } else if (currentLead) {
+            // Look for additional information in continuation lines
+            if (!currentLead.email) {
+                const emailMatch = trimmedLine.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+                if (emailMatch) {
+                    currentLead.email = emailMatch[1];
+                }
+            }
+            
+            if (!currentLead.company) {
+                const companyMatch = trimmedLine.match(/Company:\s*([^,\n]+)/i);
+                if (companyMatch) {
+                    currentLead.company = companyMatch[1].trim();
+                }
+            }
+            
+            if (!currentLead.location) {
+                const locationMatch = trimmedLine.match(/Location:\s*([^,\n]+)/i);
+                if (locationMatch) {
+                    currentLead.location = locationMatch[1].trim();
+                }
+            }
+        }
+    }
+
+    // Add the last lead if it exists
+    if (currentLead && currentLead.name) {
         leads.push({
-            name: nameMatches[i],
-            company: companyMatches[i]?.replace('at ', ''),
-            email: emailMatches[i],
-            title: 'Executive Assistant', // Default based on common use case
-            source: 'apollo.io',
+            ...currentLead,
+            source: 'apollo.io'
         });
     }
 
-    return leads.length > 0 ? leads : [{ text, parsed: false }];
+    // If no structured leads found, try basic pattern matching as fallback
+    if (leads.length === 0) {
+        const nameMatches = text.match(/([A-Z][a-z]+ [A-Z][a-z]+)/g) || [];
+        const companyMatches = text.match(/at ([A-Z][a-zA-Z\s&,.-]+)/g) || [];
+        const emailMatches = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g) || [];
+
+        for (let i = 0; i < nameMatches.length; i++) {
+            leads.push({
+                name: nameMatches[i],
+                company: companyMatches[i]?.replace('at ', ''),
+                email: emailMatches[i],
+                title: 'Executive Assistant', // Default based on common use case
+                source: 'apollo.io',
+            });
+        }
+    }
+
+    return leads.length > 0 ? leads : [{ text, parsed: false, source: 'apollo.io' }];
 }
 
 /**
@@ -538,6 +664,11 @@ export function formatDisplayText(
  */
 function extractSources(webhookData: any): any[] {
     const sources: any[] = [];
+
+    // Handle null or undefined webhookData
+    if (!webhookData) {
+        return sources;
+    }
 
     // Look for source information in the webhook data
     if (webhookData.sources && Array.isArray(webhookData.sources)) {

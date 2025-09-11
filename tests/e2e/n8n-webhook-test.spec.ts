@@ -3,7 +3,7 @@ import { readFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 // Test configuration
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://localhost:3002';
 const TEST_TIMEOUT = 120000; // 2 minutes for full test
 const RESPONSE_TIMEOUT = 60000; // 1 minute for AI response
 

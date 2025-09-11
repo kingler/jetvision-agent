@@ -10,6 +10,7 @@ export const apolloMCPConfig: MCPServersConfig = {
     mcpServers: {
         'apollo-io': process.env.APOLLO_MCP_SERVER_URL || 'http://localhost:3001/apollo',
         avinode: process.env.AVAINODE_MCP_SERVER_URL || 'http://localhost:3002/avinode',
+        'n8n-workflow': process.env.N8N_MCP_SERVER_URL || 'http://localhost:3003/n8n',
     },
 };
 

@@ -41,13 +41,47 @@ interface ApolloDataDisplayProps {
     actions?: any[];
 }
 
+// Normalize varied lead shapes into a consistent interface
+function normalizeLead(raw: any): ApolloLead {
+    const firstName = raw?.first_name || raw?.firstName;
+    const lastName = raw?.last_name || raw?.lastName;
+    const fullName = raw?.full_name || raw?.fullName;
+    const companyObjName = raw?.company?.name || raw?.organization?.name;
+    const companyAlt = raw?.organization || raw?.organization_name || raw?.company_name;
+    const emailFromArrays = Array.isArray(raw?.emails)
+        ? raw.emails[0]
+        : Array.isArray(raw?.email_addresses)
+        ? raw.email_addresses[0]
+        : raw?.contact?.email;
+    const linkedinFromVariants =
+        raw?.linkedinUrl || raw?.linkedin_url || raw?.linkedin || raw?.social?.linkedin;
+
+    return {
+        name:
+            raw?.name ||
+            fullName ||
+            [firstName, lastName].filter(Boolean).join(' ') ||
+            undefined,
+        title: raw?.title || raw?.job_title || raw?.jobTitle || undefined,
+        company: raw?.company || companyObjName || companyAlt || undefined,
+        email: raw?.email || emailFromArrays || undefined,
+        phone: raw?.phone || raw?.phone_number || raw?.phoneNumber || undefined,
+        linkedinUrl: linkedinFromVariants || undefined,
+        score: raw?.score || raw?.match_score || raw?.matchScore || undefined,
+        tags: raw?.tags || [],
+    };
+}
+
 export const ApolloDataDisplay: React.FC<ApolloDataDisplayProps> = ({ type, data, summary }) => {
     if (type === 'people_search' && data.people) {
-        return <PeopleSearchDisplay people={data.people} summary={summary} />;
+        // Normalize people entries as well
+        const people = (data.people || []).map(normalizeLead);
+        return <PeopleSearchDisplay people={people} summary={summary} />;
     }
 
     if (type === 'apollo_leads' && data.leads) {
-        return <ApolloLeadsDisplay leads={data.leads} summary={summary} />;
+        const leads = (data.leads || []).map(normalizeLead);
+        return <ApolloLeadsDisplay leads={leads} summary={summary} />;
     }
 
     if (type === 'apollo_campaign' && data.metrics) {

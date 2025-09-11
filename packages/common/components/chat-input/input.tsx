@@ -24,7 +24,7 @@ import { detectIntent } from '../../utils/intent-detection';
 import { debounce, deduplicate, batchStateUpdates } from '../../utils/debounce';
 import { routeMessage, type RoutingDecision } from '../../utils/agent-router';
 import { isAviationMessage } from '../../utils/aviation-classifier';
-import { ExamplePrompts } from '../exmaple-prompts';
+import { ExamplePrompts } from '../example-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 // import { PromptCardsButton, PromptCard } from '../prompt-cards'; // Temporarily disabled for build

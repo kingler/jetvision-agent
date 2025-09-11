@@ -1,0 +1,137 @@
+<testsuites id="" name="" tests="3" failures="3" skipped="0" errors="0" time="19.768181999999996">
+<testsuite name="tests/apollo-integration.spec.ts" timestamp="2025-09-09T19:20:18.826Z" hostname="chromium" tests="1" failures="1" skipped="0" time="12.567" errors="0">
+<testcase name="Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies" classname="tests/apollo-integration.spec.ts" time="12.567">
+<failure message="apollo-integration.spec.ts:30:13 should find executive assistants at Fortune 500 companies" type="FAILURE">
+<![CDATA[  [chromium] › tests/apollo-integration.spec.ts:30:13 › Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="user-menu"]') to be visible
+
+
+       at utils/auth-helpers.ts:56
+
+      54 |
+      55 |         // Wait for authentication to complete
+    > 56 |         await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 10000 });
+         |                         ^
+      57 |
+      58 |         // Verify user is logged in
+      59 |         const userMenuText = await this.page.textContent('[data-testid="user-menu"]');
+        at AuthHelper.loginAs (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:56:25)
+        at quickLogin (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:198:5)
+        at /Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/tests/apollo-integration.spec.ts:22:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/video.webm]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tests/apollo-integration.spec.ts" timestamp="2025-09-09T19:20:18.826Z" hostname="webkit" tests="1" failures="1" skipped="0" time="12.764" errors="0">
+<testcase name="Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies" classname="tests/apollo-integration.spec.ts" time="12.764">
+<failure message="apollo-integration.spec.ts:30:13 should find executive assistants at Fortune 500 companies" type="FAILURE">
+<![CDATA[  [webkit] › tests/apollo-integration.spec.ts:30:13 › Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="user-menu"]') to be visible
+
+
+       at utils/auth-helpers.ts:56
+
+      54 |
+      55 |         // Wait for authentication to complete
+    > 56 |         await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 10000 });
+         |                         ^
+      57 |
+      58 |         // Verify user is logged in
+      59 |         const userMenuText = await this.page.textContent('[data-testid="user-menu"]');
+        at AuthHelper.loginAs (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:56:25)
+        at quickLogin (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:198:5)
+        at /Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/tests/apollo-integration.spec.ts:22:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/test-failed-1.png]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/video.webm]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tests/apollo-integration.spec.ts" timestamp="2025-09-09T19:20:18.826Z" hostname="mobile-chrome" tests="1" failures="1" skipped="0" time="12.73" errors="0">
+<testcase name="Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies" classname="tests/apollo-integration.spec.ts" time="12.73">
+<failure message="apollo-integration.spec.ts:30:13 should find executive assistants at Fortune 500 companies" type="FAILURE">
+<![CDATA[  [mobile-chrome] › tests/apollo-integration.spec.ts:30:13 › Apollo.io Integration Tests › Lead Generation Workflows › should find executive assistants at Fortune 500 companies 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="user-menu"]') to be visible
+
+
+       at utils/auth-helpers.ts:56
+
+      54 |
+      55 |         // Wait for authentication to complete
+    > 56 |         await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 10000 });
+         |                         ^
+      57 |
+      58 |         // Verify user is logged in
+      59 |         const userMenuText = await this.page.textContent('[data-testid="user-menu"]');
+        at AuthHelper.loginAs (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:56:25)
+        at quickLogin (/Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/utils/auth-helpers.ts:198:5)
+        at /Volumes/SeagatePortableDrive/Projects/jetvision-agent-project/jetvision-agent/apps/web/e2e/tests/apollo-integration.spec.ts:22:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/test-failed-1.png]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/video.webm]]
+
+[[ATTACHMENT|tests-apollo-integration-A-669ef-ts-at-Fortune-500-companies-mobile-chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
