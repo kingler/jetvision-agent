@@ -59,6 +59,8 @@ const config = {
         '<rootDir>/node_modules/',
         '<rootDir>/apps/web/.next/',
         '<rootDir>/apps/web/out/',
+        '<rootDir>/apps/web/e2e/',
+        '<rootDir>/e2e/',
     ],
 
     // Coverage configuration
