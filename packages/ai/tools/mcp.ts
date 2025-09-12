@@ -74,7 +74,7 @@ export async function buildAllTools(
 
         await Promise.all(
             mcpClients.map(async mcpClient => {
-                let allMcpTools = [];
+                const allMcpTools = [];
                 let nextCursor: string | undefined = undefined;
 
                 do {

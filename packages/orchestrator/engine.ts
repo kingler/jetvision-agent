@@ -31,7 +31,7 @@ export class WorkflowEngine<
     constructor({
         id,
         trace,
-        initialEventState,
+        initialEventState: _initialEventState, // Reserved for future use
         events,
         context,
         config,
@@ -113,29 +113,24 @@ export class WorkflowEngine<
 
     async executeTask(taskName: string, data?: any) {
         if (this.executionContext.isAborted() && !this.executionContext.isGracefulShutdown()) {
-            console.log(`⚠️ Task "${taskName}" skipped due to workflow abortion.`);
+            // Task skipped due to workflow abortion
             return;
         }
 
         const config = this.tasks.get(taskName);
         if (!config) {
-            console.error(`❌ Task "${taskName}" not found.`);
             this.executionContext.endTaskTiming(
                 taskName,
                 new Error(`Task "${taskName}" not found.`)
             );
             throw new Error(`Task "${taskName}" not found.`);
-
-            return;
         }
 
         if (
             config.dependencies &&
             !config.dependencies.every(dep => this.executionContext.isTaskComplete(dep))
         ) {
-            console.log(
-                `⏳ Task "${taskName}" is waiting for dependencies: ${config.dependencies.join(', ')}`
-            );
+            // Task is waiting for dependencies
             return;
         }
 
@@ -148,12 +143,12 @@ export class WorkflowEngine<
             return;
         }
 
-        const executionCount = this.executionContext.getTaskExecutionCount(taskName);
+        // const executionCount = this.executionContext.getTaskExecutionCount(taskName);
         this.executionContext.setState(state => ({
             ...state,
             runningTasks: state.runningTasks.add(taskName),
         }));
-        console.log(`🚀 Executing task "${taskName}" (Run #${executionCount + 1})`);
+        // Executing task
 
         this.executionContext.startTaskTiming(taskName);
 
@@ -214,7 +209,7 @@ export class WorkflowEngine<
                     this.executionContext.isAborted() &&
                     !this.executionContext.isGracefulShutdown()
                 ) {
-                    console.log(`⚠️ Workflow stopped after task "${taskName}".`);
+                    // Workflow stopped after task
                     return result;
                 }
 
@@ -243,7 +238,7 @@ export class WorkflowEngine<
 
                 // Check for special "end" route value
                 if (nextTasks === 'end') {
-                    console.log(`🏁 Workflow ended after task "${taskName}".`);
+                    // Workflow ended after task
                     if (this.persistence) {
                         await this.persistence.saveWorkflow(this.id, this);
                     }
@@ -285,7 +280,7 @@ export class WorkflowEngine<
             } catch (error) {
                 this.executionContext.endTaskTiming(taskName, error as Error);
                 attempt++;
-                console.error(`❌ Error in task "${taskName}" (Attempt ${attempt}):`, error);
+                // Error in task (attempt logged)
 
                 if (config.onError) {
                     try {
@@ -342,16 +337,13 @@ export class WorkflowEngine<
                             }
                             return errorResult.result;
                         }
-                    } catch (errorHandlerError) {
-                        console.error(
-                            `❌ Error handler failed for task "${taskName}":`,
-                            errorHandlerError
-                        );
+                    } catch {
+                        // Error handler failed for task
                     }
                 }
 
                 if (attempt > (config.retryCount || 0)) {
-                    console.error(`⛔ Task "${taskName}" failed after ${attempt} attempts.`);
+                    // Task failed after max attempts
                     throw error;
                 }
             }

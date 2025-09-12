@@ -7,7 +7,7 @@ type PersistentStorageAdapter = {
     exists(key: string): Promise<boolean>;
 };
 
-type WorkflowPersistenceData<TEvent, TContext> = {
+type WorkflowPersistenceData = {
     id: string;
     workflowState: any;
     eventState: any;
@@ -18,7 +18,7 @@ type WorkflowPersistenceData<TEvent, TContext> = {
     lastUpdated: string;
 };
 
-export class PersistenceLayer<TEvent, TContext> {
+export class PersistenceLayer<TEvent = any, TContext = any> {
     private storage: PersistentStorageAdapter;
 
     constructor(storage: PersistentStorageAdapter) {
@@ -29,7 +29,7 @@ export class PersistenceLayer<TEvent, TContext> {
         const executionContext = engine.executionContext;
         const events = engine.getEvents();
         const context = engine.getContext();
-        const data: WorkflowPersistenceData<TEvent, TContext> = {
+        const data: WorkflowPersistenceData = {
             id,
             workflowState: executionContext.state,
             eventState: events?.getAllState() || {},

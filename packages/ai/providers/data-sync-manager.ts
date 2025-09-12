@@ -541,7 +541,7 @@ export class DataSyncManager {
             throw new Error('No valid data sources available');
         }
 
-        let resolvedData = { ...validSources[0][1].data };
+        const resolvedData = { ...validSources[0][1].data };
 
         // Resolve each conflict
         for (const conflict of conflicts) {

@@ -64,9 +64,7 @@ export class ExecutionContext {
     }
 
     abortWorkflow(graceful: boolean = false) {
-        console.log(
-            graceful ? '🟡 Gracefully stopping workflow...' : '🚨 Workflow aborted immediately!'
-        );
+        // Workflow abortion (graceful or immediate)
         this.aborted = true;
         this.gracefulShutdown = graceful;
     }

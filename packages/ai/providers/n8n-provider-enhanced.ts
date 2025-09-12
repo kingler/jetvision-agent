@@ -129,7 +129,7 @@ class N8nAgentModelImpl implements N8nAgentModel {
         const stream = new ReadableStream<LanguageModelV1StreamPart>({
             async start(controller) {
                 let totalTokens = 0;
-                let responseText = '';
+                const responseText = '';
 
                 try {
                     if (self.streamingEnabled) {

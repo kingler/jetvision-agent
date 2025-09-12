@@ -176,7 +176,7 @@ const reportGenerator = createTask({
     dependencies: ['informationAnalyzer'],
     execute: async ({ context, data }) => {
         const { analysis, insights } = data.informationAnalyzer;
-        const { query, searchResults } = context?.getAll() || { query: '', searchResults: [] };
+        const { query } = context?.getAll() || { query: '' };
 
         const reportResponse = await llm.chat.completions.create({
             model: 'gpt-4o',
