@@ -148,17 +148,20 @@ export function parsePromptsMarkdown(content: string): PromptCategory[] {
 }
 
 /**
- * Parse people search parameters from manual prompt text
+ * Parse people search parameters from manual prompt text with enhanced Apollo.io parameter extraction
  */
 export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
     const params: Record<string, any> = {};
     const lowerPrompt = prompt.toLowerCase();
 
-    // Extract job titles
+    // Enhanced job title extraction with more comprehensive patterns
     const titlePatterns = [
-        /(?:find|search for|looking for)\s+([^,\n]+?)(?:\s+at|\s+in|\s+from|\s+with|$)/i,
-        /(executive assistant|ea|ceo|cfo|cto|vp|director|manager|president|partner|principal|chief)/gi,
-        /(managing director|general partner|senior partner|head of|vice president)/gi,
+        /(?:search apollo\.io for|execute apollo search with|find|search for|looking for)\s+([^,\n]+?)(?:\s+at|\s+in|\s+from|\s+with|$)/i,
+        /(executive assistant|ea|ceo|chief executive officer|cfo|chief financial officer|cto|chief technology officer)/gi,
+        /(vp|vice president|director|manager|president|partner|principal|chief|founder|co-founder)/gi,
+        /(managing director|general partner|senior partner|head of|senior vice president|evp|executive vice president)/gi,
+        /(chief development officer|chief investment officer|chief operating officer|coo|chief marketing officer|cmo)/gi,
+        /(managing partner|limited partner|portfolio manager|asset manager|investment director)/gi,
     ];
 
     const titles: string[] = [];
@@ -166,7 +169,9 @@ export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
         const matches = prompt.match(pattern);
         if (matches) {
             matches.forEach(match => {
-                const cleaned = match.replace(/^(find|search for|looking for)\s+/i, '').trim();
+                const cleaned = match
+                    .replace(/^(search apollo\.io for|execute apollo search with|find|search for|looking for)\s+/i, '')
+                    .trim();
                 if (cleaned && !titles.includes(cleaned)) {
                     titles.push(cleaned);
                 }
@@ -174,15 +179,26 @@ export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
         }
     });
 
+    // Extract job titles from structured parameter mentions
+    const jobTitleMatch = prompt.match(/job_titles[:\s]+\[([^\]]+)\]/i);
+    if (jobTitleMatch) {
+        const extractedTitles = jobTitleMatch[1]
+            .split(',')
+            .map(t => t.replace(/["']/g, '').trim())
+            .filter(t => t.length > 0);
+        titles.push(...extractedTitles);
+    }
+
     if (titles.length > 0) {
-        params.person_titles = titles;
+        params.job_titles = Array.from(new Set(titles)); // Remove duplicates
         params.include_similar_titles = true;
     }
 
-    // Extract locations
+    // Enhanced location extraction
     const locationPatterns = [
-        /(?:in|at|from|based in)\s+(new york|nyc|san francisco|sf|los angeles|la|chicago|boston|miami|atlanta|dallas|houston|seattle)/gi,
-        /(?:silicon valley|wall street|manhattan|brooklyn|bay area)/gi,
+        /(?:in|at|from|based in|located in)\s+([\w\s]+,\s*[A-Z]{2})/gi, // City, STATE format
+        /(?:in|at|from|based in)\s+(new york|nyc|san francisco|sf|los angeles|la|chicago|boston|miami|atlanta|dallas|houston|seattle|austin|nashville|phoenix|denver|san diego|washington dc|dc)/gi,
+        /(?:silicon valley|wall street|manhattan|brooklyn|bay area|orange county|beverly hills)/gi,
     ];
 
     const locations: string[] = [];
@@ -190,7 +206,7 @@ export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
         const matches = prompt.match(pattern);
         if (matches) {
             matches.forEach(match => {
-                const location = match.replace(/^(in|at|from|based in)\s+/i, '').trim();
+                const location = match.replace(/^(in|at|from|based in|located in)\s+/i, '').trim();
                 if (location && !locations.includes(location)) {
                     locations.push(location);
                 }
@@ -198,49 +214,110 @@ export function parsePeopleSearchPrompt(prompt: string): Record<string, any> {
         }
     });
 
+    // Extract locations from structured parameter mentions
+    const locationMatch = prompt.match(/locations[:\s]+\[([^\]]+)\]/i);
+    if (locationMatch) {
+        const extractedLocations = locationMatch[1]
+            .split(',')
+            .map(l => l.replace(/["']/g, '').trim())
+            .filter(l => l.length > 0);
+        locations.push(...extractedLocations);
+    }
+
     if (locations.length > 0) {
-        params.person_locations = locations;
+        params.locations = Array.from(new Set(locations)); // Remove duplicates
     }
 
-    // Extract company information
-    if (lowerPrompt.includes('private equity') || lowerPrompt.includes('pe firm')) {
-        params.q_organization_keyword_tags = ['private equity', 'investment', 'buyout'];
-        params.organization_num_employees_ranges = ['50,200', '200,500', '500+'];
+    // Enhanced industry extraction
+    const industryPatterns = [
+        /(real estate|commercial real estate|real estate development|real estate investment)/gi,
+        /(private equity|venture capital|investment management|hedge fund|investment banking)/gi,
+        /(technology|software|saas|fintech|biotech|medtech|edtech|proptech)/gi,
+        /(healthcare|pharmaceutical|medical device|hospital|health system)/gi,
+        /(entertainment|media|film|television|streaming|gaming|sports)/gi,
+        /(finance|banking|insurance|financial services|wealth management)/gi,
+        /(manufacturing|automotive|aerospace|defense|industrial)/gi,
+        /(energy|oil and gas|renewable energy|utilities|clean energy)/gi,
+        /(hospitality|hotels|restaurants|tourism|travel|leisure)/gi,
+        /(retail|e-commerce|consumer goods|fashion|luxury goods)/gi,
+    ];
+
+    const industries: string[] = [];
+    industryPatterns.forEach(pattern => {
+        const matches = prompt.match(pattern);
+        if (matches) {
+            matches.forEach(match => {
+                if (!industries.includes(match.toLowerCase())) {
+                    industries.push(match);
+                }
+            });
+        }
+    });
+
+    // Extract industries from structured parameter mentions
+    const industryMatch = prompt.match(/industries[:\s]+\[([^\]]+)\]/i);
+    if (industryMatch) {
+        const extractedIndustries = industryMatch[1]
+            .split(',')
+            .map(i => i.replace(/["']/g, '').trim())
+            .filter(i => i.length > 0);
+        industries.push(...extractedIndustries);
     }
 
-    if (lowerPrompt.includes('tech') || lowerPrompt.includes('technology')) {
-        params.q_organization_keyword_tags = ['technology', 'software', 'saas'];
-        params.organization_num_employees_ranges = ['500,1000', '1000,5000', '5000+'];
+    if (industries.length > 0) {
+        params.industries = Array.from(new Set(industries)); // Remove duplicates
     }
 
-    if (lowerPrompt.includes('finance') || lowerPrompt.includes('financial')) {
-        params.q_organization_keyword_tags = ['finance', 'investment', 'banking'];
-    }
+    // Enhanced company size extraction
+    const sizeMatch = prompt.match(/company_size[:\s]+\{[^}]*min_employees[:\s]+(\d+)[^}]*max_employees[:\s]+(\d+)/i);
+    if (sizeMatch) {
+        params.company_size = {
+            min_employees: parseInt(sizeMatch[1]),
+            max_employees: parseInt(sizeMatch[2]),
+        };
+    } else {
+        // Fallback to pattern matching
+        const sizePatterns = [
+            /(\d+)\s*-\s*(\d+)\s+employees/i,
+            /(\d+)\+?\s+employees/i,
+            /companies with (\d+) to (\d+) employees/i,
+        ];
 
-    if (lowerPrompt.includes('healthcare') || lowerPrompt.includes('medical')) {
-        params.q_organization_keyword_tags = ['healthcare', 'pharmaceutical', 'biotech'];
-    }
-
-    if (lowerPrompt.includes('entertainment') || lowerPrompt.includes('media')) {
-        params.q_organization_keyword_tags = ['entertainment', 'media', 'film'];
-    }
-
-    // Extract company size
-    const sizeMatches = prompt.match(/(\d+)\+?\s+(employees|people)/i);
-    if (sizeMatches) {
-        const size = parseInt(sizeMatches[1]);
-        if (size >= 1000) {
-            params.organization_num_employees_ranges = ['1000,5000', '5000,10000', '10000+'];
-        } else if (size >= 500) {
-            params.organization_num_employees_ranges = ['500,1000', '1000,5000'];
-        } else if (size >= 100) {
-            params.organization_num_employees_ranges = ['100,500', '500,1000'];
+        for (const pattern of sizePatterns) {
+            const match = prompt.match(pattern);
+            if (match) {
+                if (match[2]) {
+                    params.company_size = {
+                        min_employees: parseInt(match[1]),
+                        max_employees: parseInt(match[2]),
+                    };
+                } else {
+                    const size = parseInt(match[1]);
+                    if (size >= 1000) {
+                        params.company_size = { min_employees: 1000, max_employees: 10000 };
+                    } else if (size >= 500) {
+                        params.company_size = { min_employees: 500, max_employees: 5000 };
+                    } else {
+                        params.company_size = { min_employees: size, max_employees: size * 5 };
+                    }
+                }
+                break;
+            }
         }
     }
 
-    // Default parameters
-    params.per_page = 25;
+    // Extract minimum lead count requirement
+    const leadCountMatch = prompt.match(/(?:minimum|at least|return)\s+(\d+)\s+leads/i);
+    if (leadCountMatch) {
+        params.per_page = Math.max(100, parseInt(leadCountMatch[1]));
+    } else {
+        params.per_page = 100; // Default to 100 leads minimum
+    }
+
+    // Enhanced default parameters
     params.contact_email_status = ['verified', 'likely to engage'];
+    params.include_similar_companies = true;
+    params.include_intent_signals = true;
 
     return params;
 }
@@ -263,7 +340,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Aircraft Availability',
                 prompt: 'Check aircraft availability for Miami to New York tomorrow',
                 fullPrompt:
-                    "As a JetVision fleet operations specialist, search for available aircraft for tomorrow's flight from Miami International Airport (MIA) to New York area airports (JFK, LGA, or TEB).",
+                    "Search for available aircraft for tomorrow's flight from Miami International Airport (MIA) to New York area airports (JFK, LGA, or TEB). Query the Avinode marketplace to identify available aircraft types, seating capacity, operator information, estimated flight times, and hourly rates.",
                 description: 'Check real-time fleet availability for specific routes',
             },
             {
@@ -272,7 +349,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Empty Legs',
                 prompt: 'Find empty leg opportunities for this weekend',
                 fullPrompt:
-                    'As a JetVision charter optimization specialist, search the Avinode marketplace for empty leg (repositioning) flights available this weekend (Friday through Sunday).',
+                    'Search the Avinode marketplace for empty leg (repositioning) flights available this weekend (Friday through Sunday). Identify opportunities with origin/destination airports, aircraft types, available dates, discount percentages, and passenger capacity.',
                 description: 'Find discounted repositioning flights and save costs',
             },
             {
@@ -281,7 +358,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Fleet Utilization',
                 prompt: 'Analyze fleet utilization metrics for this month',
                 fullPrompt:
-                    'As a JetVision fleet analytics specialist, generate a comprehensive utilization report for the current month.',
+                    'Generate a comprehensive fleet utilization report for the current month. Analyze overall utilization percentage, individual aircraft performance metrics, revenue per flight hour, maintenance downtime, and peak utilization periods.',
                 description: 'Monitor aircraft usage metrics and optimization',
             },
             {
@@ -290,7 +367,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Heavy Jet Search',
                 prompt: 'Search heavy jets for 12 passengers to London Tuesday',
                 fullPrompt:
-                    'As a JetVision international charter specialist, search for heavy jet aircraft capable of transatlantic flight for 12 passengers departing next Tuesday to London.',
+                    'Search for heavy jet aircraft capable of transatlantic flight for 12 passengers departing next Tuesday to London. Requirements: 6,000+ nm range for nonstop capability, cabin configuration for 12-14 passengers, full galley facilities, WiFi, and customs handling.',
                 description: 'Search for specific aircraft types by passenger count',
             },
         ],
@@ -308,7 +385,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Weekly Conversions',
                 prompt: 'Analyze prospect to booking conversions this week',
                 fullPrompt:
-                    "As a JetVision sales analytics specialist, analyze this week's conversion funnel from Apollo.io prospects to confirmed charter bookings.",
+                    "Analyze this week's conversion funnel from Apollo.io prospects to confirmed charter bookings. Track metrics including lead volume, email open rates, response rates, meeting conversions, and booking confirmations.",
                 description: 'Track conversion metrics from campaigns to bookings',
             },
             {
@@ -317,7 +394,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'EA Engagement',
                 prompt: 'Identify top engaged executive assistants from campaigns',
                 fullPrompt:
-                    'As a JetVision relationship intelligence specialist, identify and analyze the most engaged executive assistants from our Apollo.io email campaigns.',
+                    'Identify and analyze the most engaged executive assistants from Apollo.io email campaigns. Review engagement metrics including email opens, clicks, replies, and meeting bookings. Generate a prioritized list for follow-up.',
                 description: 'Analyze engagement patterns for executive assistants',
             },
             {
@@ -326,7 +403,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Finance Campaigns',
                 prompt: 'Analyze finance sector campaign performance metrics',
                 fullPrompt:
-                    'As a JetVision vertical marketing specialist, provide comprehensive performance analysis of all finance industry campaigns in Apollo.io.',
+                    'Provide comprehensive performance analysis of all finance industry campaigns in Apollo.io. Include metrics for open rates, response rates, conversion rates, and ROI by campaign type and messaging variant.',
                 description: 'Industry-specific campaign performance metrics',
             },
             {
@@ -335,7 +412,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'VIP Campaign',
                 prompt: 'Design VIP campaign for top 100 qualified prospects',
                 fullPrompt:
-                    'As a JetVision strategic accounts specialist, design and configure a high-touch VIP campaign in Apollo.io for our top 100 qualified prospects.',
+                    'Design and configure a high-touch VIP campaign in Apollo.io for the top 100 qualified prospects. Include personalized messaging sequences, multi-channel touchpoints, and custom follow-up cadences.',
                 description: 'Launch targeted campaigns for high-value leads',
             },
         ],
@@ -343,45 +420,369 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
     {
         name: 'Lead Generation & Targeting',
         slug: 'lead-generation',
-        count: 4,
+        count: 24,
         icon: IconTarget,
         color: 'bg-orange-50 text-orange-700 border-orange-200',
         prompts: [
             {
                 id: 'lead-1',
                 category: 'Leads',
-                title: 'PE Assistants',
-                prompt: 'Find executive assistants at NYC private equity firms',
+                title: 'Miami Real Estate Executives',
+                prompt: 'Search Apollo.io for real estate executives in Miami',
                 fullPrompt:
-                    'As a JetVision lead generation specialist, use Apollo.io to identify and qualify 20 executive assistants at New York City private equity firms.',
-                description: 'Target high-value segments in private equity',
+                    'Search Apollo.io for Chief Executive Officers, Presidents, and Chief Development Officers at real estate companies in Miami, FL. Filter by job_titles: ["Chief Executive Officer", "President", "Chief Development Officer", "Managing Partner"], industries: ["Real Estate", "Commercial Real Estate", "Real Estate Development"], company_size: {min_employees: 50, max_employees: 1000}, locations: ["Miami, FL", "Fort Lauderdale, FL", "West Palm Beach, FL"]. Return minimum 100 leads with verified email addresses.',
+                description: 'Target real estate executives in South Florida market',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Development Officer', 'Managing Partner'],
+                    industries: ['Real Estate', 'Commercial Real Estate', 'Real Estate Development'],
+                    company_size: { min_employees: 50, max_employees: 1000 },
+                    locations: ['Miami, FL', 'Fort Lauderdale, FL', 'West Palm Beach, FL'],
+                },
             },
             {
                 id: 'lead-2',
                 category: 'Leads',
-                title: 'Job Changes',
-                prompt: 'Track job changes in target accounts last 30 days',
+                title: 'NYC Private Equity Partners',
+                prompt: 'Execute Apollo search for private equity partners in New York',
                 fullPrompt:
-                    "As a JetVision trigger-based marketing specialist, identify all job changes in our target market over the past 30 days using Apollo.io's intent data.",
-                description: 'Track career transitions for timely outreach',
+                    'Execute Apollo search with parameters for private equity decision makers in New York. Use job_titles: ["Managing Partner", "General Partner", "Managing Director", "Principal"], industries: ["Private Equity", "Venture Capital", "Investment Management"], company_size: {min_employees: 20, max_employees: 500}, locations: ["New York, NY", "Manhattan, NY", "Greenwich, CT"]. Return minimum 100 leads with engagement scoring.',
+                description: 'Private equity leadership in NYC financial district',
+                parameters: {
+                    job_titles: ['Managing Partner', 'General Partner', 'Managing Director', 'Principal'],
+                    industries: ['Private Equity', 'Venture Capital', 'Investment Management'],
+                    company_size: { min_employees: 20, max_employees: 500 },
+                    locations: ['New York, NY', 'Manhattan, NY', 'Greenwich, CT'],
+                },
             },
             {
                 id: 'lead-3',
                 category: 'Leads',
-                title: 'Decision Makers',
-                prompt: 'Map decision makers at Fortune 500 companies',
+                title: 'Texas Tech Founders',
+                prompt: 'Find technology company founders and CEOs in Austin and Dallas',
                 fullPrompt:
-                    'As a JetVision enterprise account strategist, map the complete decision-making unit for private aviation at Fortune 500 companies.',
-                description: 'Executive targeting at major corporations',
+                    'Search Apollo.io for technology company founders and executives in Texas markets. Apply filters job_titles: ["Founder", "Co-Founder", "Chief Executive Officer", "Chief Technology Officer"], industries: ["Software", "SaaS", "Fintech", "Enterprise Software"], company_size: {min_employees: 100, max_employees: 5000}, locations: ["Austin, TX", "Dallas, TX", "Houston, TX", "San Antonio, TX"]. Return minimum 100 verified leads.',
+                description: 'Tech leadership in Texas innovation hubs',
+                parameters: {
+                    job_titles: ['Founder', 'Co-Founder', 'Chief Executive Officer', 'Chief Technology Officer'],
+                    industries: ['Software', 'SaaS', 'Fintech', 'Enterprise Software'],
+                    company_size: { min_employees: 100, max_employees: 5000 },
+                    locations: ['Austin, TX', 'Dallas, TX', 'Houston, TX', 'San Antonio, TX'],
+                },
             },
             {
                 id: 'lead-4',
                 category: 'Leads',
-                title: 'Web Visitors',
-                prompt: 'Identify high-intent visitors from pricing page',
+                title: 'California Healthcare Executives',
+                prompt: 'Search for healthcare and biotech executives in California',
                 fullPrompt:
-                    'As a JetVision digital intelligence specialist, analyze website visitor data to identify high-intent prospects who visited our pricing page this week.',
-                description: 'Intent-based lead scoring from web activity',
+                    'Execute Apollo.io search for healthcare industry leaders in California. Parameters: job_titles: ["Chief Executive Officer", "Chief Medical Officer", "Chief Operating Officer", "President"], industries: ["Healthcare", "Biotechnology", "Medical Device", "Pharmaceutical"], company_size: {min_employees: 200, max_employees: 10000}, locations: ["San Francisco, CA", "San Diego, CA", "Los Angeles, CA", "Palo Alto, CA"]. Return minimum 100 qualified leads.',
+                description: 'Healthcare and life sciences executives on West Coast',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Medical Officer', 'Chief Operating Officer', 'President'],
+                    industries: ['Healthcare', 'Biotechnology', 'Medical Device', 'Pharmaceutical'],
+                    company_size: { min_employees: 200, max_employees: 10000 },
+                    locations: ['San Francisco, CA', 'San Diego, CA', 'Los Angeles, CA', 'Palo Alto, CA'],
+                },
+            },
+            {
+                id: 'lead-5',
+                category: 'Leads',
+                title: 'Entertainment Industry Leaders LA',
+                prompt: 'Find entertainment and media executives in Los Angeles',
+                fullPrompt:
+                    'Search Apollo.io for entertainment industry executives in Los Angeles area. Use job_titles: ["Chief Executive Officer", "President", "Studio Head", "Chief Creative Officer"], industries: ["Entertainment", "Media Production", "Film", "Television", "Streaming Media"], company_size: {min_employees: 50, max_employees: 5000}, locations: ["Los Angeles, CA", "Beverly Hills, CA", "Burbank, CA", "Santa Monica, CA"]. Return minimum 100 leads.',
+                description: 'Entertainment and media leadership in Hollywood',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Studio Head', 'Chief Creative Officer'],
+                    industries: ['Entertainment', 'Media Production', 'Film', 'Television', 'Streaming Media'],
+                    company_size: { min_employees: 50, max_employees: 5000 },
+                    locations: ['Los Angeles, CA', 'Beverly Hills, CA', 'Burbank, CA', 'Santa Monica, CA'],
+                },
+            },
+            {
+                id: 'lead-6',
+                category: 'Leads',
+                title: 'Chicago Finance Executives',
+                prompt: 'Execute search for financial services executives in Chicago',
+                fullPrompt:
+                    'Execute Apollo search for finance industry leaders in Chicago metropolitan area. Parameters: job_titles: ["Chief Executive Officer", "Chief Financial Officer", "Managing Director", "Partner"], industries: ["Banking", "Investment Banking", "Asset Management", "Financial Services"], company_size: {min_employees: 100, max_employees: 10000}, locations: ["Chicago, IL", "Northbrook, IL", "Oak Brook, IL"]. Minimum 100 verified leads required.',
+                description: 'Financial services leadership in Chicago',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Financial Officer', 'Managing Director', 'Partner'],
+                    industries: ['Banking', 'Investment Banking', 'Asset Management', 'Financial Services'],
+                    company_size: { min_employees: 100, max_employees: 10000 },
+                    locations: ['Chicago, IL', 'Northbrook, IL', 'Oak Brook, IL'],
+                },
+            },
+            {
+                id: 'lead-7',
+                category: 'Leads',
+                title: 'Boston Biotech Founders',
+                prompt: 'Search for biotech company founders and CEOs in Boston',
+                fullPrompt:
+                    'Search Apollo.io for biotechnology company leadership in Boston area. Apply filters job_titles: ["Founder", "Chief Executive Officer", "Chief Scientific Officer", "President"], industries: ["Biotechnology", "Pharmaceutical", "Life Sciences", "Medical Research"], company_size: {min_employees: 25, max_employees: 1000}, locations: ["Boston, MA", "Cambridge, MA", "Waltham, MA"]. Return minimum 100 leads.',
+                description: 'Biotech innovation leaders in Boston hub',
+                parameters: {
+                    job_titles: ['Founder', 'Chief Executive Officer', 'Chief Scientific Officer', 'President'],
+                    industries: ['Biotechnology', 'Pharmaceutical', 'Life Sciences', 'Medical Research'],
+                    company_size: { min_employees: 25, max_employees: 1000 },
+                    locations: ['Boston, MA', 'Cambridge, MA', 'Waltham, MA'],
+                },
+            },
+            {
+                id: 'lead-8',
+                category: 'Leads',
+                title: 'Atlanta Corporate Presidents',
+                prompt: 'Find corporate presidents and CEOs in Atlanta',
+                fullPrompt:
+                    'Execute Apollo.io search for corporate executives in Atlanta market. Use job_titles: ["President", "Chief Executive Officer", "Chief Operating Officer", "Executive Vice President"], industries: ["Logistics", "Transportation", "Retail", "Telecommunications"], company_size: {min_employees: 500, max_employees: 20000}, locations: ["Atlanta, GA", "Alpharetta, GA", "Sandy Springs, GA"]. Return minimum 100 qualified leads.',
+                description: 'Corporate leadership in Atlanta business hub',
+                parameters: {
+                    job_titles: ['President', 'Chief Executive Officer', 'Chief Operating Officer', 'Executive Vice President'],
+                    industries: ['Logistics', 'Transportation', 'Retail', 'Telecommunications'],
+                    company_size: { min_employees: 500, max_employees: 20000 },
+                    locations: ['Atlanta, GA', 'Alpharetta, GA', 'Sandy Springs, GA'],
+                },
+            },
+            {
+                id: 'lead-9',
+                category: 'Leads',
+                title: 'Phoenix Real Estate Developers',
+                prompt: 'Search for real estate developers and investors in Phoenix',
+                fullPrompt:
+                    'Search Apollo.io for real estate development executives in Phoenix metro. Parameters: job_titles: ["Chief Executive Officer", "President", "Chief Development Officer", "Principal"], industries: ["Real Estate Development", "Real Estate Investment", "Property Management"], company_size: {min_employees: 25, max_employees: 500}, locations: ["Phoenix, AZ", "Scottsdale, AZ", "Tempe, AZ", "Mesa, AZ"]. Minimum 100 leads required.',
+                description: 'Real estate development leaders in Phoenix market',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Development Officer', 'Principal'],
+                    industries: ['Real Estate Development', 'Real Estate Investment', 'Property Management'],
+                    company_size: { min_employees: 25, max_employees: 500 },
+                    locations: ['Phoenix, AZ', 'Scottsdale, AZ', 'Tempe, AZ', 'Mesa, AZ'],
+                },
+            },
+            {
+                id: 'lead-10',
+                category: 'Leads',
+                title: 'Nashville Music Industry Executives',
+                prompt: 'Find music and entertainment executives in Nashville',
+                fullPrompt:
+                    'Execute Apollo search for music industry leadership in Nashville. Use job_titles: ["Chief Executive Officer", "President", "Label Head", "Chief Creative Officer"], industries: ["Music", "Entertainment", "Media", "Recording"], company_size: {min_employees: 20, max_employees: 1000}, locations: ["Nashville, TN", "Franklin, TN", "Brentwood, TN"]. Return minimum 100 verified leads.',
+                description: 'Music industry executives in Nashville',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Label Head', 'Chief Creative Officer'],
+                    industries: ['Music', 'Entertainment', 'Media', 'Recording'],
+                    company_size: { min_employees: 20, max_employees: 1000 },
+                    locations: ['Nashville, TN', 'Franklin, TN', 'Brentwood, TN'],
+                },
+            },
+            {
+                id: 'lead-11',
+                category: 'Leads',
+                title: 'Seattle Tech VPs',
+                prompt: 'Search for VP-level tech executives in Seattle',
+                fullPrompt:
+                    'Search Apollo.io for VP-level technology executives in Seattle area. Apply filters job_titles: ["Vice President", "Senior Vice President", "Executive Vice President", "VP of Engineering"], industries: ["Technology", "Software", "Cloud Computing", "E-commerce"], company_size: {min_employees: 200, max_employees: 10000}, locations: ["Seattle, WA", "Bellevue, WA", "Redmond, WA"]. Minimum 100 leads.',
+                description: 'Senior tech leadership in Seattle region',
+                parameters: {
+                    job_titles: ['Vice President', 'Senior Vice President', 'Executive Vice President', 'VP of Engineering'],
+                    industries: ['Technology', 'Software', 'Cloud Computing', 'E-commerce'],
+                    company_size: { min_employees: 200, max_employees: 10000 },
+                    locations: ['Seattle, WA', 'Bellevue, WA', 'Redmond, WA'],
+                },
+            },
+            {
+                id: 'lead-12',
+                category: 'Leads',
+                title: 'Denver Energy Executives',
+                prompt: 'Find energy and utilities executives in Denver',
+                fullPrompt:
+                    'Execute Apollo.io search for energy sector leadership in Denver. Parameters: job_titles: ["Chief Executive Officer", "President", "Chief Operating Officer", "Vice President"], industries: ["Energy", "Oil and Gas", "Renewable Energy", "Utilities"], company_size: {min_employees: 100, max_employees: 5000}, locations: ["Denver, CO", "Boulder, CO", "Aurora, CO"]. Return minimum 100 qualified leads.',
+                description: 'Energy industry executives in Colorado',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Operating Officer', 'Vice President'],
+                    industries: ['Energy', 'Oil and Gas', 'Renewable Energy', 'Utilities'],
+                    company_size: { min_employees: 100, max_employees: 5000 },
+                    locations: ['Denver, CO', 'Boulder, CO', 'Aurora, CO'],
+                },
+            },
+            {
+                id: 'lead-13',
+                category: 'Leads',
+                title: 'DC Government Contractors',
+                prompt: 'Search for executives at government contracting firms in DC',
+                fullPrompt:
+                    'Search Apollo.io for government contractor executives in Washington DC area. Use job_titles: ["Chief Executive Officer", "President", "Chief Growth Officer", "Executive Vice President"], industries: ["Defense", "Government Services", "Consulting", "Aerospace"], company_size: {min_employees: 100, max_employees: 10000}, locations: ["Washington, DC", "Arlington, VA", "McLean, VA", "Bethesda, MD"]. Minimum 100 leads.',
+                description: 'Federal contractor leadership in DC metro',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Growth Officer', 'Executive Vice President'],
+                    industries: ['Defense', 'Government Services', 'Consulting', 'Aerospace'],
+                    company_size: { min_employees: 100, max_employees: 10000 },
+                    locations: ['Washington, DC', 'Arlington, VA', 'McLean, VA', 'Bethesda, MD'],
+                },
+            },
+            {
+                id: 'lead-14',
+                category: 'Leads',
+                title: 'Charlotte Banking Executives',
+                prompt: 'Find banking and finance executives in Charlotte',
+                fullPrompt:
+                    'Execute Apollo search for banking industry leaders in Charlotte. Parameters: job_titles: ["Chief Executive Officer", "Chief Financial Officer", "Managing Director", "Executive Vice President"], industries: ["Banking", "Commercial Banking", "Investment Banking", "Wealth Management"], company_size: {min_employees: 200, max_employees: 50000}, locations: ["Charlotte, NC", "Raleigh, NC", "Durham, NC"]. Return minimum 100 leads.',
+                description: 'Banking sector leadership in Charlotte financial center',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Financial Officer', 'Managing Director', 'Executive Vice President'],
+                    industries: ['Banking', 'Commercial Banking', 'Investment Banking', 'Wealth Management'],
+                    company_size: { min_employees: 200, max_employees: 50000 },
+                    locations: ['Charlotte, NC', 'Raleigh, NC', 'Durham, NC'],
+                },
+            },
+            {
+                id: 'lead-15',
+                category: 'Leads',
+                title: 'Las Vegas Hospitality Leaders',
+                prompt: 'Search for hospitality and gaming executives in Las Vegas',
+                fullPrompt:
+                    'Search Apollo.io for hospitality industry executives in Las Vegas. Apply filters job_titles: ["Chief Executive Officer", "President", "Chief Operating Officer", "General Manager"], industries: ["Hospitality", "Hotels", "Gaming", "Entertainment", "Restaurants"], company_size: {min_employees: 100, max_employees: 10000}, locations: ["Las Vegas, NV", "Henderson, NV", "Paradise, NV"]. Minimum 100 verified leads.',
+                description: 'Hospitality and gaming executives in Vegas',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Operating Officer', 'General Manager'],
+                    industries: ['Hospitality', 'Hotels', 'Gaming', 'Entertainment', 'Restaurants'],
+                    company_size: { min_employees: 100, max_employees: 10000 },
+                    locations: ['Las Vegas, NV', 'Henderson, NV', 'Paradise, NV'],
+                },
+            },
+            {
+                id: 'lead-16',
+                category: 'Leads',
+                title: 'Detroit Manufacturing CEOs',
+                prompt: 'Find manufacturing and automotive executives in Detroit',
+                fullPrompt:
+                    'Execute Apollo.io search for manufacturing executives in Detroit region. Use job_titles: ["Chief Executive Officer", "President", "Chief Operating Officer", "Plant Manager"], industries: ["Manufacturing", "Automotive", "Industrial", "Aerospace"], company_size: {min_employees: 200, max_employees: 20000}, locations: ["Detroit, MI", "Troy, MI", "Auburn Hills, MI", "Dearborn, MI"]. Return minimum 100 qualified leads.',
+                description: 'Manufacturing leadership in Detroit industrial base',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Operating Officer', 'Plant Manager'],
+                    industries: ['Manufacturing', 'Automotive', 'Industrial', 'Aerospace'],
+                    company_size: { min_employees: 200, max_employees: 20000 },
+                    locations: ['Detroit, MI', 'Troy, MI', 'Auburn Hills, MI', 'Dearborn, MI'],
+                },
+            },
+            {
+                id: 'lead-17',
+                category: 'Leads',
+                title: 'Orlando Tourism Executives',
+                prompt: 'Search for tourism and theme park executives in Orlando',
+                fullPrompt:
+                    'Search Apollo.io for tourism industry leadership in Orlando. Parameters: job_titles: ["Chief Executive Officer", "President", "Vice President", "General Manager"], industries: ["Tourism", "Theme Parks", "Hospitality", "Travel", "Entertainment"], company_size: {min_employees: 100, max_employees: 50000}, locations: ["Orlando, FL", "Kissimmee, FL", "Lake Buena Vista, FL"]. Minimum 100 leads required.',
+                description: 'Tourism and entertainment executives in Orlando',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Vice President', 'General Manager'],
+                    industries: ['Tourism', 'Theme Parks', 'Hospitality', 'Travel', 'Entertainment'],
+                    company_size: { min_employees: 100, max_employees: 50000 },
+                    locations: ['Orlando, FL', 'Kissimmee, FL', 'Lake Buena Vista, FL'],
+                },
+            },
+            {
+                id: 'lead-18',
+                category: 'Leads',
+                title: 'San Diego Defense Contractors',
+                prompt: 'Find defense and aerospace executives in San Diego',
+                fullPrompt:
+                    'Execute Apollo search for defense industry executives in San Diego. Use job_titles: ["Chief Executive Officer", "President", "Vice President", "Program Director"], industries: ["Defense", "Aerospace", "Military Technology", "Maritime"], company_size: {min_employees: 50, max_employees: 10000}, locations: ["San Diego, CA", "La Jolla, CA", "Carlsbad, CA"]. Return minimum 100 verified leads.',
+                description: 'Defense and aerospace leadership in San Diego',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Vice President', 'Program Director'],
+                    industries: ['Defense', 'Aerospace', 'Military Technology', 'Maritime'],
+                    company_size: { min_employees: 50, max_employees: 10000 },
+                    locations: ['San Diego, CA', 'La Jolla, CA', 'Carlsbad, CA'],
+                },
+            },
+            {
+                id: 'lead-19',
+                category: 'Leads',
+                title: 'Philadelphia Healthcare Systems',
+                prompt: 'Search for hospital and health system executives in Philadelphia',
+                fullPrompt:
+                    'Search Apollo.io for healthcare system executives in Philadelphia region. Apply filters job_titles: ["Chief Executive Officer", "Chief Medical Officer", "Chief Operating Officer", "President"], industries: ["Healthcare", "Hospitals", "Health Systems", "Medical"], company_size: {min_employees: 500, max_employees: 50000}, locations: ["Philadelphia, PA", "King of Prussia, PA", "Cherry Hill, NJ"]. Minimum 100 leads.',
+                description: 'Healthcare system leadership in Philadelphia',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Medical Officer', 'Chief Operating Officer', 'President'],
+                    industries: ['Healthcare', 'Hospitals', 'Health Systems', 'Medical'],
+                    company_size: { min_employees: 500, max_employees: 50000 },
+                    locations: ['Philadelphia, PA', 'King of Prussia, PA', 'Cherry Hill, NJ'],
+                },
+            },
+            {
+                id: 'lead-20',
+                category: 'Leads',
+                title: 'Minneapolis Retail Executives',
+                prompt: 'Find retail and consumer goods executives in Minneapolis',
+                fullPrompt:
+                    'Execute Apollo.io search for retail industry leaders in Minneapolis. Parameters: job_titles: ["Chief Executive Officer", "President", "Chief Merchandising Officer", "Chief Marketing Officer"], industries: ["Retail", "E-commerce", "Consumer Goods", "Fashion"], company_size: {min_employees: 200, max_employees: 50000}, locations: ["Minneapolis, MN", "St. Paul, MN", "Bloomington, MN"]. Return minimum 100 qualified leads.',
+                description: 'Retail leadership in Minneapolis market',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Merchandising Officer', 'Chief Marketing Officer'],
+                    industries: ['Retail', 'E-commerce', 'Consumer Goods', 'Fashion'],
+                    company_size: { min_employees: 200, max_employees: 50000 },
+                    locations: ['Minneapolis, MN', 'St. Paul, MN', 'Bloomington, MN'],
+                },
+            },
+            {
+                id: 'lead-21',
+                category: 'Leads',
+                title: 'Tampa Bay Finance Leaders',
+                prompt: 'Search for financial services executives in Tampa Bay',
+                fullPrompt:
+                    'Search Apollo.io for finance executives in Tampa Bay area. Use job_titles: ["Chief Executive Officer", "Chief Financial Officer", "Managing Partner", "Senior Vice President"], industries: ["Financial Services", "Insurance", "Investment Management", "Banking"], company_size: {min_employees: 100, max_employees: 10000}, locations: ["Tampa, FL", "St. Petersburg, FL", "Clearwater, FL", "Sarasota, FL"]. Minimum 100 verified leads.',
+                description: 'Financial services leadership in Tampa Bay',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Financial Officer', 'Managing Partner', 'Senior Vice President'],
+                    industries: ['Financial Services', 'Insurance', 'Investment Management', 'Banking'],
+                    company_size: { min_employees: 100, max_employees: 10000 },
+                    locations: ['Tampa, FL', 'St. Petersburg, FL', 'Clearwater, FL', 'Sarasota, FL'],
+                },
+            },
+            {
+                id: 'lead-22',
+                category: 'Leads',
+                title: 'Salt Lake City Tech Founders',
+                prompt: 'Find tech startup founders and CEOs in Salt Lake City',
+                fullPrompt:
+                    'Execute Apollo search for technology startup leaders in Salt Lake City. Parameters: job_titles: ["Founder", "Co-Founder", "Chief Executive Officer", "Chief Technology Officer"], industries: ["Software", "SaaS", "Technology", "Fintech"], company_size: {min_employees: 10, max_employees: 500}, locations: ["Salt Lake City, UT", "Park City, UT", "Provo, UT", "Lehi, UT"]. Return minimum 100 leads.',
+                description: 'Tech startup leadership in Utah Silicon Slopes',
+                parameters: {
+                    job_titles: ['Founder', 'Co-Founder', 'Chief Executive Officer', 'Chief Technology Officer'],
+                    industries: ['Software', 'SaaS', 'Technology', 'Fintech'],
+                    company_size: { min_employees: 10, max_employees: 500 },
+                    locations: ['Salt Lake City, UT', 'Park City, UT', 'Provo, UT', 'Lehi, UT'],
+                },
+            },
+            {
+                id: 'lead-23',
+                category: 'Leads',
+                title: 'Portland Creative Executives',
+                prompt: 'Search for creative and advertising executives in Portland',
+                fullPrompt:
+                    'Search Apollo.io for creative industry executives in Portland. Apply filters job_titles: ["Chief Executive Officer", "Chief Creative Officer", "President", "Creative Director"], industries: ["Advertising", "Marketing", "Design", "Digital Media"], company_size: {min_employees: 25, max_employees: 1000}, locations: ["Portland, OR", "Beaverton, OR", "Lake Oswego, OR"]. Minimum 100 verified leads.',
+                description: 'Creative and advertising leadership in Portland',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'Chief Creative Officer', 'President', 'Creative Director'],
+                    industries: ['Advertising', 'Marketing', 'Design', 'Digital Media'],
+                    company_size: { min_employees: 25, max_employees: 1000 },
+                    locations: ['Portland, OR', 'Beaverton, OR', 'Lake Oswego, OR'],
+                },
+            },
+            {
+                id: 'lead-24',
+                category: 'Leads',
+                title: 'Columbus Insurance Executives',
+                prompt: 'Find insurance industry executives in Columbus',
+                fullPrompt:
+                    'Execute Apollo.io search for insurance executives in Columbus. Use job_titles: ["Chief Executive Officer", "President", "Chief Underwriting Officer", "Chief Risk Officer"], industries: ["Insurance", "Reinsurance", "Financial Services"], company_size: {min_employees: 100, max_employees: 20000}, locations: ["Columbus, OH", "Dublin, OH", "Westerville, OH"]. Return minimum 100 qualified leads.',
+                description: 'Insurance industry leadership in Columbus',
+                parameters: {
+                    job_titles: ['Chief Executive Officer', 'President', 'Chief Underwriting Officer', 'Chief Risk Officer'],
+                    industries: ['Insurance', 'Reinsurance', 'Financial Services'],
+                    company_size: { min_employees: 100, max_employees: 20000 },
+                    locations: ['Columbus, OH', 'Dublin, OH', 'Westerville, OH'],
+                },
             },
         ],
     },
@@ -398,7 +799,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Conversion Trends',
                 prompt: 'Compare conversion rates with last quarter',
                 fullPrompt:
-                    'As a JetVision revenue operations analyst, provide comprehensive conversion rate analysis comparing current quarter to last quarter performance.',
+                    'Provide comprehensive conversion rate analysis comparing current quarter to last quarter performance. Include lead-to-opportunity rates, opportunity-to-booking rates, average sales cycle duration, and win rate trends.',
                 description: 'Performance benchmarking across time periods',
             },
             {
@@ -407,7 +808,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Campaign ROI',
                 prompt: 'Calculate ROI by campaign type and industry vertical',
                 fullPrompt:
-                    'As a JetVision marketing analytics specialist, calculate detailed ROI analysis for all campaign types across industry verticals.',
+                    'Calculate detailed ROI analysis for all campaign types across industry verticals. Break down cost per lead, cost per acquisition, lifetime value, and return on ad spend by campaign channel and industry segment.',
                 description: 'Revenue attribution analysis by segment',
             },
             {
@@ -416,7 +817,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Message Performance',
                 prompt: 'Analyze top performing email templates and messaging',
                 fullPrompt:
-                    'As a JetVision content optimization specialist, analyze all message templates to identify top performers and optimization opportunities.',
+                    'Analyze all message templates to identify top performers and optimization opportunities. Compare open rates, click rates, response rates, and conversion rates across different messaging variations and subject lines.',
                 description: 'Content optimization through A/B testing',
             },
             {
@@ -425,7 +826,7 @@ export const STATIC_PROMPTS_DATA: PromptCategory[] = [
                 title: 'Executive Briefing',
                 prompt: 'Generate comprehensive Monday executive briefing',
                 fullPrompt:
-                    'As a JetVision business intelligence specialist, generate a comprehensive Monday morning executive briefing with actionable insights.',
+                    'Generate a comprehensive Monday morning executive briefing with actionable insights. Include weekly performance metrics, pipeline updates, conversion trends, and prioritized action items for the week.',
                 description: 'Automated reporting and insights summary',
             },
         ],
