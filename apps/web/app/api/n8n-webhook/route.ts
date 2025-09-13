@@ -417,7 +417,12 @@ export async function POST(request: NextRequest) {
                         });
                     } else if (webhookData.executionId) {
                         // Long-running execution - poll for result
-                        const result = await pollForExecution(webhookData.executionId, sendEvent, threadId, threadItemId);
+                        const result = await pollForExecution(
+                            webhookData.executionId,
+                            sendEvent,
+                            threadId,
+                            threadItemId
+                        );
 
                         if (result) {
                             const transformed = transformN8nResponse(

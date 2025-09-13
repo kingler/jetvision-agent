@@ -260,7 +260,9 @@ describe('PromptCards Basic Rendering', () => {
 
         // Mock loading state
         const loadingManager = { ...mockPromptManager, loading: true };
-        jest.mocked(require('../../hooks/use-prompt-manager').usePromptManager).mockReturnValue(loadingManager);
+        jest.mocked(require('../../hooks/use-prompt-manager').usePromptManager).mockReturnValue(
+            loadingManager
+        );
 
         render(React.createElement(PromptCards, { onPromptSelect: mockOnPromptSelect }));
 
@@ -273,7 +275,9 @@ describe('PromptCards Basic Rendering', () => {
 
         // Mock error state
         const errorManager = { ...mockPromptManager, error: errorMessage };
-        jest.mocked(require('../../hooks/use-prompt-manager').usePromptManager).mockReturnValue(errorManager);
+        jest.mocked(require('../../hooks/use-prompt-manager').usePromptManager).mockReturnValue(
+            errorManager
+        );
 
         render(React.createElement(PromptCards, { onPromptSelect: mockOnPromptSelect }));
 

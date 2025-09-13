@@ -20,18 +20,8 @@
             "@/app/*": ["../app/*"],
             "@/public/*": ["../public/*"]
         },
-        "types": [
-            "node",
-            "@playwright/test"
-        ]
+        "types": ["node", "@playwright/test"]
     },
-    "include": [
-        "**/*.ts",
-        "**/*.tsx", 
-        "../next-env.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "../node_modules"
-    ]
+    "include": ["**/*.ts", "**/*.tsx", "../next-env.d.ts"],
+    "exclude": ["node_modules", "../node_modules"]
 }

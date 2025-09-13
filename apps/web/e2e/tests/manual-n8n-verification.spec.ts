@@ -2,23 +2,22 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Manual N8N Integration Verification
- * 
+ *
  * This test manually verifies that the N8N integration displays responses
  * in the message thread after the SSE event format fix.
  */
 test.describe('Manual N8N Integration Verification', () => {
-
     test('should manually verify N8N lead generation integration', async ({ page }) => {
         console.log('🚀 Starting manual N8N verification...');
-        
+
         // Navigate to the JetVision Agent application
         await page.goto('http://localhost:3000');
         console.log('📱 Navigated to application');
-        
+
         // Take initial screenshot
-        await page.screenshot({ 
+        await page.screenshot({
             path: 'test-results/n8n-integration-initial.png',
-            fullPage: true 
+            fullPage: true,
         });
         console.log('📸 Initial screenshot taken');
 
@@ -27,7 +26,9 @@ test.describe('Manual N8N Integration Verification', () => {
         await page.waitForTimeout(2000);
 
         // Check if there's a welcome dialog and try to close it
-        const dialogCloseButton = page.locator('[data-testid="close-dialog"], button:has-text("×"), button:has-text("Close")').first();
+        const dialogCloseButton = page
+            .locator('[data-testid="close-dialog"], button:has-text("×"), button:has-text("Close")')
+            .first();
         try {
             if (await dialogCloseButton.isVisible({ timeout: 3000 })) {
                 await dialogCloseButton.click();
@@ -56,15 +57,15 @@ test.describe('Manual N8N Integration Verification', () => {
         }
 
         // Take screenshot after trying to close dialog
-        await page.screenshot({ 
+        await page.screenshot({
             path: 'test-results/n8n-integration-after-dialog.png',
-            fullPage: true 
+            fullPage: true,
         });
         console.log('📸 After dialog close screenshot taken');
 
         // Look for chat interface elements
         console.log('🔍 Looking for chat interface elements...');
-        
+
         // Try multiple selectors for chat input
         const inputSelectors = [
             '[data-testid="chat-input"]',
@@ -74,7 +75,7 @@ test.describe('Manual N8N Integration Verification', () => {
             'textarea',
             'input[type="text"]',
             '.chat-input',
-            '[class*="input"]'
+            '[class*="input"]',
         ];
 
         let chatInput = null;
@@ -93,30 +94,36 @@ test.describe('Manual N8N Integration Verification', () => {
 
         if (!chatInput) {
             console.log('❌ No chat input found, documenting current state...');
-            
+
             // Take debug screenshot
-            await page.screenshot({ 
+            await page.screenshot({
                 path: 'test-results/n8n-integration-no-input-debug.png',
-                fullPage: true 
+                fullPage: true,
             });
-            
+
             // Log all interactive elements
-            const interactiveElements = await page.locator('input, textarea, button, [contenteditable], [role="textbox"]').all();
+            const interactiveElements = await page
+                .locator('input, textarea, button, [contenteditable], [role="textbox"]')
+                .all();
             console.log(`Found ${interactiveElements.length} interactive elements:`);
-            
+
             for (let i = 0; i < Math.min(5, interactiveElements.length); i++) {
                 try {
                     const element = interactiveElements[i];
                     const tagName = await element.evaluate(el => el.tagName);
                     const className = await element.evaluate(el => el.className);
-                    const placeholder = await element.evaluate(el => el.getAttribute('placeholder') || '');
+                    const placeholder = await element.evaluate(
+                        el => el.getAttribute('placeholder') || ''
+                    );
                     const visible = await element.isVisible();
-                    console.log(`Element ${i}: ${tagName} class="${className}" placeholder="${placeholder}" visible=${visible}`);
+                    console.log(
+                        `Element ${i}: ${tagName} class="${className}" placeholder="${placeholder}" visible=${visible}`
+                    );
                 } catch (error) {
                     console.log(`Element ${i}: Could not inspect - ${error.message}`);
                 }
             }
-            
+
             // Still try to proceed with the first visible interactive element
             for (const element of interactiveElements) {
                 try {
@@ -134,22 +141,23 @@ test.describe('Manual N8N Integration Verification', () => {
         if (chatInput) {
             try {
                 console.log('✏️ Attempting to type in chat input...');
-                
-                const leadGenerationQuery = 'Find aviation leads for private jet charter services in New York';
-                
+
+                const leadGenerationQuery =
+                    'Find aviation leads for private jet charter services in New York';
+
                 // Wait a moment and try to focus the input
                 await page.waitForTimeout(1000);
                 await chatInput.click({ timeout: 5000 });
                 await chatInput.fill(leadGenerationQuery);
-                
+
                 console.log('✅ Successfully entered query:', leadGenerationQuery);
-                
+
                 // Take screenshot with query entered
-                await page.screenshot({ 
+                await page.screenshot({
                     path: 'test-results/n8n-integration-query-entered.png',
-                    fullPage: true 
+                    fullPage: true,
                 });
-                
+
                 // Look for submit button
                 const submitSelectors = [
                     'button[type="submit"]',
@@ -157,7 +165,7 @@ test.describe('Manual N8N Integration Verification', () => {
                     'button:has-text("Send")',
                     'button:has-text("Submit")',
                     '[aria-label="Send"]',
-                    '.send-button'
+                    '.send-button',
                 ];
 
                 let submitButton = null;
@@ -184,7 +192,7 @@ test.describe('Manual N8N Integration Verification', () => {
 
                 // Wait for response and monitor network activity
                 console.log('⏳ Waiting for N8N webhook response...');
-                
+
                 // Monitor network requests
                 let webhookRequested = false;
                 page.on('request', request => {
@@ -202,21 +210,21 @@ test.describe('Manual N8N Integration Verification', () => {
 
                 // Wait for any changes in the interface
                 await page.waitForTimeout(5000);
-                
+
                 // Take final screenshot
-                await page.screenshot({ 
+                await page.screenshot({
                     path: 'test-results/n8n-integration-final.png',
-                    fullPage: true 
+                    fullPage: true,
                 });
                 console.log('📸 Final screenshot taken');
 
                 // Look for any new messages or content
                 const allText = await page.textContent('body');
                 const hasUserQuery = allText?.includes(leadGenerationQuery);
-                
+
                 console.log('✅ User query found in DOM:', hasUserQuery);
                 console.log('📡 Webhook request made:', webhookRequested);
-                
+
                 // Document results
                 console.log('\n🎯 N8N Integration Test Results:');
                 console.log('✓ Application loaded successfully');
@@ -226,19 +234,18 @@ test.describe('Manual N8N Integration Verification', () => {
                 console.log(`✓ User message in DOM: ${hasUserQuery}`);
                 console.log(`✓ N8N webhook called: ${webhookRequested}`);
                 console.log('✓ Screenshots captured for documentation');
-                
+
                 // The test passes if we can interact with the interface
                 expect(true).toBeTruthy(); // Basic success indicator
-
             } catch (error) {
                 console.log('❌ Error during chat interaction:', error.message);
-                
+
                 // Take error screenshot
-                await page.screenshot({ 
+                await page.screenshot({
                     path: 'test-results/n8n-integration-error.png',
-                    fullPage: true 
+                    fullPage: true,
                 });
-                
+
                 throw error;
             }
         } else {
@@ -249,25 +256,25 @@ test.describe('Manual N8N Integration Verification', () => {
 
     test('should document the application interface', async ({ page }) => {
         console.log('📋 Documenting JetVision Agent interface...');
-        
+
         await page.goto('http://localhost:3000');
         await page.waitForLoadState('domcontentloaded');
         await page.waitForTimeout(3000);
-        
+
         // Document the initial state
-        await page.screenshot({ 
+        await page.screenshot({
             path: 'test-results/app-documentation-full.png',
-            fullPage: true 
+            fullPage: true,
         });
-        
+
         // Document viewport
-        await page.screenshot({ 
+        await page.screenshot({
             path: 'test-results/app-documentation-viewport.png',
-            fullPage: false 
+            fullPage: false,
         });
-        
+
         console.log('✅ Application interface documented');
-        
+
         expect(true).toBeTruthy();
     });
 });

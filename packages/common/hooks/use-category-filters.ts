@@ -2,7 +2,14 @@
 
 import { useState, useCallback, useEffect } from 'react';
 
-export type CategoryKey = 'Charter' | 'Apollo' | 'Leads' | 'Analytics' | 'Custom' | 'Travel' | 'People Search';
+export type CategoryKey =
+    | 'Charter'
+    | 'Apollo'
+    | 'Leads'
+    | 'Analytics'
+    | 'Custom'
+    | 'Travel'
+    | 'People Search';
 
 export interface CategoryFilterState {
     [key: string]: boolean;
@@ -22,17 +29,18 @@ const STORAGE_KEY = 'jetvision_category_filters';
 
 // Default categories to show (all visible by default)
 const DEFAULT_CATEGORIES: CategoryFilterState = {
-    'Charter': true,
-    'Apollo': true,
-    'Leads': true,
-    'Analytics': true,
-    'Custom': true,
-    'Travel': true,
+    Charter: true,
+    Apollo: true,
+    Leads: true,
+    Analytics: true,
+    Custom: true,
+    Travel: true,
     'People Search': true,
 };
 
 export const useCategoryFilters = (): UseCategoryFiltersReturn => {
-    const [visibleCategories, setVisibleCategories] = useState<CategoryFilterState>(DEFAULT_CATEGORIES);
+    const [visibleCategories, setVisibleCategories] =
+        useState<CategoryFilterState>(DEFAULT_CATEGORIES);
 
     // Load category filters from localStorage on mount
     useEffect(() => {
@@ -60,16 +68,19 @@ export const useCategoryFilters = (): UseCategoryFiltersReturn => {
     }, []);
 
     // Toggle a specific category
-    const toggleCategory = useCallback((category: CategoryKey) => {
-        setVisibleCategories(prev => {
-            const updated = {
-                ...prev,
-                [category]: !prev[category],
-            };
-            saveToStorage(updated);
-            return updated;
-        });
-    }, [saveToStorage]);
+    const toggleCategory = useCallback(
+        (category: CategoryKey) => {
+            setVisibleCategories(prev => {
+                const updated = {
+                    ...prev,
+                    [category]: !prev[category],
+                };
+                saveToStorage(updated);
+                return updated;
+            });
+        },
+        [saveToStorage]
+    );
 
     // Show all categories
     const showAllCategories = useCallback(() => {
@@ -77,7 +88,7 @@ export const useCategoryFilters = (): UseCategoryFiltersReturn => {
             acc[key] = true;
             return acc;
         }, {} as CategoryFilterState);
-        
+
         setVisibleCategories(allVisible);
         saveToStorage(allVisible);
     }, [saveToStorage]);
@@ -88,7 +99,7 @@ export const useCategoryFilters = (): UseCategoryFiltersReturn => {
             acc[key] = false;
             return acc;
         }, {} as CategoryFilterState);
-        
+
         setVisibleCategories(allHidden);
         saveToStorage(allHidden);
     }, [saveToStorage]);

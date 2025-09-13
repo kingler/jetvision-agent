@@ -83,16 +83,16 @@ const AircraftSearchDisplay: React.FC<{
     recommendations?: string[];
 }> = ({ aircraft, summary, recommendations }) => {
     return (
-        <Card className="mt-4 border-sky-500/20 bg-gradient-to-br from-sky-50/50 to-transparent dark:from-sky-950/20">
+        <Card className="border-border from-secondary/50 dark:from-secondary/20 mt-4 bg-gradient-to-br to-transparent">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
-                        <IconPlane className="h-5 w-5 text-sky-600" />
+                        <IconPlane className="text-brand h-5 w-5" />
                         Available Aircraft
                     </CardTitle>
                     <Badge
                         variant="secondary"
-                        className="bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300"
+                        className="bg-secondary text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground"
                     >
                         {aircraft.length} options
                     </Badge>
@@ -137,7 +137,7 @@ const AircraftSearchDisplay: React.FC<{
                                         </span>
                                     )}
                                     {jet.hourlyRate && (
-                                        <span className="flex items-center gap-1 font-medium text-sky-600">
+                                        <span className="text-brand flex items-center gap-1 font-medium">
                                             <IconCurrencyDollar className="h-3 w-3" />
                                             {jet.hourlyRate}/hr
                                         </span>
@@ -164,15 +164,15 @@ const AircraftSearchDisplay: React.FC<{
                 </div>
 
                 {recommendations && recommendations.length > 0 && (
-                    <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/30">
-                        <h5 className="mb-2 text-sm font-medium text-blue-900 dark:text-blue-100">
+                    <div className="border-border bg-secondary dark:border-border dark:bg-secondary mt-4 rounded-lg border p-3">
+                        <h5 className="text-foreground dark:text-foreground mb-2 text-sm font-medium">
                             Recommendations
                         </h5>
                         <ul className="space-y-1">
                             {recommendations.map((rec, index) => (
                                 <li
                                     key={index}
-                                    className="text-xs text-blue-700 dark:text-blue-300"
+                                    className="text-muted-foreground dark:text-muted-foreground text-xs"
                                 >
                                     • {rec}
                                 </li>
@@ -250,17 +250,17 @@ const BookingQuoteDisplay: React.FC<{ quote: BookingQuote; pricing?: any }> = ({
 
 const FleetStatusDisplay: React.FC<{ fleet: FleetStatus }> = ({ fleet }) => {
     const statusItems = [
-        { label: 'Total Aircraft', value: fleet.totalAircraft, color: 'blue' },
+        { label: 'Total Aircraft', value: fleet.totalAircraft, color: 'gray' },
         { label: 'Available Now', value: fleet.availableNow, color: 'green' },
         { label: 'In Maintenance', value: fleet.inMaintenance, color: 'yellow' },
         { label: 'On Mission', value: fleet.onMission, color: 'purple' },
     ].filter(item => item.value !== undefined);
 
     return (
-        <Card className="mt-4 border-indigo-500/20 bg-gradient-to-br from-indigo-50/50 to-transparent dark:from-indigo-950/20">
+        <Card className="border-border from-secondary/50 dark:from-secondary/20 mt-4 bg-gradient-to-br to-transparent">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <IconPlane className="h-5 w-5 text-indigo-600" />
+                    <IconPlane className="text-brand h-5 w-5" />
                     Fleet Status Overview
                 </CardTitle>
             </CardHeader>
@@ -270,8 +270,8 @@ const FleetStatusDisplay: React.FC<{ fleet: FleetStatus }> = ({ fleet }) => {
                         <StatusCard key={index} {...item} />
                     ))}
                 </div>
-                <div className="mt-4 rounded-lg bg-indigo-50 p-3 dark:bg-indigo-950/30">
-                    <div className="text-sm text-indigo-700 dark:text-indigo-300">
+                <div className="bg-secondary dark:bg-secondary mt-4 rounded-lg p-3">
+                    <div className="text-muted-foreground dark:text-muted-foreground text-sm">
                         Fleet utilization rate: {calculateUtilization(fleet)}%
                     </div>
                 </div>
@@ -286,7 +286,7 @@ const StatusCard: React.FC<{ label: string; value?: number; color: string }> = (
     color,
 }) => {
     const colorClasses = {
-        blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+        gray: 'bg-secondary text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground',
         green: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
         yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
         purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',

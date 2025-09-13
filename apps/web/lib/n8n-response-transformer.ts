@@ -4,7 +4,13 @@
  */
 
 export interface StructuredData {
-    type: 'apollo_leads' | 'people_search' | 'aircraft_search' | 'booking_data' | 'google_sheets' | 'general';
+    type:
+        | 'apollo_leads'
+        | 'people_search'
+        | 'aircraft_search'
+        | 'booking_data'
+        | 'google_sheets'
+        | 'general';
     data: any;
 }
 
@@ -101,14 +107,16 @@ function extractResponseText(webhookData: any): string {
     for (const field of possibleFields) {
         if (webhookData[field]) {
             const value = webhookData[field];
-            
+
             // If it's a string that looks like JSON, try to parse and format it
             if (typeof value === 'string') {
                 const trimmedValue = value.trim();
-                
+
                 // Check if it's JSON string
-                if ((trimmedValue.startsWith('{') && trimmedValue.endsWith('}')) ||
-                    (trimmedValue.startsWith('[') && trimmedValue.endsWith(']'))) {
+                if (
+                    (trimmedValue.startsWith('{') && trimmedValue.endsWith('}')) ||
+                    (trimmedValue.startsWith('[') && trimmedValue.endsWith(']'))
+                ) {
                     try {
                         const parsed = JSON.parse(trimmedValue);
                         return formatParsedResponse(parsed);
@@ -117,10 +125,10 @@ function extractResponseText(webhookData: any): string {
                         return trimmedValue;
                     }
                 }
-                
+
                 return trimmedValue;
             }
-            
+
             // If it's already an object, format it
             if (typeof value === 'object' && value !== null) {
                 return formatParsedResponse(value);
@@ -189,19 +197,19 @@ function formatParsedResponse(data: any): string {
  */
 function formatGoogleSheetsResponse(data: any): string {
     let formatted = `**📊 Google Sheets Created Successfully**\n\n`;
-    
+
     if (data.properties?.title) {
         formatted += `**Title:** ${data.properties.title}\n`;
     }
-    
+
     if (data.spreadsheetId) {
         formatted += `**Spreadsheet ID:** ${data.spreadsheetId}\n`;
     }
-    
+
     if (data.spreadsheetUrl) {
         formatted += `**URL:** [Open Spreadsheet](${data.spreadsheetUrl})\n`;
     }
-    
+
     if (data.sheets && data.sheets.length > 0) {
         formatted += `\n**Sheets:**\n`;
         data.sheets.forEach((sheet: any, index: number) => {
@@ -214,17 +222,17 @@ function formatGoogleSheetsResponse(data: any): string {
             formatted += `\n`;
         });
     }
-    
+
     if (data.properties?.locale) {
         formatted += `\n**Locale:** ${data.properties.locale}`;
     }
-    
+
     if (data.properties?.timeZone) {
         formatted += `\n**Time Zone:** ${data.properties.timeZone}`;
     }
-    
+
     formatted += `\n\n✅ Your spreadsheet is ready for use!`;
-    
+
     return formatted;
 }
 
@@ -233,10 +241,10 @@ function formatGoogleSheetsResponse(data: any): string {
  */
 function formatPeopleSearchResponse(data: any): string {
     const people = Array.isArray(data) ? data : data.people || [];
-    
+
     let formatted = `**👥 People Search Results**\n\n`;
     formatted += `Found ${people.length} result(s):\n\n`;
-    
+
     people.forEach((person: any, index: number) => {
         formatted += `**${index + 1}. ${person.name || 'Unknown'}**\n`;
         if (person.title) formatted += `• Title: ${person.title}\n`;
@@ -245,7 +253,7 @@ function formatPeopleSearchResponse(data: any): string {
         if (person.location) formatted += `• Location: ${person.location}\n`;
         formatted += `\n`;
     });
-    
+
     return formatted;
 }
 
@@ -254,18 +262,19 @@ function formatPeopleSearchResponse(data: any): string {
  */
 function formatAircraftResponse(data: any): string {
     const aircraft = Array.isArray(data) ? data : data.aircraft || [];
-    
+
     let formatted = `**✈️ Aircraft Search Results**\n\n`;
     formatted += `Found ${aircraft.length} available aircraft:\n\n`;
-    
+
     aircraft.forEach((plane: any, index: number) => {
         formatted += `**${index + 1}. ${plane.manufacturer || ''} ${plane.model || ''}**\n`;
         if (plane.location) formatted += `• Location: ${plane.location}\n`;
         if (plane.price) formatted += `• Price: ${plane.price}\n`;
-        if (plane.available !== undefined) formatted += `• Available: ${plane.available ? 'Yes' : 'No'}\n`;
+        if (plane.available !== undefined)
+            formatted += `• Available: ${plane.available ? 'Yes' : 'No'}\n`;
         formatted += `\n`;
     });
-    
+
     return formatted;
 }
 
@@ -389,19 +398,71 @@ export function extractStructuredData(responseText: string): StructuredData | nu
 function extractLeadData(text: string): any[] {
     const leads: any[] = [];
 
-    // Basic pattern matching for lead information
-    const nameMatches = text.match(/([A-Z][a-z]+ [A-Z][a-z]+)/g) || [];
-    const companyMatches = text.match(/at ([A-Z][a-zA-Z\s&,.-]+)/g) || [];
-    const emailMatches = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g) || [];
+    // First, try to parse JSON data if the response contains JSON
+    try {
+        // Look for JSON arrays or objects in the text
+        const jsonMatches = text.match(/\[?\{[\s\S]*?\}\]?/g);
+        if (jsonMatches) {
+            for (const match of jsonMatches) {
+                try {
+                    const parsed = JSON.parse(match);
+                    const items = Array.isArray(parsed) ? parsed : [parsed];
 
-    for (let i = 0; i < nameMatches.length; i++) {
-        leads.push({
-            name: nameMatches[i],
-            company: companyMatches[i]?.replace('at ', ''),
-            email: emailMatches[i],
-            title: 'Executive Assistant', // Default based on common use case
-            source: 'apollo.io',
-        });
+                    for (const item of items) {
+                        // Handle Apollo.io response format with first_name/last_name
+                        if (item.first_name || item.last_name || item.name) {
+                            const lead: any = {
+                                name:
+                                    item.name ||
+                                    (item.first_name && item.last_name
+                                        ? `${item.first_name} ${item.last_name}`
+                                        : '') ||
+                                    item.first_name ||
+                                    item.last_name ||
+                                    'Unknown',
+                                title: item.title || item.job_title || item.headline || null,
+                                company:
+                                    item.company ||
+                                    item.organization_name ||
+                                    item.company_name ||
+                                    null,
+                                email: item.email || item.email_address || null,
+                                phone: item.phone || item.phone_number || null,
+                                linkedinUrl: item.linkedin_url || item.linkedinUrl || null,
+                                source: 'apollo.io',
+                            };
+
+                            // Only add if we have at least a name or company
+                            if (lead.name !== 'Unknown' || lead.company) {
+                                leads.push(lead);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // If individual JSON parsing fails, continue with pattern matching
+                    console.debug('Failed to parse potential JSON:', e);
+                }
+            }
+        }
+    } catch (e) {
+        console.debug('JSON extraction failed, falling back to pattern matching:', e);
+    }
+
+    // If no JSON data found, fall back to pattern matching
+    if (leads.length === 0) {
+        const nameMatches = text.match(/([A-Z][a-z]+ [A-Z][a-z]+)/g) || [];
+        const companyMatches = text.match(/at ([A-Z][a-zA-Z\s&,.-]+)/g) || [];
+        const emailMatches = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g) || [];
+
+        for (let i = 0; i < nameMatches.length; i++) {
+            leads.push({
+                name: nameMatches[i],
+                company: companyMatches[i]?.replace('at ', ''),
+                email: emailMatches[i],
+                title: 'Executive Assistant', // Default based on common use case
+                source: 'apollo.io',
+            });
+        }
     }
 
     return leads.length > 0 ? leads : [{ text, parsed: false }];

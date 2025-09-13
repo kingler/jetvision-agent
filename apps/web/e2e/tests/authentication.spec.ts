@@ -436,7 +436,7 @@ test.describe('Authentication Flow Tests', () => {
         test('should prevent XSS in user data', async ({ page }) => {
             const baseUser = testUsers[0];
             if (!baseUser) throw new Error('Base test user not found');
-            
+
             const maliciousUser = {
                 ...baseUser,
                 firstName: '<script>alert("xss")</script>',

@@ -4,7 +4,7 @@ import { N8NHelper, waitForN8NResponse } from '../utils/n8n-helpers';
 
 /**
  * E2E Tests for Lead Generation Message Thread Integration
- * 
+ *
  * This test verifies that lead generation prompts properly display responses
  * in the message thread after the SSE event format fix that includes
  * threadId, threadItemId, and event fields.
@@ -22,8 +22,10 @@ test.describe('Lead Generation Message Thread Tests', () => {
         await page.waitForLoadState('networkidle');
 
         // Wait for the chat interface to be visible
-        await expect(page.locator('[data-testid="chat-input"], [contenteditable="true"]')).toBeVisible();
-        
+        await expect(
+            page.locator('[data-testid="chat-input"], [contenteditable="true"]')
+        ).toBeVisible();
+
         // Setup N8N mocks with realistic lead generation responses
         await n8nHelper.setupMocks();
         await n8nHelper.startMonitoring();
@@ -33,18 +35,23 @@ test.describe('Lead Generation Message Thread Tests', () => {
         await n8nHelper.resetMocks();
     });
 
-    test('should display N8N response for aviation lead generation query in message thread', async ({ page }) => {
+    test('should display N8N response for aviation lead generation query in message thread', async ({
+        page,
+    }) => {
         // Take screenshot before sending query
-        await page.screenshot({ 
+        await page.screenshot({
             path: '/tmp/lead-generation-before.png',
-            fullPage: true 
+            fullPage: true,
         });
 
-        const leadGenerationQuery = 'Find aviation leads for private jet charter services in New York';
+        const leadGenerationQuery =
+            'Find aviation leads for private jet charter services in New York';
 
         // Find the chat input (could be contenteditable div or input)
-        const chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
-        
+        const chatInput = page
+            .locator('[data-testid="chat-input"], [contenteditable="true"]')
+            .first();
+
         // Type the lead generation query
         await chatInput.fill(leadGenerationQuery);
 
@@ -57,29 +64,33 @@ test.describe('Lead Generation Message Thread Tests', () => {
         }
 
         // Verify the user message appears in the thread
-        await expect(page.locator('text="' + leadGenerationQuery + '"')).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('text="' + leadGenerationQuery + '"')).toBeVisible({
+            timeout: 10000,
+        });
 
         // Wait for N8N response to be processed and displayed
         await waitForN8NResponse(page, 30000);
 
         // Verify that a response message appears in the thread
-        const chatMessages = page.locator('[data-testid="chat-message"], .message, [class*="message"]');
+        const chatMessages = page.locator(
+            '[data-testid="chat-message"], .message, [class*="message"]'
+        );
         const messageCount = await chatMessages.count();
-        
+
         // Should have at least 2 messages: user query + AI response
         expect(messageCount).toBeGreaterThanOrEqual(2);
 
         // Verify the response contains aviation-related content
         const lastMessage = chatMessages.last();
         const responseText = await lastMessage.textContent();
-        
+
         expect(responseText).toBeTruthy();
         expect(responseText!.length).toBeGreaterThan(10);
-        
+
         // Take screenshot after response is displayed
-        await page.screenshot({ 
+        await page.screenshot({
             path: '/tmp/lead-generation-after.png',
-            fullPage: true 
+            fullPage: true,
         });
 
         // Verify webhook was called with correct data structure
@@ -108,8 +119,8 @@ test.describe('Lead Generation Message Thread Tests', () => {
                 constructor(url: string, options?: EventSourceInit) {
                     console.log('EventSource created for:', url);
                     super(url, options);
-                    
-                    this.onmessage = (event) => {
+
+                    this.onmessage = event => {
                         try {
                             const data = JSON.parse(event.data);
                             (window as any).__sseEvents = (window as any).__sseEvents || [];
@@ -124,10 +135,12 @@ test.describe('Lead Generation Message Thread Tests', () => {
         });
 
         const query = 'Generate leads for executive jet charters in Los Angeles';
-        
-        const chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
+
+        const chatInput = page
+            .locator('[data-testid="chat-input"], [contenteditable="true"]')
+            .first();
         await chatInput.fill(query);
-        
+
         const submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
         if (await submitButton.isVisible()) {
             await submitButton.click();
@@ -146,7 +159,9 @@ test.describe('Lead Generation Message Thread Tests', () => {
         console.log('SSE Events received:', sseEvents);
 
         // Verify response appears in message thread
-        const chatMessages = page.locator('[data-testid="chat-message"], .message, [class*="message"]');
+        const chatMessages = page.locator(
+            '[data-testid="chat-message"], .message, [class*="message"]'
+        );
         const messageCount = await chatMessages.count();
         expect(messageCount).toBeGreaterThanOrEqual(2);
     });
@@ -155,14 +170,16 @@ test.describe('Lead Generation Message Thread Tests', () => {
         const queries = [
             'Find leads for private aviation services in Miami',
             'Search for jet charter prospects in Texas',
-            'Generate contacts for helicopter tour services'
+            'Generate contacts for helicopter tour services',
         ];
 
         // Send multiple queries in sequence
         for (const query of queries) {
-            const chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
+            const chatInput = page
+                .locator('[data-testid="chat-input"], [contenteditable="true"]')
+                .first();
             await chatInput.fill(query);
-            
+
             const submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
             if (await submitButton.isVisible()) {
                 await submitButton.click();
@@ -172,15 +189,17 @@ test.describe('Lead Generation Message Thread Tests', () => {
 
             // Wait for this response before sending the next query
             await waitForN8NResponse(page, 30000);
-            
+
             // Small delay between queries
             await page.waitForTimeout(1000);
         }
 
         // Verify all queries and responses are in the thread
-        const chatMessages = page.locator('[data-testid="chat-message"], .message, [class*="message"]');
+        const chatMessages = page.locator(
+            '[data-testid="chat-message"], .message, [class*="message"]'
+        );
         const messageCount = await chatMessages.count();
-        
+
         // Should have at least 6 messages: 3 user queries + 3 AI responses
         expect(messageCount).toBeGreaterThanOrEqual(6);
 
@@ -190,18 +209,22 @@ test.describe('Lead Generation Message Thread Tests', () => {
         }
 
         // Take final screenshot showing all messages
-        await page.screenshot({ 
+        await page.screenshot({
             path: '/tmp/concurrent-lead-generation.png',
-            fullPage: true 
+            fullPage: true,
         });
     });
 
-    test('should maintain message thread context across lead generation requests', async ({ page }) => {
+    test('should maintain message thread context across lead generation requests', async ({
+        page,
+    }) => {
         // First query to establish context
         const contextQuery = 'I need leads for luxury aircraft sales';
-        let chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
+        let chatInput = page
+            .locator('[data-testid="chat-input"], [contenteditable="true"]')
+            .first();
         await chatInput.fill(contextQuery);
-        
+
         let submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
         if (await submitButton.isVisible()) {
             await submitButton.click();
@@ -215,7 +238,7 @@ test.describe('Lead Generation Message Thread Tests', () => {
         const followUpQuery = 'Now filter those leads for clients in California';
         chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
         await chatInput.fill(followUpQuery);
-        
+
         submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
         if (await submitButton.isVisible()) {
             await submitButton.click();
@@ -226,7 +249,9 @@ test.describe('Lead Generation Message Thread Tests', () => {
         await waitForN8NResponse(page, 30000);
 
         // Verify both messages are in the thread
-        const chatMessages = page.locator('[data-testid="chat-message"], .message, [class*="message"]');
+        const chatMessages = page.locator(
+            '[data-testid="chat-message"], .message, [class*="message"]'
+        );
         const messageCount = await chatMessages.count();
         expect(messageCount).toBeGreaterThanOrEqual(4); // 2 user + 2 AI messages
 
@@ -235,9 +260,9 @@ test.describe('Lead Generation Message Thread Tests', () => {
         await expect(page.locator(`text="${followUpQuery}"`)).toBeVisible();
 
         // Take screenshot showing context flow
-        await page.screenshot({ 
+        await page.screenshot({
             path: '/tmp/contextual-lead-generation.png',
-            fullPage: true 
+            fullPage: true,
         });
     });
 
@@ -246,10 +271,12 @@ test.describe('Lead Generation Message Thread Tests', () => {
         await n8nHelper.simulateFailure();
 
         const query = 'Find leads despite service failure';
-        
-        const chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
+
+        const chatInput = page
+            .locator('[data-testid="chat-input"], [contenteditable="true"]')
+            .first();
         await chatInput.fill(query);
-        
+
         const submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
         if (await submitButton.isVisible()) {
             await submitButton.click();
@@ -258,7 +285,9 @@ test.describe('Lead Generation Message Thread Tests', () => {
         }
 
         // Wait for error message to appear
-        const errorMessage = page.locator('[data-testid="error-message"], .error, [class*="error"]');
+        const errorMessage = page.locator(
+            '[data-testid="error-message"], .error, [class*="error"]'
+        );
         await expect(errorMessage).toBeVisible({ timeout: 15000 });
 
         // Verify user query is still visible in thread
@@ -269,18 +298,20 @@ test.describe('Lead Generation Message Thread Tests', () => {
         expect(errorText?.toLowerCase()).toContain('error');
 
         // Take screenshot of error handling
-        await page.screenshot({ 
+        await page.screenshot({
             path: '/tmp/lead-generation-error.png',
-            fullPage: true 
+            fullPage: true,
         });
     });
 
     test('should preserve message thread state across page refreshes', async ({ page }) => {
         const query = 'Find aviation leads for business development';
-        
-        const chatInput = page.locator('[data-testid="chat-input"], [contenteditable="true"]').first();
+
+        const chatInput = page
+            .locator('[data-testid="chat-input"], [contenteditable="true"]')
+            .first();
         await chatInput.fill(query);
-        
+
         const submitButton = page.locator('button[type="submit"], [data-testid="send-button"]');
         if (await submitButton.isVisible()) {
             await submitButton.click();
@@ -299,7 +330,9 @@ test.describe('Lead Generation Message Thread Tests', () => {
 
         // Check if conversation was persisted (implementation dependent)
         // This test verifies the infrastructure can handle state persistence
-        const chatContainer = page.locator('[data-testid="chat-container"], .chat, [class*="chat"]');
+        const chatContainer = page.locator(
+            '[data-testid="chat-container"], .chat, [class*="chat"]'
+        );
         await expect(chatContainer).toBeVisible({ timeout: 10000 });
 
         console.log('Page refresh handling verified for lead generation workflow');

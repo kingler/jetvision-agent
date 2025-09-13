@@ -47,12 +47,12 @@ const AddNewPromptCard: React.FC<AddNewPromptCardProps> = ({ onClick }) => {
                     'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900',
                     'border-2 border-dashed border-gray-300 dark:border-gray-600',
                     'hover:border-gray-400 dark:hover:border-gray-500',
-                    'hover:from-blue-50 hover:to-blue-100 hover:shadow-lg dark:hover:from-blue-900/20 dark:hover:to-blue-800/20',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2',
+                    'hover:from-gray-50 hover:to-gray-200 hover:shadow-lg dark:hover:from-gray-800 dark:hover:to-gray-700',
+                    'focus:ring-brand focus:outline-none focus:ring-2 focus:ring-offset-2',
                     'flex flex-col items-center justify-center gap-3'
                 )}
             >
-                <div className="rounded-full bg-blue-100 p-3 text-blue-600 transition-colors group-hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:group-hover:bg-blue-800/40">
+                <div className="text-brand dark:text-brand-foreground rounded-full bg-gray-100 p-3 transition-colors group-hover:bg-gray-200 dark:bg-gray-800 dark:group-hover:bg-gray-700">
                     <IconPlus size={24} />
                 </div>
                 <div className="text-center">
@@ -74,43 +74,43 @@ const enhancedCategoryConfig = {
         label: 'Jet Charter Operations',
         icon: IconPlane,
         description: 'Fleet management and aircraft availability',
-        color: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Apollo: {
         label: 'Apollo Campaign Management',
         icon: IconRocket,
         description: 'Sales intelligence and email campaigns',
-        color: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Leads: {
         label: 'Lead Generation & Targeting',
         icon: IconUsers,
         description: 'Prospect identification and scoring',
-        color: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Analytics: {
         label: 'Analytics & Insights',
         icon: IconChartBar,
         description: 'Performance metrics and reporting',
-        color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Custom: {
         label: 'Custom Prompts',
         icon: IconStar,
         description: 'Your personalized prompt library',
-        color: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Travel: {
         label: 'Travel Planning & Coordination',
         icon: IconCalendar,
         description: 'Multi-city itineraries and logistics',
-        color: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     'People Search': {
         label: 'People Search & Intelligence',
         icon: IconUserSearch,
         description: 'Apollo.io people search and prospect targeting',
-        color: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800',
+        color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
 };
 
@@ -290,6 +290,11 @@ export const PromptCards: React.FC<PromptCardsProps> = ({ onSelectPrompt, classN
         {} as Record<string, typeof prompts>
     );
 
+    // Ensure Custom category always exists even if empty
+    if (!groupedPrompts['Custom']) {
+        groupedPrompts['Custom'] = [];
+    }
+
     // Filter grouped prompts based on category visibility
     const filteredGroupedPrompts = Object.entries(groupedPrompts).reduce(
         (acc, [category, categoryPrompts]) => {
@@ -339,181 +344,204 @@ export const PromptCards: React.FC<PromptCardsProps> = ({ onSelectPrompt, classN
                             </p>
                         </div>
                     ) : (
-                        Object.entries(filteredGroupedPrompts).map(([category, categoryPrompts]) => {
-                            const config =
-                                enhancedCategoryConfig[category as keyof typeof enhancedCategoryConfig];
-                            if (!config) return null;
+                        Object.entries(filteredGroupedPrompts).map(
+                            ([category, categoryPrompts]) => {
+                                const config =
+                                    enhancedCategoryConfig[
+                                        category as keyof typeof enhancedCategoryConfig
+                                    ];
+                                if (!config) return null;
 
-                            return (
-                                <div key={category} className="space-y-4">
-                                    {/* Category Header */}
-                                    <div className="border-b border-gray-200 pb-3 dark:border-gray-800">
-                                        <div className="flex items-center gap-3">
-                                            <config.icon
-                                                size={20}
-                                                className="text-gray-600 dark:text-gray-400"
-                                            />
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                                    {config.label}
-                                                </h3>
-                                                <p className="text-sm text-gray-500 dark:text-gray-500">
-                                                    {config.description}
-                                                </p>
+                                return (
+                                    <div key={category} className="space-y-4">
+                                        {/* Category Header */}
+                                        <div className="border-b border-gray-200 pb-3 dark:border-gray-800">
+                                            <div className="flex items-center gap-3">
+                                                <config.icon
+                                                    size={20}
+                                                    className="text-gray-600 dark:text-gray-400"
+                                                />
+                                                <div className="flex-1">
+                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                                        {config.label}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-500">
+                                                        {config.description}
+                                                    </p>
+                                                </div>
+                                                {category === 'Custom' && (
+                                                    <span
+                                                        className={cn(
+                                                            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                                            config.color
+                                                        )}
+                                                    >
+                                                        {categoryPrompts.length} custom
+                                                    </span>
+                                                )}
                                             </div>
+                                        </div>
+
+                                        {/* Cards Grid */}
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                            {/* Add New Prompt Card for Custom Category */}
                                             {category === 'Custom' && (
-                                                <span
-                                                    className={cn(
-                                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                                                        config.color
-                                                    )}
-                                                >
-                                                    {categoryPrompts.length} custom
-                                                </span>
+                                                <AddNewPromptCard onClick={handleCreateNew} />
                                             )}
+
+                                            {/* Prompt Cards */}
+                                            {categoryPrompts.map(prompt => {
+                                                const Icon = config.icon;
+                                                return (
+                                                    <motion.div
+                                                        key={prompt.id}
+                                                        variants={item}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                    >
+                                                        <div className="group relative">
+                                                            {/* Main Card Button */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    const displayPrompt =
+                                                                        formatPromptForDisplay(
+                                                                            prompt.prompt
+                                                                        );
+                                                                    onSelectPrompt(
+                                                                        displayPrompt,
+                                                                        prompt.fullPrompt,
+                                                                        prompt.parameters
+                                                                    );
+                                                                    scrollToChatInputWithFocus(100);
+                                                                }}
+                                                                className={cn(
+                                                                    'w-full rounded-lg p-4 text-left transition-all',
+                                                                    'bg-white dark:bg-gray-900',
+                                                                    'border border-gray-200 dark:border-gray-800',
+                                                                    'shadow-md hover:shadow-lg',
+                                                                    'hover:border-gray-300 dark:hover:border-gray-700',
+                                                                    'focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2'
+                                                                )}
+                                                            >
+                                                                <div className="flex h-full flex-col gap-2">
+                                                                    {/* Header with Icon */}
+                                                                    <div className="mb-1 flex items-start justify-between">
+                                                                        <Icon
+                                                                            size={20}
+                                                                            className="text-gray-600 dark:text-gray-400"
+                                                                        />
+                                                                        {/* Placeholder to maintain layout */}
+                                                                        <div className="h-6 w-6" />
+                                                                    </div>
+
+                                                                    {/* Title */}
+                                                                    <h4 className="line-clamp-1 font-semibold text-gray-900 dark:text-gray-100">
+                                                                        {prompt.title}
+                                                                    </h4>
+
+                                                                    {/* Prompt preview */}
+                                                                    <p className="line-clamp-3 text-sm text-gray-600 dark:text-gray-400">
+                                                                        {prompt.prompt}
+                                                                    </p>
+
+                                                                    {/* Custom prompt indicator */}
+                                                                    {prompt.isCustom && (
+                                                                        <div className="mt-2 flex items-center gap-1">
+                                                                            <IconStar
+                                                                                size={12}
+                                                                                className="text-green-500"
+                                                                            />
+                                                                            <span className="text-xs text-green-600 dark:text-green-400">
+                                                                                Custom
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </button>
+
+                                                            {/* Dropdown Menu - Outside the button */}
+                                                            <div
+                                                                className={cn(
+                                                                    'absolute right-4 top-4',
+                                                                    'opacity-0 transition-opacity group-hover:opacity-100',
+                                                                    'sm:opacity-100' // Always visible on mobile
+                                                                )}
+                                                            >
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <button
+                                                                            onClick={e =>
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                            className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                                        >
+                                                                            <IconDotsVertical
+                                                                                size={16}
+                                                                                className="text-gray-500 dark:text-gray-400"
+                                                                            />
+                                                                        </button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuItem
+                                                                            onClick={e => {
+                                                                                e.stopPropagation();
+                                                                                const displayPrompt =
+                                                                                    formatPromptForDisplay(
+                                                                                        prompt.prompt
+                                                                                    );
+                                                                                onSelectPrompt(
+                                                                                    displayPrompt,
+                                                                                    prompt.fullPrompt,
+                                                                                    prompt.parameters
+                                                                                );
+                                                                                scrollToChatInputWithFocus(
+                                                                                    100
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <IconCopy size={14} />
+                                                                            Insert
+                                                                        </DropdownMenuItem>
+
+                                                                        <DropdownMenuItem
+                                                                            onClick={e => {
+                                                                                e.stopPropagation();
+                                                                                handleEdit(
+                                                                                    prompt.id
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <IconEdit size={14} />
+                                                                            Edit
+                                                                        </DropdownMenuItem>
+
+                                                                        <DropdownMenuItem
+                                                                            onClick={e => {
+                                                                                e.stopPropagation();
+                                                                                handleDelete(
+                                                                                    prompt.id
+                                                                                );
+                                                                            }}
+                                                                            disabled={
+                                                                                !prompt.isCustom
+                                                                            }
+                                                                            className="text-red-600 focus:bg-red-50 disabled:text-gray-400 dark:text-red-400 dark:focus:bg-red-900/20 disabled:dark:text-gray-600"
+                                                                        >
+                                                                            <IconTrash size={14} />
+                                                                            Delete
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
-
-                                    {/* Cards Grid */}
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                        {/* Add New Prompt Card for Custom Category */}
-                                        {category === 'Custom' && (
-                                            <AddNewPromptCard onClick={handleCreateNew} />
-                                        )}
-
-                                        {/* Prompt Cards */}
-                                        {categoryPrompts.map(prompt => {
-                                            const Icon = config.icon;
-                                            return (
-                                                <motion.div
-                                                    key={prompt.id}
-                                                    variants={item}
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                >
-                                                    <div className="group relative">
-                                                        {/* Main Card Button */}
-                                                        <button
-                                                            onClick={() => {
-                                                                const displayPrompt =
-                                                                    formatPromptForDisplay(
-                                                                        prompt.prompt
-                                                                    );
-                                                                onSelectPrompt(
-                                                                    displayPrompt,
-                                                                    prompt.fullPrompt,
-                                                                    prompt.parameters
-                                                                );
-                                                                scrollToChatInputWithFocus(100);
-                                                            }}
-                                                            className={cn(
-                                                                'w-full rounded-lg p-4 text-left transition-all',
-                                                                'bg-white dark:bg-gray-900',
-                                                                'border border-gray-200 dark:border-gray-800',
-                                                                'shadow-md hover:shadow-lg',
-                                                                'hover:border-gray-300 dark:hover:border-gray-700',
-                                                                'focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2'
-                                                            )}
-                                                        >
-                                                            <div className="flex h-full flex-col gap-2">
-                                                                {/* Header with Icon */}
-                                                                <div className="mb-1 flex items-start justify-between">
-                                                                    <Icon
-                                                                        size={20}
-                                                                        className="text-gray-600 dark:text-gray-400"
-                                                                    />
-                                                                    {/* Placeholder to maintain layout */}
-                                                                    <div className="h-6 w-6" />
-                                                                </div>
-
-                                                                {/* Title */}
-                                                                <h4 className="line-clamp-1 font-semibold text-gray-900 dark:text-gray-100">
-                                                                    {prompt.title}
-                                                                </h4>
-
-                                                                {/* Prompt preview */}
-                                                                <p className="line-clamp-3 text-sm text-gray-600 dark:text-gray-400">
-                                                                    {prompt.prompt}
-                                                                </p>
-
-                                                                {/* Custom prompt indicator */}
-                                                                {prompt.isCustom && (
-                                                                    <div className="mt-2 flex items-center gap-1">
-                                                                        <IconStar
-                                                                            size={12}
-                                                                            className="text-green-500"
-                                                                        />
-                                                                        <span className="text-xs text-green-600 dark:text-green-400">
-                                                                            Custom
-                                                                        </span>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </button>
-
-                                                        {/* Dropdown Menu - Outside the button */}
-                                                        <div className={cn(
-                                                            'absolute top-4 right-4',
-                                                            'opacity-0 transition-opacity group-hover:opacity-100',
-                                                            'sm:opacity-100' // Always visible on mobile
-                                                        )}>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <button
-                                                                        onClick={e => e.stopPropagation()}
-                                                                        className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                                    >
-                                                                        <IconDotsVertical
-                                                                            size={16}
-                                                                            className="text-gray-500 dark:text-gray-400"
-                                                                        />
-                                                                    </button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="end">
-                                                                    <DropdownMenuItem
-                                                                        onClick={e => {
-                                                                            e.stopPropagation();
-                                                                            const displayPrompt = formatPromptForDisplay(prompt.prompt);
-                                                                            onSelectPrompt(displayPrompt, prompt.fullPrompt, prompt.parameters);
-                                                                            scrollToChatInputWithFocus(100);
-                                                                        }}
-                                                                    >
-                                                                        <IconCopy size={14} />
-                                                                        Insert
-                                                                    </DropdownMenuItem>
-
-                                                                    <DropdownMenuItem
-                                                                        onClick={e => {
-                                                                            e.stopPropagation();
-                                                                            handleEdit(prompt.id);
-                                                                        }}
-                                                                    >
-                                                                        <IconEdit size={14} />
-                                                                        Edit
-                                                                    </DropdownMenuItem>
-
-                                                                    <DropdownMenuItem
-                                                                        onClick={e => {
-                                                                            e.stopPropagation();
-                                                                            handleDelete(prompt.id);
-                                                                        }}
-                                                                        disabled={!prompt.isCustom}
-                                                                        className="text-red-600 focus:bg-red-50 dark:text-red-400 dark:focus:bg-red-900/20 disabled:text-gray-400 disabled:dark:text-gray-600"
-                                                                    >
-                                                                        <IconTrash size={14} />
-                                                                        Delete
-                                                                    </DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            );
-                        })
+                                );
+                            }
+                        )
                     )}
                 </div>
             </motion.div>

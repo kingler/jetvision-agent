@@ -10,7 +10,8 @@ const workerSelf = self as any;
 
 // Ensure we don't redeclare variables if this module is processed multiple times
 const workerConnections: Set<MessagePort> = (globalThis as any).__workerConnections || new Set();
-const broadcastChannel: BroadcastChannel = (globalThis as any).__broadcastChannel || new BroadcastChannel('chat-sync-channel');
+const broadcastChannel: BroadcastChannel =
+    (globalThis as any).__broadcastChannel || new BroadcastChannel('chat-sync-channel');
 
 // Store references to prevent redeclaration
 (globalThis as any).__workerConnections = workerConnections;
@@ -47,22 +48,24 @@ if (broadcastChannel) {
 }
 
 // Handle messages from tabs - use existing function if already defined
-const handleMessage = (globalThis as any).__handleMessage || ((message: any, sourcePort: MessagePort): void => {
-    // Log the action for debugging
-    if (message.type) {
-        console.log(`[SharedWorker] Received ${message.type} event`);
-    }
-
-    // Broadcast message to all other connections (tabs)
-    for (const port of Array.from(workerConnections)) {
-        if (port !== sourcePort) {
-            port.postMessage(message);
+const handleMessage =
+    (globalThis as any).__handleMessage ||
+    ((message: any, sourcePort: MessagePort): void => {
+        // Log the action for debugging
+        if (message.type) {
+            console.log(`[SharedWorker] Received ${message.type} event`);
         }
-    }
 
-    // Alternative way to broadcast using BroadcastChannel
-    // broadcastChannel.postMessage(message);
-});
+        // Broadcast message to all other connections (tabs)
+        for (const port of Array.from(workerConnections)) {
+            if (port !== sourcePort) {
+                port.postMessage(message);
+            }
+        }
+
+        // Alternative way to broadcast using BroadcastChannel
+        // broadcastChannel.postMessage(message);
+    });
 
 // Store reference to prevent redeclaration
 (globalThis as any).__handleMessage = handleMessage;

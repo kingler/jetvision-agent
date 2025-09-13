@@ -2,7 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@repo/ui';
+import {
+    cn,
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@repo/ui';
 import {
     IconChevronDown,
     IconChevronUp,
@@ -11,37 +17,41 @@ import {
     IconAdjustments,
     IconCheck,
 } from '@tabler/icons-react';
-import { CategoryKey, CategoryFilterState, UseCategoryFiltersReturn } from '../../hooks/use-category-filters';
+import {
+    CategoryKey,
+    CategoryFilterState,
+    UseCategoryFiltersReturn,
+} from '../../hooks/use-category-filters';
 
 // Category configuration matching the one in PromptCards
 const categoryConfig = {
     Charter: {
         label: 'Charter Operations',
-        color: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Apollo: {
         label: 'Apollo Campaigns',
-        color: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Leads: {
         label: 'Lead Generation',
-        color: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Analytics: {
         label: 'Analytics',
-        color: 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Custom: {
         label: 'Custom',
-        color: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     Travel: {
         label: 'Travel Planning',
-        color: 'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
     'People Search': {
         label: 'People Search',
-        color: 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800',
+        color: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800',
     },
 };
 
@@ -103,7 +113,9 @@ export const CategoryControls: React.FC<CategoryControlsProps> = ({
                             >
                                 <IconEye size={14} />
                                 Show All
-                                {isAllVisible && <IconCheck size={14} className="ml-auto text-green-500" />}
+                                {isAllVisible && (
+                                    <IconCheck size={14} className="ml-auto text-green-500" />
+                                )}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={hideAllCategories}
@@ -112,7 +124,9 @@ export const CategoryControls: React.FC<CategoryControlsProps> = ({
                             >
                                 <IconEyeOff size={14} />
                                 Hide All
-                                {isAllHidden && <IconCheck size={14} className="ml-auto text-green-500" />}
+                                {isAllHidden && (
+                                    <IconCheck size={14} className="ml-auto text-green-500" />
+                                )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -154,7 +168,7 @@ export const CategoryControls: React.FC<CategoryControlsProps> = ({
                                 <div
                                     key={category}
                                     className={cn(
-                                        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border',
+                                        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium',
                                         config.color
                                     )}
                                 >
@@ -221,7 +235,7 @@ export const CategoryControls: React.FC<CategoryControlsProps> = ({
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         {isVisible ? (
                                             <IconEye size={16} className="text-green-500" />
                                         ) : (

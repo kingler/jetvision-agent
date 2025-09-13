@@ -220,9 +220,10 @@ test.describe('Chat UI Integration Tests', () => {
             ];
 
             await page.route(WEBHOOK_URL + '**', async route => {
-                const streamBody = streamingChunks.map((chunk) => 
-                    `data: ${JSON.stringify({ message: chunk })}\n\n`
-                ).join('') + 'data: [DONE]\n\n';
+                const streamBody =
+                    streamingChunks
+                        .map(chunk => `data: ${JSON.stringify({ message: chunk })}\n\n`)
+                        .join('') + 'data: [DONE]\n\n';
 
                 await route.fulfill({
                     status: 200,
@@ -792,9 +793,13 @@ test.describe('Chat UI Integration Tests', () => {
             ];
 
             await page.route(WEBHOOK_URL + '**', async route => {
-                const streamBody = progressSteps.map((step) => 
-                    `data: ${JSON.stringify({ message: step.message, progress: step.progress })}\n\n`
-                ).join('') + 'data: [DONE]\n\n';
+                const streamBody =
+                    progressSteps
+                        .map(
+                            step =>
+                                `data: ${JSON.stringify({ message: step.message, progress: step.progress })}\n\n`
+                        )
+                        .join('') + 'data: [DONE]\n\n';
 
                 await route.fulfill({
                     status: 200,
