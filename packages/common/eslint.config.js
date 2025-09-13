@@ -47,7 +47,7 @@ module.exports = [
         },
         plugins: {
             '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
-            'react': require('eslint-plugin-react'),
+            react: require('eslint-plugin-react'),
         },
         rules: {
             'no-undef': 'off',

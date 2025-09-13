@@ -211,7 +211,7 @@ describe('ChatInput Business Logic Tests', () => {
 
         // Create router instance first
         const router = mockUseRouter();
-        
+
         // Simulate auth check for premium features
         if (!authResult.isSignedIn) {
             router.push('/sign-in');

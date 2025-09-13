@@ -62,7 +62,7 @@ export class TestEnvironmentManager {
             webhookUrl: 'https://n8n.vividwalls.blog/webhook/jetvision-agent',
             frontendUrl: 'http://localhost:3000',
         };
-        
+
         this.config = { ...defaultConfig, ...config };
 
         this.metrics = {
@@ -367,9 +367,10 @@ export class TestEnvironmentManager {
                 'Complete.',
             ];
 
-            const streamBody = streamingChunks.map((chunk) => 
-                `data: ${JSON.stringify({ message: chunk })}\n\n`
-            ).join('') + 'data: [DONE]\n\n';
+            const streamBody =
+                streamingChunks
+                    .map(chunk => `data: ${JSON.stringify({ message: chunk })}\n\n`)
+                    .join('') + 'data: [DONE]\n\n';
 
             await route.fulfill({
                 status: 200,
@@ -402,7 +403,7 @@ export class TestEnvironmentManager {
 
             const errorTypeIndex = errorCount % errorTypes.length;
             const errorType = errorTypes[errorTypeIndex] || errorTypes[0];
-            
+
             if (!errorType) {
                 throw new Error('No error types available');
             }

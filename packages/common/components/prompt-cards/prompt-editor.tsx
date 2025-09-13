@@ -3,7 +3,15 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@repo/ui';
-import { IconX, IconCheck, IconEdit, IconEye, IconDeviceFloppy, IconAlertCircle, IconSparkles } from '@tabler/icons-react';
+import {
+    IconX,
+    IconCheck,
+    IconEdit,
+    IconEye,
+    IconDeviceFloppy,
+    IconAlertCircle,
+    IconSparkles,
+} from '@tabler/icons-react';
 import { validateEditedPrompt, enhancePromptForAviation } from '../../utils/prompt-editor';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { Document } from '@tiptap/extension-document';
@@ -44,10 +52,19 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     const [description, setDescription] = useState('');
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [isValid, setIsValid] = useState(false);
-    const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
+        'idle'
+    );
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-    const [validationResult, setValidationResult] = useState({ isValid: true, errors: [], warnings: [] });
-    const [enhancementSuggestions, setEnhancementSuggestions] = useState<{ enhancedText: string; changes: string[] } | null>(null);
+    const [validationResult, setValidationResult] = useState({
+        isValid: true,
+        errors: [],
+        warnings: [],
+    });
+    const [enhancementSuggestions, setEnhancementSuggestions] = useState<{
+        enhancedText: string;
+        changes: string[];
+    } | null>(null);
     const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
     const DRAFT_KEY = `prompt_draft_${mode}_${initialData?.title || 'new'}`;
 
@@ -114,42 +131,45 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         const fullPromptText = fullPromptEditor?.getText() || '';
 
         // Basic validation
-        const basicValid = trimmedTitle.length >= 3 && trimmedPrompt.length >= 10 && trimmedDescription.length >= 5;
-        
+        const basicValid =
+            trimmedTitle.length >= 3 &&
+            trimmedPrompt.length >= 10 &&
+            trimmedDescription.length >= 5;
+
         // Enhanced validation using prompt-editor utils
         const promptValidation = validateEditedPrompt(fullPromptText);
         const descriptionValidation = validateEditedPrompt(trimmedDescription);
-        
+
         // Combine validation results
         const combinedErrors = [
             ...(trimmedTitle.length < 3 ? ['Title must be at least 3 characters'] : []),
             ...(trimmedPrompt.length < 10 ? ['Display prompt must be at least 10 characters'] : []),
             ...promptValidation.errors,
-            ...descriptionValidation.errors
+            ...descriptionValidation.errors,
         ];
 
         const combinedWarnings = [
             ...(trimmedTitle.length > 100 ? ['Title is quite long'] : []),
             ...promptValidation.warnings,
-            ...descriptionValidation.warnings
+            ...descriptionValidation.warnings,
         ];
 
         const validationResult = {
             isValid: basicValid && promptValidation.isValid && descriptionValidation.isValid,
             errors: combinedErrors,
-            warnings: combinedWarnings
+            warnings: combinedWarnings,
         };
 
         setValidationResult(validationResult);
         setIsValid(validationResult.isValid);
 
         // Mark as having unsaved changes if content differs from initial
-        const hasChanges: boolean = initialData ? (
-            trimmedTitle !== initialData.title ||
-            trimmedPrompt !== initialData.prompt ||
-            trimmedDescription !== initialData.description ||
-            fullPromptText !== initialData.fullPrompt
-        ) : !!(trimmedTitle || trimmedPrompt || trimmedDescription || fullPromptText);
+        const hasChanges: boolean = initialData
+            ? trimmedTitle !== initialData.title ||
+              trimmedPrompt !== initialData.prompt ||
+              trimmedDescription !== initialData.description ||
+              fullPromptText !== initialData.fullPrompt
+            : !!(trimmedTitle || trimmedPrompt || trimmedDescription || fullPromptText);
 
         setHasUnsavedChanges(hasChanges);
 
@@ -167,7 +187,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                 prompt,
                 description,
                 fullPrompt: fullPromptEditor?.getHTML() || '',
-                timestamp: Date.now()
+                timestamp: Date.now(),
             };
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
             setAutoSaveStatus('saved');
@@ -193,7 +213,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     const handleEnhancePrompt = useCallback(() => {
         const currentText = fullPromptEditor?.getText() || '';
         const enhancement = enhancePromptForAviation(currentText);
-        
+
         if (enhancement.changes.length > 0) {
             setEnhancementSuggestions(enhancement);
         }
@@ -240,7 +260,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         if (autoSaveTimerRef.current) {
             clearTimeout(autoSaveTimerRef.current);
         }
-        
+
         onClose();
         // Reset form after a delay to prevent flashing
         setTimeout(() => {
@@ -284,13 +304,17 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                 {autoSaveStatus === 'saved' && (
                                     <>
                                         <IconDeviceFloppy size={14} className="text-green-500" />
-                                        <span className="text-green-600 dark:text-green-400">Draft saved</span>
+                                        <span className="text-green-600 dark:text-green-400">
+                                            Draft saved
+                                        </span>
                                     </>
                                 )}
                                 {autoSaveStatus === 'error' && (
                                     <>
                                         <IconAlertCircle size={14} className="text-red-500" />
-                                        <span className="text-red-600 dark:text-red-400">Save failed</span>
+                                        <span className="text-red-600 dark:text-red-400">
+                                            Save failed
+                                        </span>
                                     </>
                                 )}
                             </div>
@@ -305,10 +329,17 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <IconAlertCircle size={14} className="text-red-500" />
-                                    <span className="text-xs font-medium text-red-700 dark:text-red-400">Issues to fix:</span>
+                                    <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                                        Issues to fix:
+                                    </span>
                                 </div>
                                 {validationResult.errors.map((error, index) => (
-                                    <p key={index} className="text-xs text-red-600 dark:text-red-400 ml-4">• {error}</p>
+                                    <p
+                                        key={index}
+                                        className="ml-4 text-xs text-red-600 dark:text-red-400"
+                                    >
+                                        • {error}
+                                    </p>
                                 ))}
                             </div>
                         )}
@@ -316,10 +347,17 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <IconAlertCircle size={14} className="text-orange-500" />
-                                    <span className="text-xs font-medium text-orange-700 dark:text-orange-400">Suggestions:</span>
+                                    <span className="text-xs font-medium text-orange-700 dark:text-orange-400">
+                                        Suggestions:
+                                    </span>
                                 </div>
                                 {validationResult.warnings.map((warning, index) => (
-                                    <p key={index} className="text-xs text-orange-600 dark:text-orange-400 ml-4">• {warning}</p>
+                                    <p
+                                        key={index}
+                                        className="ml-4 text-xs text-orange-600 dark:text-orange-400"
+                                    >
+                                        • {warning}
+                                    </p>
                                 ))}
                             </div>
                         )}
@@ -411,7 +449,10 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                     className="flex items-center gap-1 rounded-md bg-blue-100 px-2 py-1 text-xs transition-colors hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40"
                                     title="Enhance for aviation context"
                                 >
-                                    <IconSparkles size={14} className="text-blue-600 dark:text-blue-400" />
+                                    <IconSparkles
+                                        size={14}
+                                        className="text-blue-600 dark:text-blue-400"
+                                    />
                                     Enhance
                                 </button>
                                 <button
@@ -556,8 +597,13 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                     <div className="space-y-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <IconSparkles size={16} className="text-blue-600 dark:text-blue-400" />
-                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Aviation Enhancement Suggestions</span>
+                                <IconSparkles
+                                    size={16}
+                                    className="text-blue-600 dark:text-blue-400"
+                                />
+                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                    Aviation Enhancement Suggestions
+                                </span>
                             </div>
                             <button
                                 onClick={() => setEnhancementSuggestions(null)}
@@ -566,11 +612,18 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                 <IconX size={14} className="text-blue-600 dark:text-blue-400" />
                             </button>
                         </div>
-                        
+
                         <div className="space-y-2">
-                            <p className="text-xs text-blue-800 dark:text-blue-200">Suggested improvements:</p>
+                            <p className="text-xs text-blue-800 dark:text-blue-200">
+                                Suggested improvements:
+                            </p>
                             {enhancementSuggestions.changes.map((change, index) => (
-                                <p key={index} className="text-xs text-blue-700 dark:text-blue-300 ml-4">• {change}</p>
+                                <p
+                                    key={index}
+                                    className="ml-4 text-xs text-blue-700 dark:text-blue-300"
+                                >
+                                    • {change}
+                                </p>
                             ))}
                         </div>
 

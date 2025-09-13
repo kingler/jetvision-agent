@@ -193,7 +193,12 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
     private async executeWithFallback(
         options: Parameters<LanguageModelV1['doGenerate']>[0],
         isStreaming: boolean
-    ): Promise<{ text: string; usage: any; finishReason: LanguageModelV1FinishReason; rawCall: any }> {
+    ): Promise<{
+        text: string;
+        usage: any;
+        finishReason: LanguageModelV1FinishReason;
+        rawCall: any;
+    }> {
         const query = this.extractQuery(options);
         const source = this.detectSource(query);
 
@@ -213,7 +218,10 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
                 rawCall: { rawPrompt: null, rawSettings: {} },
             };
         } catch (error) {
-            console.log('🟡 N8N primary failed, trying direct APIs...', error instanceof Error ? error.message : String(error));
+            console.log(
+                '🟡 N8N primary failed, trying direct APIs...',
+                error instanceof Error ? error.message : String(error)
+            );
             this.metrics.fallbackActivations++;
         }
 
@@ -231,7 +239,10 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
                 rawCall: { rawPrompt: null, rawSettings: {} },
             };
         } catch (error) {
-            console.log('🟡 Direct APIs failed, checking cache...', error instanceof Error ? error.message : String(error));
+            console.log(
+                '🟡 Direct APIs failed, checking cache...',
+                error instanceof Error ? error.message : String(error)
+            );
         }
 
         // Step 3: Try Cache Layer (Stale data acceptable)
@@ -250,7 +261,10 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
                 };
             }
         } catch (error) {
-            console.log('🟡 Cache fallback failed', error instanceof Error ? error.message : String(error));
+            console.log(
+                '🟡 Cache fallback failed',
+                error instanceof Error ? error.message : String(error)
+            );
         }
 
         // Step 4: Emergency Offline Response
@@ -344,7 +358,9 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
                 return this.formatApolloLeadsResponse(result, query);
             }
         } catch (error) {
-            throw new Error(`Apollo.io direct API failed: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(
+                `Apollo.io direct API failed: ${error instanceof Error ? error.message : String(error)}`
+            );
         }
     }
 
@@ -373,7 +389,9 @@ export class JetVisionResilientProvider implements LanguageModelV1 {
                 return this.generateBasicAvinodeResponse(query);
             }
         } catch (error) {
-            throw new Error(`Avinode direct API failed: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(
+                `Avinode direct API failed: ${error instanceof Error ? error.message : String(error)}`
+            );
         }
     }
 

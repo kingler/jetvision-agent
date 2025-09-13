@@ -96,9 +96,7 @@ const config = {
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 
     // Transform ignore patterns for ES modules
-    transformIgnorePatterns: [
-        'node_modules/(?!(nanoid|@tiptap|framer-motion|@tabler)/)',
-    ],
+    transformIgnorePatterns: ['node_modules/(?!(nanoid|@tiptap|framer-motion|@tabler)/)'],
 };
 
 module.exports = config;

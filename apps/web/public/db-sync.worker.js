@@ -10,10 +10,10 @@ const broadcastChannel = globalThis.__broadcastChannel || new BroadcastChannel('
 globalThis.__workerConnections = workerConnections;
 globalThis.__broadcastChannel = broadcastChannel;
 // Handle messages from individual tabs
-workerSelf.onconnect = (event) => {
+workerSelf.onconnect = event => {
     const port = event.ports[0];
     workerConnections.add(port);
-    port.onmessage = (e) => {
+    port.onmessage = e => {
         handleMessage(e.data, port);
     };
     port.start();
@@ -34,19 +34,21 @@ if (broadcastChannel) {
     };
 }
 // Handle messages from tabs - use existing function if already defined
-const handleMessage = globalThis.__handleMessage || ((message, sourcePort) => {
-    // Log the action for debugging
-    if (message.type) {
-        console.log(`[SharedWorker] Received ${message.type} event`);
-    }
-    // Broadcast message to all other connections (tabs)
-    for (const port of Array.from(workerConnections)) {
-        if (port !== sourcePort) {
-            port.postMessage(message);
+const handleMessage =
+    globalThis.__handleMessage ||
+    ((message, sourcePort) => {
+        // Log the action for debugging
+        if (message.type) {
+            console.log(`[SharedWorker] Received ${message.type} event`);
         }
-    }
-    // Alternative way to broadcast using BroadcastChannel
-    // broadcastChannel.postMessage(message);
-});
+        // Broadcast message to all other connections (tabs)
+        for (const port of Array.from(workerConnections)) {
+            if (port !== sourcePort) {
+                port.postMessage(message);
+            }
+        }
+        // Alternative way to broadcast using BroadcastChannel
+        // broadcastChannel.postMessage(message);
+    });
 // Store reference to prevent redeclaration
 globalThis.__handleMessage = handleMessage;

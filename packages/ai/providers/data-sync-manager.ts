@@ -158,7 +158,11 @@ export class DataSyncManager {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.updateSyncStatus(dataType, 'error', [], [errorMessage]);
-            syncLog.complete(false, undefined, error instanceof Error ? error : new Error(String(error)));
+            syncLog.complete(
+                false,
+                undefined,
+                error instanceof Error ? error : new Error(String(error))
+            );
 
             return {
                 success: false,

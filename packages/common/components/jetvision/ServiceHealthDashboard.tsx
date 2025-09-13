@@ -26,9 +26,9 @@ import {
 // Simple Progress Component (since not exported from @repo/ui)
 const Progress: React.FC<{ value: number; className?: string }> = ({ value, className }) => {
     return (
-        <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 ${className}`}>
-            <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out" 
+        <div className={`h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 ${className}`}>
+            <div
+                className="h-2 rounded-full bg-blue-600 transition-all duration-300 ease-in-out"
                 style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
             />
         </div>

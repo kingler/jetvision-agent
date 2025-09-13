@@ -250,9 +250,9 @@ export const usePromptManager = (): UsePromptManagerReturn => {
                 const customCopy: CustomPromptCard = {
                     ...existingPrompt,
                     id: newId,
-                    title: existingPrompt.isCustom ? 
-                        `${existingPrompt.title} (Copy)` : 
-                        `${existingPrompt.title} (Custom)`,
+                    title: existingPrompt.isCustom
+                        ? `${existingPrompt.title} (Copy)`
+                        : `${existingPrompt.title} (Custom)`,
                     category: 'Custom',
                     isCustom: true,
                     createdAt: now,
