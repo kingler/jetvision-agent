@@ -4,6 +4,12 @@
   "installCommand": "bun install",
   "framework": "nextjs",
   "env": {
-    "TURBO_TELEMETRY_DISABLED": "1"
+    "TURBO_TELEMETRY_DISABLED": "1",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@next_public_clerk_publishable_key"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@next_public_clerk_publishable_key"
+    }
   }
 }
