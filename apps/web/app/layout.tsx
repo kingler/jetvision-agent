@@ -7,6 +7,10 @@ import { ThemeProvider } from '@repo/common/components';
 import { TooltipProvider } from '@repo/ui';
 import './globals.css';
 
+// Force dynamic rendering to prevent SSG issues with Clerk
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
