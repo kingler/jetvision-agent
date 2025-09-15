@@ -66,16 +66,16 @@ const ApolloLeadsDisplay: React.FC<{ leads: ApolloLead[]; summary?: string }> = 
     summary,
 }) => {
     return (
-        <Card className="mt-4 border-blue-500/20 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-950/20">
+        <Card className="mt-4 border-border bg-gradient-to-br from-secondary/50 to-transparent dark:from-secondary/20">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
-                        <IconUsers className="h-5 w-5 text-blue-600" />
+                        <IconUsers className="h-5 w-5 text-brand" />
                         Apollo.io Lead Intelligence
                     </CardTitle>
                     <Badge
                         variant="secondary"
-                        className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                        className="bg-secondary text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground"
                     >
                         {leads.length} leads found
                     </Badge>
@@ -117,7 +117,7 @@ const ApolloLeadsDisplay: React.FC<{ leads: ApolloLead[]; summary?: string }> = 
                                 {lead.email && (
                                     <div className="mt-1 flex items-center gap-1">
                                         <IconMail className="text-muted-foreground h-3 w-3" />
-                                        <span className="text-xs text-blue-600">{lead.email}</span>
+                                        <span className="text-xs text-brand">{lead.email}</span>
                                     </div>
                                 )}
                             </div>
@@ -158,7 +158,7 @@ const ApolloCampaignDisplay: React.FC<{ metrics: ApolloMetrics; campaign?: any }
             <CardContent>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     {metrics.openRate && (
-                        <MetricCard label="Open Rate" value={metrics.openRate} color="blue" />
+                        <MetricCard label="Open Rate" value={metrics.openRate} color="gray" />
                     )}
                     {metrics.clickRate && (
                         <MetricCard label="Click Rate" value={metrics.clickRate} color="green" />
@@ -213,16 +213,16 @@ const PeopleSearchDisplay: React.FC<{ people: ApolloLead[]; summary?: string }> 
     summary,
 }) => {
     return (
-        <Card className="mt-4 border-indigo-500/20 bg-gradient-to-br from-indigo-50/50 to-transparent dark:from-indigo-950/20">
+        <Card className="mt-4 border-border bg-gradient-to-br from-secondary/50 to-transparent dark:from-secondary/20">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
-                        <IconUserSearch className="h-5 w-5 text-indigo-600" />
+                        <IconUserSearch className="h-5 w-5 text-brand" />
                         People Search Results
                     </CardTitle>
                     <Badge
                         variant="secondary"
-                        className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+                        className="bg-secondary text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground"
                     >
                         {people.length} people found
                     </Badge>
@@ -267,7 +267,7 @@ const PeopleSearchDisplay: React.FC<{ people: ApolloLead[]; summary?: string }> 
                                     {person.email && (
                                         <div className="flex items-center gap-2">
                                             <IconMail className="text-muted-foreground h-3 w-3" />
-                                            <span className="text-sm text-indigo-600 dark:text-indigo-400">
+                                            <span className="text-sm text-brand dark:text-brand">
                                                 {person.email}
                                             </span>
                                         </div>
@@ -330,7 +330,7 @@ const MetricCard: React.FC<{ label: string; value: string; color: string }> = ({
     color,
 }) => {
     const colorClasses = {
-        blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+        gray: 'bg-secondary text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground',
         green: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
         yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
         purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',

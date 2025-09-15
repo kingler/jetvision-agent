@@ -33,7 +33,8 @@ export const chatOptions = [
     // No special chat options - all OpenAI models handle aviation routing
 ];
 
-export const modelOptions = [
+// DISABLED: Model selection now handled by n8n workflow
+/* export const modelOptions = [
     {
         label: 'GPT-4o (Aviation Agent)',
         description: 'Most capable OpenAI model with aviation routing',
@@ -76,7 +77,7 @@ export const modelOptions = [
         icon: undefined,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.O4_Mini],
     },
-];
+]; */
 
 export const AttachmentButton = () => {
     return (
@@ -93,7 +94,8 @@ export const AttachmentButton = () => {
     );
 };
 
-// OpenAI Frontend Agent Selection Button
+// DISABLED: Model selection now handled by n8n workflow
+/* // OpenAI Frontend Agent Selection Button
 export const ChatModeButton = () => {
     const chatMode = useChatStore(state => state.chatMode);
     const setChatMode = useChatStore(state => state.setChatMode);
@@ -118,7 +120,7 @@ export const ChatModeButton = () => {
             <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
         </DropdownMenu>
     );
-};
+}; */
 
 export const WebSearchButton = () => {
     const useWebSearch = useChatStore(state => state.useWebSearch);
@@ -167,7 +169,8 @@ export const GeneratingStatus = () => {
     );
 };
 
-export const ChatModeOptions = ({
+// DISABLED: Model selection now handled by n8n workflow
+/* export const ChatModeOptions = ({
     chatMode,
     setChatMode,
     isRetry = false,
@@ -186,7 +189,6 @@ export const ChatModeOptions = ({
             side="bottom"
             className="no-scrollbar max-h-[300px] w-[300px] overflow-y-auto"
         >
-            {/* Chat options removed - all OpenAI models handle aviation routing */}
             <DropdownMenuGroup>
                 <DropdownMenuLabel>OpenAI Aviation Agents</DropdownMenuLabel>
                 {modelOptions.map(option => (
@@ -221,7 +223,7 @@ export const ChatModeOptions = ({
             </DropdownMenuGroup>
         </DropdownMenuContent>
     );
-};
+}; */
 
 export const SendStopButton = ({
     isGenerating,

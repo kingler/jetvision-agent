@@ -111,7 +111,8 @@ type Actions = {
     stopGeneration: () => void;
     setAbortController: (abortController: AbortController) => void;
     createThread: (optimisticId: string, thread?: Pick<Thread, 'title'>) => Promise<Thread>;
-    setChatMode: (chatMode: ChatMode) => void;
+    // DISABLED: Model selection now handled by n8n workflow
+    // setChatMode: (chatMode: ChatMode) => void;
     updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
     getThread: (threadId: string) => Promise<Thread | null>;
     pinThread: (threadId: string) => Promise<void>;
@@ -532,12 +533,13 @@ export const useChatStore = create(
             });
         },
 
-        setChatMode: (chatMode: ChatMode) => {
+        // DISABLED: Model selection now handled by n8n workflow
+        /* setChatMode: (chatMode: ChatMode) => {
             localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
             set(state => {
                 state.chatMode = chatMode;
             });
-        },
+        }, */
 
         pinThread: async (threadId: string) => {
             await db.threads.update(threadId, { pinned: true, pinnedAt: new Date() });

@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import { RootProvider, ReactQueryProvider } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
+import { ThemeProvider } from '@repo/common/components';
 import { TooltipProvider } from '@repo/ui';
 import './globals.css';
 
@@ -16,15 +17,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <meta name="theme-color" content="#1a1a1a" />
             </head>
             <body className={inter.className} suppressHydrationWarning>
-                <ClerkProvider>
-                    <RootProvider>
-                        <TooltipProvider>
-                            <ReactQueryProvider>
-                                <AgentProvider>{children}</AgentProvider>
-                            </ReactQueryProvider>
-                        </TooltipProvider>
-                    </RootProvider>
-                </ClerkProvider>
+                <ThemeProvider>
+                    <ClerkProvider>
+                        <RootProvider>
+                            <TooltipProvider>
+                                <ReactQueryProvider>
+                                    <AgentProvider>{children}</AgentProvider>
+                                </ReactQueryProvider>
+                            </TooltipProvider>
+                        </RootProvider>
+                    </ClerkProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

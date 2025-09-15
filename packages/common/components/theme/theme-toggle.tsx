@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@repo/ui';
-import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
+import { IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-react';
 import { useTheme } from './theme-provider';
 import { cn } from '@repo/ui';
 
@@ -32,12 +32,12 @@ export function ThemeToggle({ size = 'md', variant = 'icon', className }: ThemeT
 
     const getIcon = () => {
         if (theme === 'system') {
-            return <ComputerDesktopIcon className="h-4 w-4" />;
+            return <IconDeviceDesktop size={16} strokeWidth={2} />;
         }
         return resolvedTheme === 'dark' ? (
-            <MoonIcon className="h-4 w-4" />
+            <IconSun size={16} strokeWidth={2} />
         ) : (
-            <SunIcon className="h-4 w-4" />
+            <IconMoon size={16} strokeWidth={2} />
         );
     };
 
@@ -53,7 +53,7 @@ export function ThemeToggle({ size = 'md', variant = 'icon', className }: ThemeT
             onClick={toggleTheme}
             title={getTooltip()}
             className={cn(
-                'transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
+                'transition-all duration-200 hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring',
                 className
             )}
         >
@@ -79,11 +79,11 @@ export function ThemeStatus({ className }: ThemeStatusProps) {
         >
             <div className="flex items-center space-x-1">
                 {theme === 'system' ? (
-                    <ComputerDesktopIcon className="h-3 w-3" />
+                    <IconDeviceDesktop size={12} strokeWidth={2} />
                 ) : resolvedTheme === 'dark' ? (
-                    <MoonIcon className="h-3 w-3" />
+                    <IconMoon size={12} strokeWidth={2} />
                 ) : (
-                    <SunIcon className="h-3 w-3" />
+                    <IconSun size={12} strokeWidth={2} />
                 )}
                 <span>
                     {theme === 'system'

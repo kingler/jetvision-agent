@@ -1,7 +1,7 @@
-const sharedConfig = require('@repo/tailwind-config');
+import type { Config } from 'tailwindcss';
+import sharedConfig from '@repo/tailwind-config';
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const config: Config = {
     presets: [sharedConfig],
     content: [
         './app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,3 +12,5 @@ module.exports = {
         '../../packages/common/hooks/**/*.{js,ts,jsx,tsx,mdx}',
     ],
 };
+
+export default config;

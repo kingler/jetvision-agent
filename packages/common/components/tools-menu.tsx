@@ -23,10 +23,13 @@ export const ToolsMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { mcpConfig, updateSelectedMCP, selectedMCP } = useMcpToolsStore();
     const apiKeys = useApiKeysStore();
-    const chatMode = useChatStore(state => state.chatMode);
+    // DISABLED: Model selection now handled by n8n workflow
+    // const chatMode = useChatStore(state => state.chatMode);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
     const setSettingTab = useAppStore(state => state.setSettingTab);
+    // Use default mode since n8n workflow handles model selection
+    const chatMode = 'gpt-4o-mini';
     const isToolsAvailable = useMemo(
         () => hasApiKeyForChatMode(chatMode),
         [chatMode, hasApiKeyForChatMode, apiKeys]

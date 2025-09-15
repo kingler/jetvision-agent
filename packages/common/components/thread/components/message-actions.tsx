@@ -1,8 +1,9 @@
 'use client';
-import { ChatModeOptions } from '@repo/common/components';
+// DISABLED: Model selection now handled by n8n workflow
+// import { ChatModeOptions } from '@repo/common/components';
 import { useAgentStream, useCopyText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
-import { ChatMode, getChatModeName } from '@repo/shared/config';
+// import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
 import { IconCheck, IconCopy, IconMarkdown, IconRefresh, IconTrash } from '@tabler/icons-react';
@@ -18,7 +19,8 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
         const removeThreadItem = useChatStore(state => state.deleteThreadItem);
         const getThreadItems = useChatStore(state => state.getThreadItems);
         const useWebSearch = useChatStore(state => state.useWebSearch);
-        const [chatMode, setChatMode] = useState<ChatMode>(threadItem.mode);
+        // DISABLED: Model selection now handled by n8n workflow
+        // const [chatMode, setChatMode] = useState<ChatMode>(threadItem.mode);
         const { copyToClipboard, status, copyMarkdown, markdownCopyStatus } = useCopyText();
         return (
             <div className="flex flex-row items-center gap-1 py-2">
@@ -61,7 +63,8 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         )}
                     </Button>
                 )}
-                {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
+                {/* DISABLED: Model selection now handled by n8n workflow */}
+                {/* {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost-bordered" size="icon-sm" tooltip="Rewrite">
@@ -85,7 +88,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                             }}
                         />
                     </DropdownMenu>
-                )}
+                )} */}
 
                 {isLast && (
                     <Button

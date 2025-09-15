@@ -22,15 +22,15 @@ function LoadingThreeDotsJumping() {
             className="flex items-center justify-center gap-2.5"
         >
             <motion.div
-                className="h-5 w-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 will-change-transform"
+                className="h-5 w-5 rounded-full bg-brand will-change-transform"
                 variants={dotVariants}
             />
             <motion.div
-                className="h-5 w-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 will-change-transform"
+                className="h-5 w-5 rounded-full bg-brand will-change-transform"
                 variants={dotVariants}
             />
             <motion.div
-                className="h-5 w-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 will-change-transform"
+                className="h-5 w-5 rounded-full bg-brand will-change-transform"
                 variants={dotVariants}
             />
         </motion.div>

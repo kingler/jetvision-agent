@@ -92,12 +92,12 @@ const ProgressBar: React.FC<{ steps: WorkflowStep[] }> = ({ steps }) => {
     return (
         <div className="bg-secondary/50 mb-4 h-1 w-full overflow-hidden rounded-full">
             <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+                className="h-full rounded-full bg-brand transition-all duration-500 ease-out"
                 style={{ width: `${progressPercentage}%` }}
             />
             {runningSteps > 0 && (
                 <div
-                    className="absolute top-0 h-full rounded-full bg-gradient-to-r from-purple-400/60 to-pink-400/60 transition-all duration-500"
+                    className="absolute top-0 h-full rounded-full bg-muted transition-all duration-500"
                     style={{ width: `${runningPercentage}%` }}
                 />
             )}
@@ -196,8 +196,8 @@ export const WorkflowStatus: React.FC<WorkflowStatusProps> = ({
 
                             {/* Active processing indicator */}
                             {isActive && (
-                                <div className="flex items-center gap-1 text-xs text-purple-600">
-                                    <div className="h-1 w-1 animate-pulse rounded-full bg-purple-500" />
+                                <div className="flex items-center gap-1 text-xs text-brand">
+                                    <div className="h-1 w-1 animate-pulse rounded-full bg-brand" />
                                     <span>Processing...</span>
                                 </div>
                             )}

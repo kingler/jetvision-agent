@@ -26,7 +26,9 @@ import { routeMessage, type RoutingDecision } from '../../utils/agent-router';
 import { isAviationMessage } from '../../utils/aviation-classifier';
 import { ExamplePrompts } from '../exmaple-prompts';
 // import { ChatFooter } from '../chat-footer'; // Removed JetVision footer
-import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
+// DISABLED: Model selection now handled by n8n workflow
+// import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
+import { GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 // import { PromptCardsButton, PromptCard } from '../prompt-cards'; // Temporarily disabled for build
 import { ChatEditor } from './chat-editor';
 import { ImageUpload } from './image-upload';
@@ -130,7 +132,9 @@ export const ChatInput = forwardRef<
 
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
-    const chatMode = useChatStore(state => state.chatMode);
+    // DISABLED: Model selection now handled by n8n workflow - using default mode
+    // const chatMode = useChatStore(state => state.chatMode);
+    const chatMode = 'gpt-4o-mini'; // Default mode since n8n workflow handles model selection
 
     // Handle prompt selection from prompt cards
     // const handlePromptSelect = useCallback((prompt: PromptCard) => {
@@ -460,7 +464,7 @@ export const ChatInput = forwardRef<
                 <Flex
                     direction="col"
                     className={cn(
-                        'bg-background border-hard/50 shadow-subtle-sm relative z-10 w-full rounded-xl border'
+                        'bg-background border-hard/50 shadow-medium relative z-10 w-full rounded-xl border'
                     )}
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
@@ -498,8 +502,8 @@ export const ChatInput = forwardRef<
                                             <GeneratingStatus />
                                         ) : (
                                             <Flex gap="xs" items="center" className="shrink-0">
-                                                {/* OpenAI Frontend Agent Selection */}
-                                                <ChatModeButton />
+                                                {/* DISABLED: Model selection now handled by n8n workflow */}
+                                                {/* <ChatModeButton /> */}
                                                 {/* <AttachmentButton /> */}
                                                 {/* <PromptCardsButton onSelectPrompt={handlePromptSelect} /> */}
                                                 <WebSearchButton />
@@ -652,7 +656,7 @@ const AnimatedTitles = ({}: AnimatedTitlesProps) => {
                 return `${baseGreeting} ${user.firstName}!`;
             } else {
                 // Default to "Kham Lam" for testing purposes as requested
-                return `${baseGreeting} Kham Lam!`;
+                return `${baseGreeting}`;
             }
         };
 
@@ -684,7 +688,12 @@ const AnimatedTitles = ({}: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 whitespace-pre-line bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
+                    className="whitespace-pre-line bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
+                    style={{
+                        background: 'linear-gradient(270deg, #A8A8A8 -1.16%, #343232 100%)',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                    }}
                 >
                     {greeting}
                 </motion.h1>

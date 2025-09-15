@@ -19,7 +19,9 @@ export const ImageUpload: FC<TImageUpload> = ({
     showIcon,
     handleImageUpload,
 }) => {
-    const chatMode = useChatStore(state => state.chatMode);
+    // DISABLED: Model selection now handled by n8n workflow - using default mode
+    // const chatMode = useChatStore(state => state.chatMode);
+    const chatMode = 'gpt-4o-mini'; // Default mode since n8n workflow handles model selection
     const handleFileSelect = () => {
         document.getElementById(id)?.click();
     };

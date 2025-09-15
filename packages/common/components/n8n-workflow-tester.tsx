@@ -723,10 +723,10 @@ export const N8NWorkflowTester: React.FC = () => {
                         exit={{ opacity: 0, y: -20 }}
                         className="mb-6"
                     >
-                        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
+                        <div className="rounded-lg border border-border bg-secondary p-4 dark:border-border dark:bg-secondary">
                             <div className="flex items-center gap-3">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-                                <p className="font-medium text-blue-800 dark:text-blue-200">
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-t-transparent"></div>
+                                <p className="font-medium text-brand dark:text-brand">
                                     Processing workflow request...
                                 </p>
                             </div>

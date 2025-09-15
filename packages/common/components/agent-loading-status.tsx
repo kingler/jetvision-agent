@@ -89,7 +89,7 @@ export default function AgentLoadingStatus({
     if (!isLoading) return null;
 
     return (
-        <div className="w-full space-y-4 rounded-lg border border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 p-4 dark:border-purple-800 dark:from-purple-950/20 dark:to-pink-950/20">
+        <div className="w-full space-y-4 rounded-lg border border-border bg-secondary p-4 dark:border-border dark:bg-secondary">
             <div className="flex flex-col items-center space-y-4">
                 <LoadingThreeDotsJumping />
 
@@ -112,7 +112,7 @@ export default function AgentLoadingStatus({
                 <div className="w-full max-w-xs">
                     <div className="h-1.5 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                         <motion.div
-                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                            className="h-full bg-brand"
                             initial={{ width: '0%' }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 0.3, ease: 'easeOut' }}
