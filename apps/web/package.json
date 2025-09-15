@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "npm run build:worker && next dev",
-        "build": "npm run build:worker && cd ../../packages/prisma && bun prisma generate && cd ../../apps/web && next build",
+        "dev": "bun run build:worker && next dev",
+        "build": "bun run build:worker && cd ../../packages/prisma && bun prisma generate && cd ../../apps/web && next build",
         "build:worker": "tsc ../../packages/common/store/db-sync.worker.ts --target ES2020 --module ES2020 --moduleResolution node --outDir public --skipLibCheck",
         "start": "next start",
         "prepare": "husky",

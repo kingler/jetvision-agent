@@ -1,0 +1,9 @@
+{
+  "buildCommand": "bun run build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "env": {
+    "TURBO_TELEMETRY_DISABLED": "1"
+  }
+}
