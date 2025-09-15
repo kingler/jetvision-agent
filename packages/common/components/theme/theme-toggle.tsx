@@ -20,7 +20,7 @@ export function ThemeToggle({ size = 'md', variant = 'icon', className }: ThemeT
                 <select
                     value={theme}
                     onChange={e => setTheme(e.target.value as 'light' | 'dark' | 'system')}
-                    className="appearance-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                    className="appearance-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
@@ -73,7 +73,7 @@ export function ThemeStatus({ className }: ThemeStatusProps) {
     return (
         <div
             className={cn(
-                'flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400',
+                'flex items-center space-x-2 text-xs text-muted-foreground',
                 className
             )}
         >

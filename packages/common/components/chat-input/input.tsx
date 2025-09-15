@@ -231,7 +231,7 @@ export const ChatInput = forwardRef<
                 }));
 
             // Route the message using the routing system
-            const routingDecision = routeMessage(messageText, chatMode, {
+            const routingDecision = routeMessage(messageText, chatMode as ChatMode, {
                 threadId: threadId,
                 previousMessages,
             });
