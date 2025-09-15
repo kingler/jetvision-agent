@@ -31,7 +31,7 @@ export const ToolsMenu = () => {
     // Use default mode since n8n workflow handles model selection
     const chatMode = 'gpt-4o-mini';
     const isToolsAvailable = useMemo(
-        () => hasApiKeyForChatMode(chatMode),
+        () => hasApiKeyForChatMode(chatMode as any),
         [chatMode, hasApiKeyForChatMode, apiKeys]
     );
 
