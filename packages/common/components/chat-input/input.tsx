@@ -2,7 +2,7 @@
 import { useAuth, useUser } from '@clerk/nextjs';
 import { ImageAttachment, ImageDropzoneRoot } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
-import { ChatModeConfig } from '@repo/shared/config';
+import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
